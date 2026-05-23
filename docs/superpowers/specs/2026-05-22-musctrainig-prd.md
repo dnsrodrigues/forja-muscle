@@ -169,10 +169,10 @@ Um app web acessível pelo celular (PWA instalável) que digitaliza todo o proce
 
 ## 7. Design e Tema Visual
 
-- **Paleta:** Fundo escuro (#0f0f0f), superfície (#1a1a1a), laranja primário (#f97316)
+- **Paleta (atualizada 23/05/2026):** Fundo escuro (#05050a), superfície (#0e0e16), verde-limão primário (#c8f04a)
 - **Tema:** Dark mode exclusivo (sem toggle claro/escuro)
-- **Linguagem visual:** Moderno, energético, focado em fitness
-- **Tipografia:** Sistema (sans-serif nativo do dispositivo)
+- **Linguagem visual:** Editorial, técnico, atlético — inspirado no design Nova
+- **Tipografia:** Syne (display/títulos) + DM Mono (corpo/captions)
 
 ---
 

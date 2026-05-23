@@ -39,7 +39,7 @@ export function Avatar({ name, src, size = 'md', className = '' }: AvatarProps) 
 
   return (
     <div
-      className={`${base} bg-orange-500 flex items-center justify-center font-bold text-white select-none`}
+      className={`${base} bg-orange-500 flex items-center justify-center font-bold text-[#05050a] select-none`}
       aria-label={`Avatar de ${name}`}
     >
       {getInitials(name)}

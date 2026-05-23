@@ -70,7 +70,7 @@ export function LoginPage() {
         {/* Logo */}
         <div className="flex flex-col items-center mb-8 gap-3">
           <div className="w-16 h-16 bg-orange-500 rounded-2xl flex items-center justify-center shadow-lg shadow-orange-500/20">
-            <Dumbbell size={32} className="text-white" />
+            <Dumbbell size={32} className="text-[#05050a]" />
           </div>
           <div className="text-center">
             <h1 className="text-2xl font-bold text-white tracking-tight">

@@ -24,7 +24,8 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
 
     const variants = {
       primary:
-        'bg-orange-500 hover:bg-orange-400 active:bg-orange-600 text-white focus:ring-orange-500',
+        // text-[#05050a] = texto escuro sobre o lime claro (#c8f04a)
+        'bg-orange-500 hover:bg-orange-400 active:bg-orange-600 text-[#05050a] font-bold focus:ring-orange-500',
       secondary:
         'bg-white/10 hover:bg-white/20 active:bg-white/5 text-white border border-white/10 focus:ring-white/20',
       ghost:

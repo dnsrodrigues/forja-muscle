@@ -134,7 +134,7 @@ export function ProfilePage() {
           transition={{ duration: 0.4 }}
           className="relative mt-6 mb-6 rounded-3xl overflow-hidden border border-white/5"
           style={{
-            background: 'linear-gradient(135deg, #1e1200 0%, #1a1a1a 60%, #0f0f0f 100%)',
+            background: 'linear-gradient(135deg, #0a1200 0%, #0e0e16 60%, #05050a 100%)',
           }}
         >
           {/* Grade decorativa de fundo */}
@@ -142,7 +142,7 @@ export function ProfilePage() {
             className="absolute inset-0 opacity-5"
             style={{
               backgroundImage:
-                'repeating-linear-gradient(0deg, #f97316 0, #f97316 1px, transparent 1px, transparent 40px), repeating-linear-gradient(90deg, #f97316 0, #f97316 1px, transparent 1px, transparent 40px)',
+                'repeating-linear-gradient(0deg, #c8f04a 0, #c8f04a 1px, transparent 1px, transparent 40px), repeating-linear-gradient(90deg, #c8f04a 0, #c8f04a 1px, transparent 1px, transparent 40px)',
             }}
           />
 

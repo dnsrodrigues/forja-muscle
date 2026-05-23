@@ -93,11 +93,14 @@ Não existe `tailwind.config.js`. Cores customizadas ficam em `src/index.css` de
 
 | Uso | Classe / Valor |
 |-----|---------------|
-| Fundo principal | `bg-[#0f0f0f]` |
-| Superfície (cards) | `bg-[#1a1a1a]` |
-| Cor primária (laranja) | `bg-orange-500` / `text-orange-500` |
+| Fundo principal | `bg-[#05050a]` |
+| Superfície (cards) | `bg-[#0e0e16]` |
+| Cor primária (verde-limão `#c8f04a`) | `bg-orange-500` / `text-orange-500` ¹ |
+| Texto sobre fundo lime | `text-[#05050a]` (escuro — lime é claro!) |
 | Bordas sutis | `border-white/10` |
 | Texto secundário | `text-gray-400` |
+
+> ¹ `orange-500` foi sobrescrito no `@theme {}` do `index.css` para apontar para `#c8f04a`. Use as classes `orange-*` normalmente — elas já são lime.
 
 ---
 
