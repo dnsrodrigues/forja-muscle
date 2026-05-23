@@ -1,0 +1,4 @@
+# Padroniza fins de linha para todos os sistemas operacionais
+* text=auto eol=lf
+*.{cmd,[cC][mM][dD]} text eol=crlf
+*.{bat,[bB][aA][tT]} text eol=crlf
