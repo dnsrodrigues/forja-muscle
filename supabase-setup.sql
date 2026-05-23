@@ -212,6 +212,18 @@ ALTER TABLE body_measurements ENABLE ROW LEVEL SECURITY;
 ALTER TABLE nutrition_logs ENABLE ROW LEVEL SECURITY;
 
 -- =============================================
+-- FUNÇÃO AUXILIAR: verificar se usuário é admin
+-- (evita recursão infinita nas políticas de profiles)
+-- =============================================
+CREATE OR REPLACE FUNCTION public.is_admin_user()
+RETURNS BOOLEAN AS $$
+  SELECT EXISTS (
+    SELECT 1 FROM public.profiles
+    WHERE id = (SELECT auth.uid()) AND role = 'admin'
+  );
+$$ LANGUAGE sql SECURITY DEFINER STABLE SET search_path = public;
+
+-- =============================================
 -- POLÍTICAS DE ACESSO — profiles
 -- =============================================
 CREATE POLICY "profiles: usuário vê o próprio perfil"
@@ -220,9 +232,7 @@ CREATE POLICY "profiles: usuário vê o próprio perfil"
 
 CREATE POLICY "profiles: admin vê todos"
   ON profiles FOR SELECT
-  USING (
-    EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND role = 'admin')
-  );
+  USING (public.is_admin_user());
 
 CREATE POLICY "profiles: usuário edita o próprio perfil"
   ON profiles FOR UPDATE
