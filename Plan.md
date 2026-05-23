@@ -16,7 +16,7 @@
 | 1 | Fundação (Vite + React + TypeScript + Tailwind) | ✅ Completa |
 | 2 | Banco de dados (Supabase: tabelas, RLS, seed) | ✅ Completa |
 | 3 | Autenticação (login, logout, rotas protegidas) | ✅ Completa |
-| 4 | Perfil do usuário | ⏳ Pendente |
+| 4 | Perfil do usuário | ✅ Completa |
 | 5 | Fichas de treino (CRUD admin + visualização aluno) | ⏳ Pendente |
 | 6 | Execução de treino (séries, timer) | ⏳ Pendente |
 | 7 | Histórico e progressão (gráficos) | ⏳ Pendente |
@@ -73,7 +73,7 @@ Antes de cada fase, verificar a complexidade e seguir o fluxo correspondente:
 
 ---
 
-### FASE 4 — Perfil do usuário ⏳
+### FASE 4 — Perfil do usuário ✅ COMPLETA
 **Complexidade:** 🟡 Simples → usar `/frontend-design`
 
 **O que entrega:** Página onde o aluno visualiza e edita seus dados pessoais (nome, peso, altura, objetivo, foto).

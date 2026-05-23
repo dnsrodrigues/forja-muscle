@@ -4,9 +4,8 @@ import { ProtectedRoute } from './components/layout/ProtectedRoute'
 import { AdminRoute } from './components/layout/AdminRoute'
 import { LoginPage } from './pages/LoginPage'
 import { DashboardPage } from './pages/DashboardPage'
+import { ProfilePage } from './pages/ProfilePage'
 import { NotFoundPage } from './pages/NotFoundPage'
-
-// As demais páginas serão adicionadas nas fases 4 a 9
 
 function App() {
   return (
@@ -25,6 +24,9 @@ function App() {
 
             {/* Dashboard */}
             <Route path="/dashboard" element={<DashboardPage />} />
+
+            {/* Fase 4 — Perfil do usuário */}
+            <Route path="/perfil" element={<ProfilePage />} />
 
             {/* ── Rotas exclusivas do admin ── */}
             <Route element={<AdminRoute />}>
