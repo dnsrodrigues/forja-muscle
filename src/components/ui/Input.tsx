@@ -13,7 +13,6 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
 
     const isPassword = type === 'password'
     const inputType = isPassword && showPassword ? 'text' : type
-
     const inputId = id ?? label?.toLowerCase().replace(/\s+/g, '-')
 
     return (
@@ -21,7 +20,8 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
         {label && (
           <label
             htmlFor={inputId}
-            className="text-sm font-medium text-gray-300"
+            className="text-sm font-medium"
+            style={{ color: 'var(--muted)' }}
           >
             {label}
           </label>
@@ -32,15 +32,25 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
             ref={ref}
             id={inputId}
             type={inputType}
-            className={`
-              w-full h-11 px-4 rounded-xl
-              bg-white/5 border text-white placeholder-gray-500 text-sm
-              focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent
-              transition-colors duration-200
-              ${error ? 'border-red-500' : 'border-white/10 hover:border-white/20'}
-              ${isPassword ? 'pr-12' : ''}
-              ${className}
-            `}
+            className={`w-full h-11 px-4 rounded-xl text-sm outline-none transition-all duration-200 ${isPassword ? 'pr-12' : ''} ${className}`}
+            style={{
+              background: 'var(--glass)',
+              color: 'var(--ink)',
+              border: error
+                ? '1px solid rgba(239,68,68,0.7)'
+                : '1px solid var(--line)',
+              boxShadow: 'none',
+            }}
+            onFocus={(e) => {
+              e.currentTarget.style.borderColor = 'color-mix(in srgb, var(--accent) 70%, white)'
+              e.currentTarget.style.boxShadow = '0 0 0 4px var(--accent-glow)'
+              props.onFocus?.(e)
+            }}
+            onBlur={(e) => {
+              e.currentTarget.style.borderColor = error ? 'rgba(239,68,68,0.7)' : 'var(--line)'
+              e.currentTarget.style.boxShadow = 'none'
+              props.onBlur?.(e)
+            }}
             {...props}
           />
 
@@ -48,7 +58,8 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
             <button
               type="button"
               onClick={() => setShowPassword((prev) => !prev)}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white transition-colors"
+              className="absolute right-3 top-1/2 -translate-y-1/2 transition-colors"
+              style={{ color: 'var(--faint)' }}
               tabIndex={-1}
             >
               {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
@@ -63,7 +74,9 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
         )}
 
         {hint && !error && (
-          <p className="text-xs text-gray-500">{hint}</p>
+          <p className="text-xs" style={{ color: 'var(--faint)' }}>
+            {hint}
+          </p>
         )}
       </div>
     )

@@ -3,9 +3,9 @@ interface AvatarProps {
   src?: string | null
   size?: 'sm' | 'md' | 'lg' | 'xl'
   className?: string
+  style?: React.CSSProperties
 }
 
-// Extrai as iniciais de um nome completo (até 2 letras)
 function getInitials(name: string): string {
   return name
     .trim()
@@ -24,8 +24,8 @@ const sizeClasses = {
   xl:  'w-24 h-24 text-3xl',
 }
 
-export function Avatar({ name, src, size = 'md', className = '' }: AvatarProps) {
-  const base = `${sizeClasses[size]} rounded-2xl flex-shrink-0 ${className}`
+export function Avatar({ name, src, size = 'md', className = '', style }: AvatarProps) {
+  const base = `${sizeClasses[size]} rounded-xl flex-shrink-0 ${className}`
 
   if (src) {
     return (
@@ -33,13 +33,21 @@ export function Avatar({ name, src, size = 'md', className = '' }: AvatarProps) 
         src={src}
         alt={name}
         className={`${base} object-cover`}
+        style={style}
       />
     )
   }
 
   return (
     <div
-      className={`${base} bg-orange-500 flex items-center justify-center font-bold text-[#05050a] select-none`}
+      className={`${base} flex items-center justify-center font-bold select-none`}
+      style={{
+        background: 'linear-gradient(135deg, var(--accent-two), var(--accent) 60%)',
+        color: 'var(--bg)',
+        fontFamily: "'Cormorant Garamond', serif",
+        letterSpacing: '0.02em',
+        ...style,
+      }}
       aria-label={`Avatar de ${name}`}
     >
       {getInitials(name)}

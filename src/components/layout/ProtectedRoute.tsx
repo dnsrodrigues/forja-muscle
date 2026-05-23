@@ -4,10 +4,20 @@ import { useAuth } from '../../context/AuthContext'
 // Tela de carregamento enquanto verifica a sessão
 function LoadingScreen() {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#0f0f0f]">
-      <div className="flex flex-col items-center gap-4">
-        <div className="w-12 h-12 border-4 border-orange-500 border-t-transparent rounded-full animate-spin" />
-        <p className="text-gray-400 text-sm">Carregando...</p>
+    <div className="min-h-screen flex items-center justify-center theme-bg">
+      <div className="flex flex-col items-center gap-5">
+        {/* Spinner usando accent color via CSS var */}
+        <div
+          className="w-10 h-10 rounded-full border-2 border-t-transparent animate-spin"
+          style={{ borderColor: 'var(--accent)', borderTopColor: 'transparent' }}
+        />
+        {/* Texto com fonte display */}
+        <p
+          className="text-xs font-light tracking-[0.3em] uppercase"
+          style={{ color: 'var(--faint)', fontFamily: "'Outfit', sans-serif" }}
+        >
+          Carregando
+        </p>
       </div>
     </div>
   )

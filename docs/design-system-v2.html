@@ -20,11 +20,11 @@
       --border-md:    rgba(240, 237, 230, 0.14);
       --border-strong:rgba(240, 237, 230, 0.22);
 
-      --orange:       #f97316;
-      --orange-dark:  #ea6b10;
-      --orange-light: #fb923c;
-      --orange-glow:  rgba(249, 115, 22, 0.2);
-      --orange-muted: rgba(249, 115, 22, 0.1);
+      --accent:       #c8f04a;
+      --accent-dark:  #b5d93e;
+      --accent-light: #d4f464;
+      --accent-glow:  rgba(200, 240, 74, 0.2);
+      --accent-muted: rgba(200, 240, 74, 0.1);
 
       --success:      #4ade80;
       --success-muted:rgba(74, 222, 128, 0.1);
@@ -69,13 +69,13 @@
       z-index: 0;
     }
 
-    /* Orb laranja */
+    /* Orb lime */
     .orb {
       position: fixed;
       width: 800px;
       height: 800px;
       border-radius: 50%;
-      background: radial-gradient(circle at center, rgba(249,115,22,0.1) 0%, transparent 70%);
+      background: radial-gradient(circle at center, rgba(200,240,74,0.1) 0%, transparent 70%);
       top: -300px;
       right: -200px;
       pointer-events: none;
@@ -128,7 +128,7 @@
       font-weight: 800;
       letter-spacing: 0.22em;
       text-transform: uppercase;
-      color: var(--orange);
+      color: var(--accent);
     }
 
     .brand-sub {
@@ -162,7 +162,7 @@
     }
 
     .nav-link:hover { color: var(--fg); border-left-color: var(--border-md); }
-    .nav-link.active { color: var(--orange); border-left-color: var(--orange); }
+    .nav-link.active { color: var(--accent); border-left-color: var(--accent); }
 
     /* Main */
     .main {
@@ -178,7 +178,7 @@
       font-size: 10px;
       letter-spacing: 0.22em;
       text-transform: uppercase;
-      color: var(--orange);
+      color: var(--accent);
       margin-bottom: 8px;
     }
 
@@ -194,7 +194,7 @@
 
     .section-title em {
       font-style: italic;
-      color: var(--orange);
+      color: var(--accent);
     }
 
     .section-desc {
@@ -295,8 +295,8 @@
     .btn-md  { font-size: 12px; padding: 0 20px; height: 40px; border-radius: var(--r-sm); }
     .btn-lg  { font-size: 13px; padding: 0 28px; height: 50px; border-radius: var(--r-sm); }
 
-    .btn-primary { background: var(--orange); color: var(--bg); }
-    .btn-primary:hover { background: var(--orange-light); transform: translateY(-1px); box-shadow: 0 4px 24px var(--orange-glow); }
+    .btn-primary { background: var(--accent); color: var(--bg); }
+    .btn-primary:hover { background: var(--accent-light); transform: translateY(-1px); box-shadow: 0 4px 24px var(--accent-glow); }
     .btn-primary:active { transform: scale(0.97); }
 
     .btn-secondary {
@@ -356,8 +356,8 @@
 
     .field-input::placeholder { color: var(--fg-3); font-style: italic; }
     .field-input:focus {
-      border-color: var(--orange);
-      box-shadow: 0 0 0 3px var(--orange-muted);
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px var(--accent-muted);
     }
     .field-input.has-error { border-color: var(--danger); }
     .field-input.has-error:focus { box-shadow: 0 0 0 3px var(--danger-muted); }
@@ -379,7 +379,7 @@
       background: rgba(240,237,230,0.03);
     }
 
-    .input-row:focus-within { border-color: var(--orange); box-shadow: 0 0 0 3px var(--orange-muted); }
+    .input-row:focus-within { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-muted); }
     .input-row input {
       flex: 1; background: transparent; border: none; outline: none;
       padding: 0 14px;
@@ -413,11 +413,11 @@
       overflow: hidden;
     }
 
-    .card-accent { border-left: 2px solid var(--orange); padding-left: 18px; }
+    .card-accent { border-left: 2px solid var(--accent); padding-left: 18px; }
 
     .card-glow {
-      border-color: rgba(249,115,22,0.25);
-      box-shadow: 0 0 0 1px rgba(249,115,22,0.06), 0 4px 32px rgba(249,115,22,0.08);
+      border-color: rgba(200,240,74,0.25);
+      box-shadow: 0 0 0 1px rgba(200,240,74,0.06), 0 4px 32px rgba(200,240,74,0.08);
     }
 
     .card-title {
@@ -476,7 +476,7 @@
       font-family: var(--font-display);
       font-weight: 800;
       color: var(--bg);
-      background: var(--orange);
+      background: var(--accent);
       flex-shrink: 0;
       letter-spacing: 0.08em;
     }
@@ -507,13 +507,13 @@
 
     .badge-dot { width: 5px; height: 5px; border-radius: 50%; background: currentColor; }
 
-    .badge-admin    { color: var(--orange-light); border-color: rgba(249,115,22,0.3); background: var(--orange-muted); }
+    .badge-admin    { color: var(--accent-light); border-color: rgba(200,240,74,0.3); background: var(--accent-muted); }
     .badge-aluno    { color: var(--fg-2); border-color: var(--border-md); }
     .badge-active   { color: var(--success); border-color: rgba(74,222,128,0.25); background: var(--success-muted); }
     .badge-inactive { color: var(--danger); border-color: rgba(248,113,113,0.25); background: var(--danger-muted); }
     .badge-easy     { color: var(--success); border-color: rgba(74,222,128,0.25); background: var(--success-muted); }
     .badge-medium   { color: var(--warning); border-color: rgba(251,191,36,0.25); background: rgba(251,191,36,0.1); }
-    .badge-hard     { color: var(--orange-light); border-color: rgba(249,115,22,0.3); background: var(--orange-muted); }
+    .badge-hard     { color: var(--accent-light); border-color: rgba(200,240,74,0.3); background: var(--accent-muted); }
     .badge-terrible { color: var(--danger); border-color: rgba(248,113,113,0.25); background: var(--danger-muted); }
     .badge-muscle   { color: rgba(147,197,253,0.9); border-color: rgba(59,130,246,0.25); background: rgba(59,130,246,0.08); font-size: 9px; }
 
@@ -538,33 +538,33 @@
       animation: rotate linear infinite;
     }
 
-    .ring-1 { width: 180px; height: 180px; border-color: rgba(249,115,22,0.2); animation-duration: 28s; }
-    .ring-2 { width: 130px; height: 130px; border-color: rgba(249,115,22,0.15); animation-duration: 18s; animation-direction: reverse; border-style: dashed; }
-    .ring-3 { width: 80px;  height: 80px;  border-color: rgba(249,115,22,0.3); animation-duration: 10s; }
+    .ring-1 { width: 180px; height: 180px; border-color: rgba(200,240,74,0.2); animation-duration: 28s; }
+    .ring-2 { width: 130px; height: 130px; border-color: rgba(200,240,74,0.15); animation-duration: 18s; animation-direction: reverse; border-style: dashed; }
+    .ring-3 { width: 80px;  height: 80px;  border-color: rgba(200,240,74,0.3); animation-duration: 10s; }
 
     .ring-1 .ring-dot {
       position: absolute;
       width: 7px; height: 7px;
-      background: var(--orange);
+      background: var(--accent);
       border-radius: 50%;
       top: 0; left: 50%;
       transform: translate(-50%, -50%);
-      box-shadow: 0 0 10px var(--orange);
+      box-shadow: 0 0 10px var(--accent);
     }
 
     .ring-core {
       width: 40px; height: 40px;
       border-radius: 50%;
-      background: var(--orange);
-      box-shadow: 0 0 30px rgba(249,115,22,0.7), 0 0 60px rgba(249,115,22,0.25);
+      background: var(--accent);
+      box-shadow: 0 0 30px rgba(200,240,74,0.7), 0 0 60px rgba(200,240,74,0.25);
       z-index: 2;
       animation: coreGlow 4s ease-in-out infinite;
     }
 
     @keyframes rotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
     @keyframes coreGlow {
-      0%, 100% { transform: scale(1); box-shadow: 0 0 30px rgba(249,115,22,0.7), 0 0 60px rgba(249,115,22,0.25); }
-      50% { transform: scale(1.2); box-shadow: 0 0 50px rgba(249,115,22,1), 0 0 90px rgba(249,115,22,0.4); }
+      0%, 100% { transform: scale(1); box-shadow: 0 0 30px rgba(200,240,74,0.7), 0 0 60px rgba(200,240,74,0.25); }
+      50% { transform: scale(1.2); box-shadow: 0 0 50px rgba(200,240,74,1), 0 0 90px rgba(200,240,74,0.4); }
     }
 
     /* ═══════════════════════════════════════════════
@@ -597,7 +597,7 @@
       font-weight: 800;
       letter-spacing: 0.22em;
       text-transform: uppercase;
-      color: var(--orange);
+      color: var(--accent);
     }
 
     .header-tag {
@@ -613,7 +613,7 @@
     .dash-hero {
       background: var(--surface);
       border: 1px solid var(--border);
-      border-left: 2px solid var(--orange);
+      border-left: 2px solid var(--accent);
       padding: 14px;
       position: relative;
       overflow: hidden;
@@ -625,7 +625,7 @@
       inset: 0;
       background: repeating-linear-gradient(
         -45deg, transparent, transparent 16px,
-        rgba(249,115,22,0.025) 16px, rgba(249,115,22,0.025) 17px
+        rgba(200,240,74,0.025) 16px, rgba(200,240,74,0.025) 17px
       );
     }
 
@@ -635,7 +635,7 @@
       font-size: 8px;
       letter-spacing: 0.2em;
       text-transform: uppercase;
-      color: var(--orange);
+      color: var(--accent);
       margin-bottom: 4px;
     }
 
@@ -648,7 +648,7 @@
       line-height: 1;
     }
 
-    .dash-name em { font-style: italic; color: var(--orange); }
+    .dash-name em { font-style: italic; color: var(--accent); }
 
     .dash-streak-pill {
       display: inline-flex;
@@ -658,10 +658,10 @@
       font-size: 9px;
       letter-spacing: 0.1em;
       text-transform: uppercase;
-      color: var(--orange-light);
-      border: 1px solid rgba(249,115,22,0.25);
+      color: var(--accent-light);
+      border: 1px solid rgba(200,240,74,0.25);
       padding: 3px 8px;
-      background: var(--orange-muted);
+      background: var(--accent-muted);
     }
 
     .stats-row {
@@ -698,7 +698,7 @@
     .workout-item {
       background: var(--surface);
       border: 1px solid var(--border);
-      border-left: 2px solid var(--orange);
+      border-left: 2px solid var(--accent);
       padding: 10px 12px;
       display: flex;
       align-items: center;
@@ -709,8 +709,8 @@
 
     .workout-icon {
       width: 30px; height: 30px;
-      background: var(--orange-muted);
-      border: 1px solid rgba(249,115,22,0.2);
+      background: var(--accent-muted);
+      border: 1px solid rgba(200,240,74,0.2);
       display: flex; align-items: center; justify-content: center;
       font-size: 14px;
       flex-shrink: 0;
@@ -755,13 +755,13 @@
     .tab-label { font-size: 8px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--fg-3); }
 
     .tab-item.active .tab-icon  { opacity: 1; }
-    .tab-item.active .tab-label { color: var(--orange); }
+    .tab-item.active .tab-label { color: var(--accent); }
 
     .tab-line {
       position: absolute;
       top: 0; left: 20%; right: 20%;
       height: 1px;
-      background: var(--orange);
+      background: var(--accent);
     }
 
     /* ═══════════════════════════════════════════════
@@ -818,7 +818,7 @@
     .mb-12 { margin-bottom: 12px; }
     .mb-16 { margin-bottom: 16px; }
     .text-muted { color: var(--fg-2); }
-    .text-orange { color: var(--orange); }
+    .text-accent { color: var(--accent); }
     .fw-700 { font-weight: 700; }
     .w-full { width: 100%; }
 
@@ -827,13 +827,13 @@
       font-size: 10px;
       letter-spacing: 0.25em;
       text-transform: uppercase;
-      color: var(--orange);
+      color: var(--accent);
       margin-bottom: 8px;
       display: flex;
       align-items: center;
       gap: 12px;
     }
-    .page-eyebrow::before { content: ''; width: 32px; height: 1px; background: var(--orange); }
+    .page-eyebrow::before { content: ''; width: 32px; height: 1px; background: var(--accent); }
 
     .page-title {
       font-family: var(--font-display);
@@ -844,7 +844,7 @@
       margin-bottom: 8px;
     }
 
-    .page-title em { font-style: italic; color: var(--orange); display: block; }
+    .page-title em { font-style: italic; color: var(--accent); display: block; }
 
     .page-subtitle {
       color: var(--fg-2);
@@ -870,9 +870,9 @@
     .token-table code {
       font-family: var(--font-mono);
       font-size: 11px;
-      background: rgba(249,115,22,0.08);
+      background: rgba(200,240,74,0.08);
       padding: 2px 6px;
-      color: var(--orange-light);
+      color: var(--accent-light);
     }
 
     .floating-badge {
@@ -892,8 +892,8 @@
     .live-dot {
       width: 6px; height: 6px;
       border-radius: 50%;
-      background: var(--orange);
-      box-shadow: 0 0 8px var(--orange);
+      background: var(--accent);
+      box-shadow: 0 0 8px var(--accent);
       animation: blink 2s ease-in-out infinite;
       flex-shrink: 0;
     }
@@ -968,7 +968,7 @@
       <p class="page-subtitle">
         Segunda opção visual para o MUSCTRAINIG.<br/>
         Syne + DM Mono · Grid editorial · Cantos afiados.<br/>
-        Mesmo laranja, outra personalidade.
+        Paleta Nova (lime), outra personalidade.
       </p>
     </div>
 
@@ -976,7 +976,7 @@
     <section class="section" id="colors">
       <div class="section-num">// 01</div>
       <h2 class="section-title">Paleta de <em>Cores</em></h2>
-      <p class="section-desc">Fundo mais frio (#05050a) que o v1. Laranja permanece como único acento quente.</p>
+      <p class="section-desc">Fundo mais frio (#05050a) que o v1. Lime (#c8f04a) é o único acento, substituindo o laranja.</p>
       <div class="divider"></div>
 
       <div class="demo">
@@ -1011,27 +1011,27 @@
       </div>
 
       <div class="demo">
-        <div class="demo-label">Primária — Ember</div>
+        <div class="demo-label">Primária — Nova Lime</div>
         <div class="color-grid">
           <div class="swatch">
-            <div class="swatch-block" style="background:#fb923c;"></div>
+            <div class="swatch-block" style="background:#d4f464;"></div>
             <div class="swatch-name">Light</div>
-            <div class="swatch-hex">#fb923c</div>
+            <div class="swatch-hex">#d4f464</div>
           </div>
           <div class="swatch">
-            <div class="swatch-block" style="background:#f97316; box-shadow: 0 4px 20px rgba(249,115,22,0.5);"></div>
+            <div class="swatch-block" style="background:#c8f04a; box-shadow: 0 4px 20px rgba(200,240,74,0.5);"></div>
             <div class="swatch-name">Primary ★</div>
-            <div class="swatch-hex">#f97316</div>
+            <div class="swatch-hex">#c8f04a</div>
           </div>
           <div class="swatch">
-            <div class="swatch-block" style="background:#ea6b10;"></div>
+            <div class="swatch-block" style="background:#b5d93e;"></div>
             <div class="swatch-name">Dark</div>
-            <div class="swatch-hex">#ea6b10</div>
+            <div class="swatch-hex">#b5d93e</div>
           </div>
           <div class="swatch">
-            <div class="swatch-block" style="background:rgba(249,115,22,0.1); border: 1px solid rgba(249,115,22,0.2);"></div>
+            <div class="swatch-block" style="background:rgba(200,240,74,0.1); border: 1px solid rgba(200,240,74,0.2);"></div>
             <div class="swatch-name">Muted</div>
-            <div class="swatch-hex">orange/10%</div>
+            <div class="swatch-hex">accent/10%</div>
           </div>
         </div>
       </div>
@@ -1066,7 +1066,7 @@
             <div class="type-meta-spec">Syne 800 · 40px · italic</div>
           </div>
           <div style="font-family:var(--font-display); font-size:40px; font-weight:800; letter-spacing:-0.02em; line-height:1;">
-            The next <em style="color:var(--orange)">era</em>
+            The next <em style="color:var(--accent)">era</em>
           </div>
         </div>
 
@@ -1085,7 +1085,7 @@
             <div class="type-meta-name">Metric</div>
             <div class="type-meta-spec">Syne 800 · 48px · tabular</div>
           </div>
-          <div style="font-family:var(--font-display); font-size:48px; font-weight:800; line-height:1; color:var(--orange); letter-spacing:-0.02em;">
+          <div style="font-family:var(--font-display); font-size:48px; font-weight:800; line-height:1; color:var(--accent); letter-spacing:-0.02em;">
             85<span style="font-family:var(--font-mono); font-size:18px; color:var(--fg-3); margin-left:6px; font-weight:300;">kg</span>
           </div>
         </div>
@@ -1129,7 +1129,7 @@
             <div class="type-meta-name">Código / tag</div>
             <div class="type-meta-spec">DM Mono · 11px · italic</div>
           </div>
-          <div style="font-size:11px; font-style:italic; color:var(--orange);">
+          <div style="font-size:11px; font-style:italic; color:var(--accent);">
             // something is coming
           </div>
         </div>
@@ -1149,14 +1149,14 @@
           <tbody>
             <tr><td><code>--bg</code></td><td>#05050a</td><td>v1 usa #0c0c0c (mais quente)</td></tr>
             <tr><td><code>--surface</code></td><td>#0e0e16</td><td>Tom azulado frio</td></tr>
-            <tr><td><code>--orange</code></td><td>#f97316</td><td>Igual ao v1 ✓</td></tr>
+            <tr><td><code>--accent</code></td><td>#c8f04a</td><td>Lime Nova (substituiu laranja do v1)</td></tr>
             <tr><td><code>--font-display</code></td><td>Syne</td><td>v1 usa Barlow Condensed</td></tr>
             <tr><td><code>--font-mono</code></td><td>DM Mono</td><td>v1 usa DM Sans (sans-serif)</td></tr>
             <tr><td><code>--r-sm</code></td><td>4px</td><td>v1 usa 8px (mais arredondado)</td></tr>
             <tr><td><code>--r-md</code></td><td>6px</td><td>v1 usa 12px</td></tr>
             <tr><td><code>--r-lg</code></td><td>8px</td><td>v1 usa 16–20px</td></tr>
             <tr><td><code>grid-lines</code></td><td>12 colunas overlay</td><td>Exclusivo do v2</td></tr>
-            <tr><td><code>orb</code></td><td>glow radial laranja</td><td>Exclusivo do v2</td></tr>
+            <tr><td><code>orb</code></td><td>glow radial lime</td><td>Exclusivo do v2</td></tr>
           </tbody>
         </table>
       </div>
@@ -1287,7 +1287,7 @@
             <div class="card-body mt-8">Linha laranja à esquerda — fina, precisa. Usado em fichas ativas ou selecionadas.</div>
           </div>
           <div class="card card-glow">
-            <div class="card-title text-orange">Card Hero</div>
+            <div class="card-title text-accent">Card Hero</div>
             <div class="card-body mt-8">Glow suave ao redor. Para CTAs e destaques do dashboard.</div>
           </div>
         </div>
@@ -1308,8 +1308,8 @@
           </div>
           <div class="metric-card">
             <div class="metric-label">Sequência</div>
-            <div class="metric-value" style="color:var(--orange);">7<span class="metric-unit">d</span></div>
-            <div class="metric-trend" style="color:var(--orange);">🔥 em alta</div>
+            <div class="metric-value" style="color:var(--accent);">7<span class="metric-unit">d</span></div>
+            <div class="metric-trend" style="color:var(--accent);">🔥 em alta</div>
           </div>
         </div>
       </div>
@@ -1478,7 +1478,7 @@
 
                 <div class="stats-row">
                   <div class="stat-box">
-                    <span class="stat-num" style="color:var(--orange);">24</span>
+                    <span class="stat-num" style="color:var(--accent);">24</span>
                     <div class="stat-lbl">Treinos</div>
                   </div>
                   <div class="stat-box">
@@ -1620,7 +1620,7 @@
                 <!-- Stats -->
                 <div class="stats-row">
                   <div class="stat-box">
-                    <span class="stat-num" style="color:var(--orange);">24</span>
+                    <span class="stat-num" style="color:var(--accent);">24</span>
                     <div class="stat-lbl">Treinos</div>
                   </div>
                   <div class="stat-box">
@@ -1635,7 +1635,7 @@
 
                 <!-- Treino de hoje -->
                 <div class="card card-glow" style="padding:12px;">
-                  <div style="font-size:8px;letter-spacing:0.2em;text-transform:uppercase;color:var(--orange);margin-bottom:8px;">// hoje — seg, 22 mai</div>
+                  <div style="font-size:8px;letter-spacing:0.2em;text-transform:uppercase;color:var(--accent);margin-bottom:8px;">// hoje — seg, 22 mai</div>
                   <div class="workout-item" style="border:none;padding:0;margin-bottom:8px;background:transparent;">
                     <div class="workout-icon">🏋️</div>
                     <div style="flex:1">

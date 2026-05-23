@@ -15,24 +15,13 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       loading = false,
       disabled,
       className = '',
+      style,
       ...props
     },
     ref
   ) => {
     const base =
-      'inline-flex items-center justify-center gap-2 font-semibold rounded-xl transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-[#0f0f0f] disabled:opacity-50 disabled:cursor-not-allowed'
-
-    const variants = {
-      primary:
-        // text-[#05050a] = texto escuro sobre o lime claro (#c8f04a)
-        'bg-orange-500 hover:bg-orange-400 active:bg-orange-600 text-[#05050a] font-bold focus:ring-orange-500',
-      secondary:
-        'bg-white/10 hover:bg-white/20 active:bg-white/5 text-white border border-white/10 focus:ring-white/20',
-      ghost:
-        'hover:bg-white/10 active:bg-white/5 text-gray-400 hover:text-white focus:ring-white/20',
-      danger:
-        'bg-red-600 hover:bg-red-500 active:bg-red-700 text-white focus:ring-red-500',
-    }
+      'inline-flex items-center justify-center gap-2 font-semibold rounded-xl transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed'
 
     const sizes = {
       sm: 'text-sm px-3 py-1.5 h-8',
@@ -40,11 +29,44 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       lg: 'text-base px-6 py-3 h-12',
     }
 
+    // Variantes com estilos inline para usar CSS vars (responsivos ao tema)
+    const variantStyles: Record<string, React.CSSProperties> = {
+      primary: {
+        background: 'linear-gradient(135deg, var(--accent-two), var(--accent) 52%)',
+        color: 'var(--bg)',
+        boxShadow: '0 12px 32px var(--accent-glow), inset 0 1px 0 rgba(255,255,255,0.36)',
+      },
+      secondary: {
+        background: 'var(--glass)',
+        color: 'var(--ink)',
+        border: '1px solid var(--line)',
+      },
+      ghost: {
+        background: 'transparent',
+        color: 'var(--muted)',
+        border: '1px solid transparent',
+      },
+      danger: {
+        background: 'rgb(220 38 38)',
+        color: 'white',
+        boxShadow: '0 8px 24px rgba(220,38,38,0.28)',
+      },
+    }
+
+    // Classes estáticas de hover (não dependem do tema)
+    const variantClasses = {
+      primary:   'hover:brightness-110 hover:-translate-y-0.5 hover:shadow-lg active:translate-y-0 focus:ring-white/20',
+      secondary: 'hover:brightness-110 active:brightness-95 focus:ring-white/20',
+      ghost:     'hover:bg-white/5 hover:opacity-100 active:bg-white/5 focus:ring-white/10',
+      danger:    'hover:brightness-110 active:brightness-90 focus:ring-red-500/50',
+    }
+
     return (
       <button
         ref={ref}
         disabled={disabled || loading}
-        className={`${base} ${variants[variant]} ${sizes[size]} ${className}`}
+        className={`${base} ${variantClasses[variant]} ${sizes[size]} ${className}`}
+        style={{ ...variantStyles[variant], ...style }}
         {...props}
       >
         {loading && (

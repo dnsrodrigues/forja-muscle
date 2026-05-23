@@ -1,40 +1,87 @@
 @import "tailwindcss";
 
-/* ═══════════════════════════════════════════════════════════════
-   Paleta de cores — Nova (verde-limão como cor primária)
-   Inspirado no design system Nova · aplicado em 23/05/2026
-═══════════════════════════════════════════════════════════════ */
+/* ═══════════════════════════════════════════════════════════════════
+   Design System v3 "Forge" — Cormorant Garamond + Outfit
+   Temas: Forge · Arctic · Venom · Eclipse
+   Aplicado em 23/05/2026
+═══════════════════════════════════════════════════════════════════ */
+
+/* ── Tipografia no @theme do Tailwind ──────────────────────────── */
 @theme {
-  /* Superfícies */
-  --color-background:    #05050a;
-  --color-surface:       #0e0e16;
-  --color-surface-hover: #15151f;
-
-  /* Primária — Lima */
-  --color-primary:       #c8f04a;
-  --color-primary-hover: #d4f464;
-
-  /* Bordas */
-  --color-border:        #1a1a28;
-
-  /* ─── Override: redireciona orange-* → lime ─────────────────
-     Todos os componentes que usam bg-orange-500, text-orange-500
-     etc. automaticamente passam a usar o lime.
-  ────────────────────────────────────────────────────────────── */
-  --color-orange-50:  #f5fdd9;
-  --color-orange-100: #eafaaa;
-  --color-orange-200: #dcf775;
-  --color-orange-300: #d4f464;
-  --color-orange-400: #cef257;
-  --color-orange-500: #c8f04a;   /* ← COR PRINCIPAL */
-  --color-orange-600: #b5d93e;
-  --color-orange-700: #8aaa28;
-  --color-orange-800: #637a1d;
-  --color-orange-900: #4a5c15;
-  --color-orange-950: #2e3a0b;
+  --font-sans:    'Outfit', system-ui, -apple-system, sans-serif;
+  --font-mono:    'Outfit', ui-monospace, monospace;
 }
 
-/* Reset básico */
+/* ── Tema padrão: Forge (Copper × Obsidian) ─────────────────────── */
+:root,
+[data-theme="forge"] {
+  --bg:           #060404;
+  --bg-soft:      #110a08;
+  --bg-hover:     #1a1208;
+  --ink:          #f8f3ed;
+  --muted:        rgba(248, 243, 237, 0.62);
+  --faint:        rgba(248, 243, 237, 0.34);
+  --line:         rgba(248, 243, 237, 0.11);
+  --glass:        rgba(255, 255, 255, 0.06);
+  --glass-strong: rgba(255, 255, 255, 0.11);
+  --accent:       #e07b45;
+  --accent-two:   #f5dcc8;
+  --accent-three: #3d6dff;
+  --accent-glow:  rgba(224, 123, 69, 0.26);
+}
+
+/* ── Arctic (Cobalt × Ice) ────────────────────────────────────── */
+[data-theme="arctic"] {
+  --bg:           #030911;
+  --bg-soft:      #060f1e;
+  --bg-hover:     #0a1428;
+  --ink:          #eef4ff;
+  --muted:        rgba(238, 244, 255, 0.62);
+  --faint:        rgba(238, 244, 255, 0.34);
+  --line:         rgba(238, 244, 255, 0.11);
+  --glass:        rgba(88, 166, 255, 0.055);
+  --glass-strong: rgba(88, 166, 255, 0.11);
+  --accent:       #58a6ff;
+  --accent-two:   #c8e8ff;
+  --accent-three: #e07b45;
+  --accent-glow:  rgba(88, 166, 255, 0.26);
+}
+
+/* ── Venom (Lime × Dark) ─────────────────────────────────────── */
+[data-theme="venom"] {
+  --bg:           #040804;
+  --bg-soft:      #081208;
+  --bg-hover:     #0c1a0a;
+  --ink:          #f0f8ec;
+  --muted:        rgba(240, 248, 236, 0.62);
+  --faint:        rgba(240, 248, 236, 0.34);
+  --line:         rgba(240, 248, 236, 0.11);
+  --glass:        rgba(200, 240, 74, 0.048);
+  --glass-strong: rgba(200, 240, 74, 0.09);
+  --accent:       #c8f04a;
+  --accent-two:   #e8fca0;
+  --accent-three: #ff5f7a;
+  --accent-glow:  rgba(200, 240, 74, 0.22);
+}
+
+/* ── Eclipse (Silver × Void) ─────────────────────────────────── */
+[data-theme="eclipse"] {
+  --bg:           #050507;
+  --bg-soft:      #0c0c10;
+  --bg-hover:     #121218;
+  --ink:          #f0ede8;
+  --muted:        rgba(240, 237, 232, 0.62);
+  --faint:        rgba(240, 237, 232, 0.34);
+  --line:         rgba(240, 237, 232, 0.11);
+  --glass:        rgba(255, 255, 255, 0.05);
+  --glass-strong: rgba(255, 255, 255, 0.1);
+  --accent:       #d4cfc8;
+  --accent-two:   #f0ede8;
+  --accent-three: #7a5cff;
+  --accent-glow:  rgba(212, 207, 200, 0.2);
+}
+
+/* ── Reset básico ────────────────────────────────────────────── */
 *, *::before, *::after {
   box-sizing: border-box;
 }
@@ -46,40 +93,92 @@ html, body, #root {
 }
 
 body {
-  background-color: #05050a;
-  color: #f0ede6;
-  font-family: 'Syne', 'DM Mono', system-ui, -apple-system, sans-serif;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: 'Outfit', system-ui, -apple-system, sans-serif;
+  font-weight: 400;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  transition: background 560ms ease, color 300ms ease;
+  overflow-x: hidden;
 }
 
-/* Textura de ruído sutil — característica do design Nova */
+/* ── Grain texture ────────────────────────────────────────────── */
 body::before {
   content: '';
   position: fixed;
   inset: 0;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
-  opacity: 0.3;
+  background-image: radial-gradient(
+    circle at 1px 1px,
+    rgba(255, 255, 255, 0.8) 1px,
+    transparent 0
+  );
+  background-size: 20px 20px;
+  opacity: 0.08;
+  mix-blend-mode: soft-light;
   pointer-events: none;
   z-index: 0;
 }
 
-/* Orb de fundo — glow sutil em cima à direita */
+/* ── Aurora gradient — muda automaticamente com o tema ──────── */
 body::after {
   content: '';
   position: fixed;
-  width: 600px;
-  height: 600px;
-  border-radius: 50%;
-  background: radial-gradient(circle at center, rgba(200, 240, 74, 0.07) 0%, transparent 70%);
-  top: -200px;
-  right: -150px;
+  inset: 0;
+  background:
+    radial-gradient(
+      circle at 15% 20%,
+      color-mix(in srgb, var(--accent) 16%, transparent),
+      transparent 34%
+    ),
+    radial-gradient(
+      circle at 82% 16%,
+      color-mix(in srgb, var(--accent-three) 14%, transparent),
+      transparent 40%
+    ),
+    radial-gradient(
+      circle at 50% 110%,
+      color-mix(in srgb, var(--accent-two) 12%, transparent),
+      transparent 48%
+    );
   pointer-events: none;
   z-index: 0;
+  transition: background 560ms ease;
 }
 
-/* Garante que o conteúdo fique acima dos efeitos de fundo */
+/* ── Conteúdo acima dos overlays ─────────────────────────────── */
 #root {
   position: relative;
   z-index: 1;
+}
+
+/* ── Fonte display (Cormorant Garamond) ─────────────────────── */
+.font-display {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+}
+
+/* ── Classes utilitárias de tema ─────────────────────────────── */
+.theme-bg           { background: var(--bg); }
+.theme-surface      { background: var(--bg-soft); }
+.theme-text         { color: var(--ink); }
+.theme-text-muted   { color: var(--muted); }
+.theme-text-faint   { color: var(--faint); }
+.theme-text-accent  { color: var(--accent); }
+.theme-text-accent2 { color: var(--accent-two); }
+.theme-border       { border-color: var(--line); }
+.theme-glass        { background: var(--glass); }
+.theme-glass-strong { background: var(--glass-strong); }
+.theme-accent       { background: var(--accent); }
+
+/* ── Glassmorphism card (usado nas páginas) ──────────────────── */
+.glass-card {
+  background: linear-gradient(135deg, var(--glass-strong), var(--glass));
+  border: 1px solid var(--line);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  transition: border-color 300ms ease;
+}
+
+.glass-card:hover {
+  border-color: color-mix(in srgb, var(--accent) 30%, var(--line));
 }
