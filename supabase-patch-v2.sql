@@ -1,5 +1,5 @@
--- =============================================
--- MUSCTRAINIG — Patch v2: Performance + Segurança
+﻿-- =============================================
+-- MUSCLE TRAINING — Patch v2: Performance + Segurança
 -- =============================================
 -- O que este patch corrige:
 -- 1. Adiciona índices em todas as chaves estrangeiras (CRÍTICO para performance)

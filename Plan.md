@@ -1,11 +1,11 @@
-# MUSCTRAINIG — Plan.md
+﻿# MUSCLE TRAINING — Plan.md
 
 **Versão:** 2.0  
 **Atualizado em:** 22 de maio de 2026  
 **Status:** Em andamento 🚧
 
 > Este é o documento central de execução do projeto. Substitui o `plano-implementacao.md` como referência ativa.  
-> Referências: [PRD](docs/superpowers/specs/2026-05-22-musctrainig-prd.md) | [CLAUDE.md](CLAUDE.md)
+> Referências: [PRD](docs/superpowers/specs/2026-05-22-MUSCLE TRAINING-prd.md) | [CLAUDE.md](CLAUDE.md)
 
 ---
 
@@ -62,7 +62,7 @@ Antes de cada fase, verificar a complexidade e seguir o fluxo correspondente:
 **O que entrega:** 9 tabelas criadas, RLS ativo, 39 exercícios pré-cadastrados.
 
 **Passos:**
-1. Acessar [app.supabase.com](https://app.supabase.com) → projeto MUSCTRAINIG → SQL Editor
+1. Acessar [app.supabase.com](https://app.supabase.com) → projeto MUSCLE TRAINING → SQL Editor
 2. Copiar o conteúdo de `supabase-setup.sql` e rodar
 3. Verificar no Table Editor que as 9 tabelas apareceram
 4. Rodar `npm run dev` e confirmar que não há erros de conexão

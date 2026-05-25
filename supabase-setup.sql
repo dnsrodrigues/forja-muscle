@@ -1,5 +1,5 @@
--- =============================================
--- MUSCTRAINIG — Script de Criação do Banco de Dados
+﻿-- =============================================
+-- MUSCLE TRAINING — Script de Criação do Banco de Dados
 -- =============================================
 -- Como usar:
 -- 1. Acesse o painel do Supabase

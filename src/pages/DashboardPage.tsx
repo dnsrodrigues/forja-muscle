@@ -1,4 +1,4 @@
-import { LogOut, Dumbbell, User, ChevronRight } from 'lucide-react'
+﻿import { LogOut, Dumbbell, User, ChevronRight } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { motion } from 'motion/react'
 import { useAuth } from '../context/AuthContext'
@@ -39,7 +39,7 @@ export function DashboardPage() {
               className="font-display text-base font-bold tracking-tight"
               style={{ color: 'var(--ink)' }}
             >
-              MUSCTRAINIG
+              MUSCLE TRAINING
             </span>
           </div>
 

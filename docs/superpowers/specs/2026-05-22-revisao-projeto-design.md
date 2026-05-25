@@ -1,4 +1,4 @@
-# Revisão do Projeto MUSCTRAINIG — Design da Atualização Documental
+﻿# Revisão do Projeto MUSCLE TRAINING — Design da Atualização Documental
 
 **Data:** 22 de maio de 2026  
 **Status:** Aprovado ✅  
@@ -102,7 +102,7 @@ FASE COMPLEXA:
 
 - CLAUDE.md: menor, sem duplicatas, com seção de skills
 - Plan.md: status correto, fluxo de skills por fase, critérios de conclusão por fase
-- Plano de implementação antigo (`2026-05-22-musctrainig-plano-implementacao.md`): mantido como referência histórica, sem alterações
+- Plano de implementação antigo (`2026-05-22-MUSCLE TRAINING-plano-implementacao.md`): mantido como referência histórica, sem alterações
 
 ---
 

@@ -1,10 +1,10 @@
-# MUSCTRAINIG — Guia Operacional para o Claude Code
+﻿# MUSCLE TRAINING — Guia Operacional para o Claude Code
 
 ## O que é este projeto
 
-MUSCTRAINIG é um PWA (app web instalável no celular) de gerenciamento de treinos de musculação. Dois tipos de usuário: **Admin (Personal Trainer)** que cria fichas e gerencia alunos, e **Aluno** que registra treinos e acompanha evolução.
+MUSCLE TRAINING é um PWA (app web instalável no celular) de gerenciamento de treinos de musculação. Dois tipos de usuário: **Admin (Personal Trainer)** que cria fichas e gerencia alunos, e **Aluno** que registra treinos e acompanha evolução.
 
-> Documentação completa: [PRD](docs/superpowers/specs/2026-05-22-musctrainig-prd.md) | [Plan.md](Plan.md)  
+> Documentação completa: [PRD](docs/superpowers/specs/2026-05-22-MUSCLE TRAINING-prd.md) | [Plan.md](Plan.md)  
 > Toda decisão de funcionalidade deve ser validada contra o PRD. Não implementar nada fora do escopo sem confirmar com o usuário.
 
 ---

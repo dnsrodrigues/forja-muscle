@@ -1,4 +1,4 @@
-# MUSCTRAINIG — Plano de Implementação Detalhado
+﻿# MUSCLE TRAINING — Plano de Implementação Detalhado
 
 **Versão:** 1.0  
 **Data:** 22 de maio de 2026  
@@ -72,7 +72,7 @@ Configurar o Supabase com todas as tabelas, triggers, RLS e dados iniciais.
 
 ### Passos para rodar o SQL
 1. Acessar https://app.supabase.com
-2. Selecionar o projeto MUSCTRAINIG
+2. Selecionar o projeto MUSCLE TRAINING
 3. Menu lateral → **SQL Editor**
 4. Clicar em **New Query**
 5. Copiar todo o conteúdo de `supabase-setup.sql`

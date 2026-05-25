@@ -1,4 +1,4 @@
-import { useState } from 'react'
+﻿import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -114,7 +114,7 @@ export function LoginPage() {
               className="font-display text-3xl font-bold leading-none tracking-tight"
               style={{ color: 'var(--ink)' }}
             >
-              MUSCTRAINIG
+              MUSCLE TRAINING
             </h1>
             <p
               className="text-xs mt-2 tracking-[0.22em] uppercase font-light"

@@ -1,4 +1,4 @@
-# MUSCTRAINIG — Documento de Requisitos do Produto (PRD)
+﻿# MUSCLE TRAINING — Documento de Requisitos do Produto (PRD)
 
 **Versão:** 1.0  
 **Data:** 22 de maio de 2026  
@@ -9,7 +9,7 @@
 
 ## 1. Visão Geral do Produto
 
-**MUSCTRAINIG** é um aplicativo web progressivo (PWA) de gerenciamento de treinos de musculação, desenvolvido para uso pessoal. O sistema permite que um personal trainer (administrador) cadastre alunos, crie fichas de treino personalizadas, e acompanhe o progresso de cada aluno. Os alunos, por sua vez, registram seus treinos e monitoram sua evolução.
+**MUSCLE TRAINING** é um aplicativo web progressivo (PWA) de gerenciamento de treinos de musculação, desenvolvido para uso pessoal. O sistema permite que um personal trainer (administrador) cadastre alunos, crie fichas de treino personalizadas, e acompanhe o progresso de cada aluno. Os alunos, por sua vez, registram seus treinos e monitoram sua evolução.
 
 ### Problema que resolve
 - Fichas de treino em papel se perdem ou ficam difíceis de acompanhar
