@@ -28,7 +28,7 @@ export async function updateProfile(
 ): Promise<UserProfile> {
   const { data, error } = await supabase
     .from('profiles')
-    .update({ ...updates, updated_at: new Date().toISOString() })
+    .update(updates) // updated_at é atualizado automaticamente pelo trigger do banco
     .eq('id', userId)
     .select()
     .single()
