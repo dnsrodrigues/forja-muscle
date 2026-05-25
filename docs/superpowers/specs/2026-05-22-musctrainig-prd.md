@@ -1,9 +1,20 @@
-﻿# MUSCLE TRAINING — Documento de Requisitos do Produto (PRD)
+# MUSCLE TRAINING — Documento de Requisitos do Produto (PRD)
 
-**Versão:** 1.0  
-**Data:** 22 de maio de 2026  
+**Versão:** 1.2  
+**Criado em:** 22 de maio de 2026  
+**Atualizado em:** 25 de maio de 2026  
 **Autor:** Denis Rodrigues  
-**Status:** Aprovado ✅
+**Status:** Em execução 🚧
+
+---
+
+## Histórico de versões
+
+| Versão | Data | Mudança |
+|--------|------|---------|
+| 1.0 | 22/05/2026 | Documento inicial aprovado |
+| 1.1 | 23/05/2026 | Design system v2 "Nova" aplicado; tema dark/light adicionado |
+| 1.2 | 25/05/2026 | Fase 5 (Fichas de Treino) concluída; modelo de dados atualizado |
 
 ---
 
@@ -26,13 +37,13 @@ Um app web acessível pelo celular (PWA instalável) que digitaliza todo o proce
 
 ### Administrador (Personal Trainer)
 - Cadastra e gerencia alunos
-- Cria e edita fichas de treino
+- Cria e edita fichas de treino (templates reutilizáveis ou fichas diretas de alunos)
 - Atribui fichas aos alunos
+- Gerencia biblioteca de exercícios (incluindo criação de exercícios personalizados)
 - Visualiza progresso e histórico de todos os alunos
-- Gerencia biblioteca de exercícios
 
 ### Usuário (Aluno)
-- Visualiza suas fichas de treino
+- Visualiza suas fichas de treino (vê destaque da ficha do dia)
 - Registra sessões de treino (séries, repetições, carga)
 - Registra peso corporal e medidas
 - Registra alimentação (com análise de IA)
@@ -42,67 +53,73 @@ Um app web acessível pelo celular (PWA instalável) que digitaliza todo o proce
 
 ## 3. Funcionalidades por Módulo
 
-### 3.1 Autenticação
+### 3.1 Autenticação ✅
 - Login com e-mail e senha (via Supabase Auth)
-- Registro de novos usuários (apenas admin pode criar alunos)
+- Registro de novos usuários (apenas admin pode criar alunos — Fase 9)
 - Sessão persistente (lembrar login)
 - Proteção de rotas por papel (admin vs. usuário)
 - Logout
 
-### 3.2 Perfil do Usuário
+### 3.2 Perfil do Usuário ✅
 - Nome completo, e-mail, foto de perfil
 - Dados físicos: peso atual, altura, data de nascimento, gênero
 - Objetivo pessoal (campo de texto livre)
 - Peso alvo
-- Ativação/desativação de conta (apenas admin)
+- Ativação/desativação de conta (apenas admin — Fase 9)
 
-### 3.3 Biblioteca de Exercícios
-- Lista de exercícios pré-cadastrados (39 exercícios iniciais)
-- Filtro por grupo muscular
+### 3.3 Biblioteca de Exercícios ✅ (parcial)
+- Lista de 39+ exercícios pré-cadastrados em `exercise_library`
+- Filtro por grupo muscular (11 grupos)
 - Campos: nome, grupo muscular, descrição, URL de vídeo/imagem
-- Admin pode adicionar, editar e remover exercícios
-- Grupos musculares: Peito, Costas, Pernas, Ombros, Bíceps, Tríceps, Abdômen, Antebraço, Trapézio, Glúteos, Panturrilha
+- **Admin pode criar exercícios personalizados** diretamente no modal de busca (Fase 5)
+- Página dedicada de gerenciamento: Fase 9
 
-### 3.4 Fichas de Treino
-- Admin cria fichas e atribui a alunos específicos
-- Cada ficha tem: nome, descrição, dias da semana sugeridos, lista de exercícios
-- Cada exercício na ficha tem: séries, repetições (pode ser range: "8-12"), carga sugerida, descanso em segundos, observações, ordem
-- Admin pode editar e desativar fichas
-- Aluno pode visualizar suas fichas (somente leitura)
+### 3.4 Fichas de Treino ✅
+- **Dois tipos de ficha:**
+  - Template (`is_template = true`): na biblioteca do admin, reutilizável para múltiplos alunos
+  - Ficha do aluno (`is_template = false`): atribuída a um aluno específico, pode ter `template_id` apontando para a origem
+- Cada ficha tem: nome, descrição, dias da semana, lista de exercícios
+- Cada exercício na ficha tem: séries, repetições (suporta range "8-12"), carga sugerida em kg, descanso em segundos, observações, ordem
+- **Dois fluxos de criação para o admin:**
+  - Via Biblioteca: cria template → atribui a alunos via modal
+  - Via Perfil do Aluno: cria diretamente vinculada ao aluno (antecipado na Fase 5, expandido na Fase 9)
+- **Visão do aluno:** ficha do dia em destaque (detectada pelo dia da semana) + lista das outras fichas
+- Admin pode editar e desativar fichas (soft delete: `is_active = false`)
 
-### 3.5 Registro de Treino (Execução)
+### 3.5 Registro de Treino (Execução) ⏳ Fase 6
 - Aluno seleciona uma ficha para treinar
 - Interface de treino ativa: lista de exercícios com campos para preencher
 - Para cada série: registrar repetições realizadas e carga usada
 - Marcar séries como concluídas
 - Timer de descanso automático entre séries
-- Ao finalizar: registrar dificuldade percebida (Fácil / Médio / Difícil / Destruidor) e observações gerais
-- Duração total do treino calculada automaticamente
+- Ao finalizar: registrar dificuldade percebida (Fácil / Médio / Difícil / Destruidor) e observações
+- Duração total calculada automaticamente
 
-### 3.6 Histórico e Progressão
+### 3.6 Histórico e Progressão ⏳ Fase 7
 - Lista de todas as sessões realizadas com data, duração e dificuldade
-- Detalhe de cada sessão: todos os exercícios com cargas e repetições registradas
+- Detalhe de cada sessão: exercícios com cargas e repetições registradas
 - Gráfico de evolução de carga por exercício ao longo do tempo
 - Gráfico de frequência de treinos (por semana/mês)
 
-### 3.7 Peso e Medidas Corporais
+### 3.7 Peso e Medidas Corporais ⏳ Fase 7
 - Registro de peso com data (histórico completo)
 - Gráfico de evolução do peso
-- Registro de medidas corporais: cintura, quadril, abdômen, coxa, braço, peitoral, panturrilha
+- Registro de medidas: cintura, quadril, abdômen, coxa, braço, peitoral, panturrilha
 - Histórico de medidas com comparativo entre datas
 
-### 3.8 Diário Nutricional com IA
+### 3.8 Diário Nutricional com IA ⏳ Fase 8
 - Registro de refeições por tipo (café, almoço, lanche, jantar, pré/pós-treino)
 - Descrição livre do que foi consumido
 - Campos opcionais: calorias, proteínas, carboidratos, gorduras
-- Análise por IA (Google Gemini): feedback automático sobre a refeição registrada
+- Análise por IA (Google Gemini): feedback automático sobre a refeição
 - Histórico de refeições por dia
 
-### 3.9 Painel Administrativo
+### 3.9 Painel Administrativo ⏳ Fase 9
 - Lista de todos os alunos cadastrados com status
 - Criar novo aluno (nome, e-mail, senha inicial)
 - Ver perfil e histórico de qualquer aluno
 - Atribuir / alterar fichas de treino de um aluno
+- Página de gerenciamento da biblioteca de exercícios
 - Estatísticas gerais: total de alunos, treinos realizados, etc.
 
 ---
@@ -115,15 +132,16 @@ Um app web acessível pelo celular (PWA instalável) que digitaliza todo o proce
 - Otimização de imagens e assets
 
 ### Segurança
-- Autenticação obrigatória para todas as rotas
+- Autenticação obrigatória para todas as rotas (exceto login)
 - RLS (Row Level Security) no banco: cada usuário vê apenas seus dados
 - Admin tem acesso global
 - Credenciais nunca expostas no frontend (variáveis de ambiente)
+- Soft delete em todos os registros (`is_active = false`)
 - HTTPS obrigatório em produção
 
 ### Usabilidade (Mobile-First)
 - Design responsivo — funciona bem em celular, tablet e desktop
-- Interface dark mode (tema escuro padrão)
+- Interface com tema dark (padrão) e light (toggle no header)
 - Fonte e botões grandes o suficiente para toque no celular
 - Navegação intuitiva sem necessidade de tutorial
 
@@ -139,40 +157,45 @@ Um app web acessível pelo celular (PWA instalável) que digitaliza todo o proce
 | Camada | Tecnologia |
 |--------|-----------|
 | Frontend | React 19 + TypeScript + Vite 6 |
-| Estilo | Tailwind CSS 4 (dark theme customizado) |
+| Estilo | Tailwind CSS v4 + Design System v2 "Nova" |
 | Roteamento | React Router v7 |
 | Animações | Motion (Framer Motion) v11 |
 | Formulários | React Hook Form + Zod |
-| Gráficos | Recharts |
+| Gráficos | Recharts (Fase 7) |
 | Ícones | Lucide React |
 | Backend/DB | Supabase (PostgreSQL + Auth + Storage) |
-| IA | Google Gemini API |
-| Hospedagem | Vercel (previsto) |
+| IA | Google Gemini API (Fase 8) |
+| Hospedagem | Vercel (Fase 11) |
 
 ---
 
-## 6. Modelo de Dados (Resumo)
+## 6. Modelo de Dados
 
-| Tabela | Descrição |
-|--------|-----------|
-| `profiles` | Dados dos usuários (alunos e admin) |
-| `exercise_library` | Catálogo de exercícios |
-| `workouts` | Fichas de treino |
-| `workout_exercises` | Exercícios de cada ficha |
-| `workout_logs` | Sessões de treino realizadas |
-| `exercise_logs` | Séries registradas por sessão |
-| `user_weights` | Histórico de peso corporal |
-| `body_measurements` | Medidas corporais |
-| `nutrition_logs` | Diário alimentar |
+| Tabela | Descrição | Status |
+|--------|-----------|--------|
+| `profiles` | Dados dos usuários (alunos e admin) | ✅ |
+| `exercise_library` | Catálogo de exercícios (39 pré-cadastrados + personalizados) | ✅ |
+| `workouts` | Fichas de treino — `is_template` distingue biblioteca de fichas de alunos | ✅ |
+| `workout_exercises` | Exercícios de cada ficha (séries, reps, carga, descanso, obs, ordem) | ✅ |
+| `workout_logs` | Sessões de treino realizadas | ✅ (estrutura) |
+| `exercise_logs` | Séries registradas por sessão | ✅ (estrutura) |
+| `user_weights` | Histórico de peso corporal | ✅ (estrutura) |
+| `body_measurements` | Medidas corporais | ✅ (estrutura) |
+| `nutrition_logs` | Diário alimentar | ✅ (estrutura) |
+
+> Tabelas marcadas com "estrutura" existem no banco mas ainda não têm interface implementada.
 
 ---
 
 ## 7. Design e Tema Visual
 
-- **Paleta (atualizada 23/05/2026):** Fundo escuro (#05050a), superfície (#0e0e16), verde-limão primário (#c8f04a)
-- **Tema:** Dark mode exclusivo (sem toggle claro/escuro)
-- **Linguagem visual:** Editorial, técnico, atlético — inspirado no design Nova
-- **Tipografia:** Syne (display/títulos) + DM Mono (corpo/captions)
+### Design System v2 "Nova" ✅
+- **Paleta dark:** fundo `#05050a`, superfície `#0e0e16`, acento `#c8f04a` (verde-limão)
+- **Paleta light:** fundo `#f5f4ee`, superfície `#eceae2`, acento `#5a9400`
+- **Tema:** Dark (padrão) com toggle para Light — preferência salva em `localStorage`
+- **Tipografia:** Syne 800 (display/títulos) + DM Mono 300 (corpo/mono/labels)
+- **Linguagem visual:** editorial, técnico, atlético — comentários de código `// assim` como elementos de UI
+- **Efeitos:** noise texture no background, orb glow animado com a cor de acento
 
 ---
 
@@ -180,10 +203,10 @@ Um app web acessível pelo celular (PWA instalável) que digitaliza todo o proce
 
 1. ✅ Admin consegue criar uma ficha de treino e atribuir a um aluno
 2. ✅ Aluno consegue fazer login e visualizar sua ficha
-3. ✅ Aluno consegue registrar um treino completo
-4. ✅ Histórico de treinos é exibido corretamente
-5. ✅ Aluno consegue registrar peso e ver o gráfico de evolução
-6. ✅ App é instalável como PWA no celular
+3. ⏳ Aluno consegue registrar um treino completo (Fase 6)
+4. ⏳ Histórico de treinos é exibido corretamente (Fase 7)
+5. ⏳ Aluno consegue registrar peso e ver o gráfico de evolução (Fase 7)
+6. ⏳ App é instalável como PWA no celular (Fase 10)
 
 ---
 
@@ -198,4 +221,4 @@ Um app web acessível pelo celular (PWA instalável) que digitaliza todo o proce
 
 ---
 
-*Documento aprovado por Denis Rodrigues em 22/05/2026*
+*Documento criado por Denis Rodrigues em 22/05/2026 — última atualização: 25/05/2026*
