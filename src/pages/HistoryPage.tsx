@@ -1,16 +1,17 @@
-﻿import { useState, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { motion } from 'motion/react'
-import { ArrowLeft, RefreshCw } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
 import { getWorkoutHistory } from '../services/history.service'
+import { Topbar } from '../components/layout/Topbar'
+import { Icon } from '../components/ui/Icon'
 import type { WorkoutLog } from '../types'
 
-const DIFFICULTY_EMOJI: Record<string, string> = {
-  easy: '😊',
-  medium: '💪',
-  hard: '🔥',
-  terrible: '💀',
+const DIFFICULTY_LABEL: Record<string, string> = {
+  easy: '😊 Fácil',
+  medium: '💪 Médio',
+  hard: '🔥 Difícil',
+  terrible: '💀 Destruidor',
 }
 
 function formatDate(iso: string): string {
@@ -44,225 +45,188 @@ export function HistoryPage() {
     }
   }
 
-  useEffect(() => { load() }, [profile?.id])
+  useEffect(() => { void load() }, [profile?.id])
+
+  // Stats agregados
+  const total = sessions.length
+  const totalMinutes = sessions.reduce((sum, s) => sum + (s.duration_minutes ?? 0), 0)
+  const last30Days = sessions.filter((s) => {
+    const d = new Date(s.started_at)
+    return Date.now() - d.getTime() < 30 * 24 * 3600 * 1000
+  })
 
   return (
-    <div className="min-h-screen" style={{ background: 'var(--bg)' }}>
-
-      {/* Grid decorativo */}
-      <div className="fixed inset-0 pointer-events-none z-0"
-        style={{ display: 'grid', gridTemplateColumns: 'repeat(12, 1fr)' }}>
-        {Array.from({ length: 12 }).map((_, i) => (
-          <span key={i} style={{ borderRight: '1px solid var(--border)' }} />
-        ))}
-      </div>
-
-      {/* Header */}
-      <header className="sticky top-0 z-20" style={{
-        padding: '14px 16px',
-        background: 'rgba(6, 7, 26,0.7)',
-        borderBottom: '1px solid var(--border)',
-        backdropFilter: 'blur(12px)',
-      }}>
-        <div className="max-w-xl mx-auto flex items-center gap-3">
-          <Link to="/dashboard" style={{
-            color: 'var(--fg-3)', opacity: 0.5, display: 'flex', alignItems: 'center'
-          }}>
-            <ArrowLeft size={16} />
+    <>
+      <Topbar
+        eyebrow="TUDO QUE FOI FORJADO"
+        title="HISTÓRICO"
+        actions={
+          <Link to="/dashboard" className="btn ghost">
+            <Icon name="arrowL" size={14} /> Voltar
           </Link>
-          <div>
-            <div style={{
-              fontFamily: "'JetBrains Mono', monospace", fontSize: 9,
-              color: 'var(--fg-3)', letterSpacing: '0.15em',
-              textTransform: 'uppercase', marginBottom: 1,
-            }}>
-              // histórico
+        }
+      />
+
+      <div className="content">
+        {/* Stats */}
+        <div className="forja-history-stats">
+          <div className="card">
+            <div className="stat-label">Total</div>
+            <div className="f-display" style={{ fontSize: 48, color: 'var(--text)' }}>
+              {loading ? '…' : String(total).padStart(2, '0')}
             </div>
-            <div style={{
-              fontFamily: "'Outfit', sans-serif", fontWeight: 800,
-              fontSize: 16, color: 'var(--fg)',
-            }}>
-              Treinos Realizados
+          </div>
+          <div className="card">
+            <div className="stat-label">Tempo total</div>
+            <div className="f-display" style={{ fontSize: 48, color: 'var(--accent)' }}>
+              {loading ? '…' : Math.round(totalMinutes / 60)}
+              <span className="stat-unit" style={{ fontSize: 14 }}>h</span>
+            </div>
+          </div>
+          <div className="card">
+            <div className="stat-label">Últimos 30d</div>
+            <div className="f-display" style={{ fontSize: 48, color: 'var(--success)' }}>
+              {loading ? '…' : last30Days.length}
+            </div>
+          </div>
+          <div className="card">
+            <div className="stat-label">Última sessão</div>
+            <div
+              className="f-display"
+              style={{ fontSize: 22, color: 'var(--text)', lineHeight: 1.1 }}
+            >
+              {loading
+                ? '…'
+                : sessions[0]
+                  ? new Date(sessions[0].started_at).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' })
+                  : '—'}
             </div>
           </div>
         </div>
-      </header>
 
-      {/* Conteúdo */}
-      <main className="relative z-10">
-        <div className="max-w-xl mx-auto" style={{ padding: '20px 16px 40px' }}>
+        {/* Loading */}
+        {loading && (
+          <div className="col gap-3">
+            {[1, 2, 3, 4].map((i) => (
+              <div key={i} className="skeleton" style={{ height: 80, borderRadius: 14 }} />
+            ))}
+          </div>
+        )}
 
-          {/* Loading */}
-          {loading && (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-              {[1, 2, 3, 4].map((i) => (
-                <div key={i} className="skeleton" style={{ height: 80, borderRadius: 4 }} />
-              ))}
+        {/* Erro */}
+        {!loading && error && (
+          <div
+            className="card"
+            style={{ borderLeft: '2px solid var(--danger)', background: 'rgba(255,61,85,0.05)' }}
+          >
+            <div style={{ color: 'var(--danger)', marginBottom: 8 }}>⚠ {error}</div>
+            <button onClick={load} className="btn ghost">Tentar novamente</button>
+          </div>
+        )}
+
+        {/* Vazio */}
+        {!loading && !error && sessions.length === 0 && (
+          <div
+            className="card"
+            style={{ borderStyle: 'dashed', textAlign: 'center', padding: '40px 24px' }}
+          >
+            <div style={{ fontSize: 36, marginBottom: 8 }}>🏋️</div>
+            <h2 className="f-display" style={{ fontSize: 28, color: 'var(--text)', marginBottom: 6 }}>
+              NADA NA FORJA AINDA
+            </h2>
+            <div style={{ color: 'var(--text-dim)', fontSize: 13, marginBottom: 20 }}>
+              Complete uma sessão para ver seu histórico.
             </div>
-          )}
+            <button className="btn primary" onClick={() => navigate('/workouts')}>
+              <Icon name="play" size={12} /> Começar agora
+            </button>
+          </div>
+        )}
 
-          {/* Erro */}
-          {!loading && error && (
-            <div style={{
-              borderLeft: '2px solid var(--danger)',
-              background: 'rgba(239,68,68,0.05)',
-              borderRadius: '0 4px 4px 0',
-              padding: '12px 16px', marginBottom: 16,
-            }}>
-              <div style={{
-                fontFamily: "'JetBrains Mono', monospace", fontSize: 11,
-                color: 'var(--danger)', marginBottom: 6,
-              }}>
-                ⚠ {error}
-              </div>
-              <button
-                onClick={load}
-                style={{
-                  display: 'flex', alignItems: 'center', gap: 5,
-                  background: 'transparent', border: '1px solid var(--border-md)',
-                  borderRadius: 4, padding: '5px 12px', color: 'var(--fg-2)',
-                  fontFamily: "'JetBrains Mono', monospace", fontSize: 10,
-                  letterSpacing: '0.1em', cursor: 'pointer', textTransform: 'uppercase',
-                }}
-              >
-                <RefreshCw size={10} /> Tentar novamente
-              </button>
+        {/* Lista de sessões */}
+        {!loading && !error && sessions.length > 0 && (
+          <div className="col gap-2">
+            <div className="label-sm">
+              {sessions.length} sessão{sessions.length !== 1 ? 'ões' : ''} registrada{sessions.length !== 1 ? 's' : ''}
             </div>
-          )}
-
-          {/* Vazio */}
-          {!loading && !error && sessions.length === 0 && (
-            <div style={{
-              border: '1px dashed var(--border)',
-              borderRadius: 4, padding: '40px 24px', textAlign: 'center',
-            }}>
-              <div style={{ fontSize: 36, marginBottom: 12 }}>🏋️</div>
-              <div style={{
-                fontFamily: "'Outfit', sans-serif", fontWeight: 800,
-                fontSize: 15, color: 'var(--fg)', marginBottom: 8,
-              }}>
-                Nenhum treino registrado ainda
-              </div>
-              <div style={{
-                fontFamily: "'JetBrains Mono', monospace", fontSize: 10,
-                color: 'var(--fg-3)', fontStyle: 'italic', marginBottom: 20,
-              }}>
-                // complete uma sessão para ver o histórico
-              </div>
-              <button
-                onClick={() => navigate('/workouts')}
-                style={{
-                  display: 'inline-flex', alignItems: 'center', gap: 6,
-                  background: 'var(--accent)', border: 'none', borderRadius: 4,
-                  padding: '9px 18px', color: 'var(--bg)',
-                  fontFamily: "'Outfit', sans-serif", fontWeight: 800,
-                  fontSize: 10, letterSpacing: '0.15em', textTransform: 'uppercase', cursor: 'pointer',
-                }}
-              >
-                Começar agora →
-              </button>
-            </div>
-          )}
-
-          {/* Lista */}
-          {!loading && !error && sessions.length > 0 && (
-            <motion.div
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.3 }}
-            >
-              <div style={{
-                fontFamily: "'JetBrains Mono', monospace", fontSize: 9,
-                color: 'var(--fg-3)', letterSpacing: '0.15em',
-                textTransform: 'uppercase', marginBottom: 10,
-              }}>
-                // {sessions.length} sessão{sessions.length !== 1 ? 'ões' : ''} registrada{sessions.length !== 1 ? 's' : ''}
-              </div>
-
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-                {sessions.map((session, idx) => {
-                  const workout = (session as WorkoutLog & { workout?: { name: string } }).workout
-                  const diffEmoji = session.difficulty ? DIFFICULTY_EMOJI[session.difficulty] : null
-
-                  return (
-                    <motion.div
-                      key={session.id}
-                      initial={{ opacity: 0, y: 8 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ duration: 0.25, delay: idx * 0.04 }}
-                    >
-                      <Link
-                        to={`/historico/${session.id}`}
-                        style={{
-                          display: 'block',
-                          background: 'var(--surface)',
-                          border: '1px solid var(--border)',
-                          borderLeft: '2px solid var(--border-md)',
-                          borderRadius: 4,
-                          padding: '12px 14px',
-                          textDecoration: 'none',
-                          transition: 'border-left-color 0.15s, background 0.15s',
-                        }}
-                        onMouseEnter={(e) => {
-                          e.currentTarget.style.borderLeftColor = 'var(--accent)'
-                          e.currentTarget.style.background = 'rgba(108, 142, 247,0.03)'
-                        }}
-                        onMouseLeave={(e) => {
-                          e.currentTarget.style.borderLeftColor = 'var(--border-md)'
-                          e.currentTarget.style.background = 'var(--surface)'
-                        }}
-                      >
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 8 }}>
-                          <div style={{ minWidth: 0, flex: 1 }}>
-                            {/* Nome da ficha */}
-                            <div style={{
-                              fontFamily: "'Outfit', sans-serif", fontWeight: 800,
-                              fontSize: 13, color: 'var(--fg)',
-                              overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
-                              marginBottom: 4,
-                            }}>
-                              {workout?.name ?? 'Treino'}
-                            </div>
-
-                            {/* Meta info */}
-                            <div style={{
-                              display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap',
-                            }}>
-                              <span style={{
-                                fontFamily: "'JetBrains Mono', monospace", fontSize: 9,
-                                color: 'var(--fg-3)',
-                              }}>
-                                {formatDate(session.started_at)}
-                              </span>
-                              {session.duration_minutes && (
-                                <span style={{
-                                  fontFamily: "'JetBrains Mono', monospace", fontSize: 9,
-                                  color: 'var(--accent)', opacity: 0.8,
-                                }}>
-                                  {session.duration_minutes} min
-                                </span>
-                              )}
-                              {diffEmoji && (
-                                <span style={{ fontSize: 13 }}>{diffEmoji}</span>
-                              )}
-                            </div>
-                          </div>
-
-                          {/* Seta */}
-                          <div style={{ color: 'var(--fg-3)', opacity: 0.4, fontSize: 12, flexShrink: 0 }}>
-                            →
-                          </div>
+            {sessions.map((session, idx) => {
+              const workout = (session as WorkoutLog & { workout?: { name: string } }).workout
+              const diff = session.difficulty ? DIFFICULTY_LABEL[session.difficulty] : null
+              return (
+                <motion.div
+                  key={session.id}
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.25, delay: idx * 0.03 }}
+                >
+                  <Link
+                    to={`/historico/${session.id}`}
+                    className="card forja-history-row"
+                    style={{ textDecoration: 'none', display: 'block' }}
+                  >
+                    <div className="forja-history-grid">
+                      <div>
+                        <div className="label-sm" style={{ color: 'var(--text-dim)' }}>
+                          {formatDate(session.started_at)}
                         </div>
-                      </Link>
-                    </motion.div>
-                  )
-                })}
-              </div>
-            </motion.div>
-          )}
+                        <div
+                          className="f-display"
+                          style={{ fontSize: 28, color: 'var(--text)', lineHeight: 1, marginTop: 6 }}
+                        >
+                          {(workout?.name ?? 'TREINO').toUpperCase()}
+                        </div>
+                      </div>
+                      <div className="forja-history-stats-row">
+                        {session.duration_minutes && (
+                          <div>
+                            <div className="stat-label">Tempo</div>
+                            <div className="f-display" style={{ fontSize: 24, color: 'var(--accent)' }}>
+                              {session.duration_minutes}<span className="stat-unit" style={{ fontSize: 12 }}>min</span>
+                            </div>
+                          </div>
+                        )}
+                        {diff && (
+                          <div>
+                            <div className="stat-label">Dificuldade</div>
+                            <div style={{ fontSize: 14, marginTop: 2 }}>{diff}</div>
+                          </div>
+                        )}
+                      </div>
+                      <Icon name="arrow" size={18} />
+                    </div>
+                  </Link>
+                </motion.div>
+              )
+            })}
+          </div>
+        )}
+      </div>
 
-        </div>
-      </main>
-    </div>
+      <style>{`
+        .forja-history-stats {
+          display: grid;
+          grid-template-columns: repeat(4, 1fr);
+          gap: 14px;
+        }
+        .forja-history-row { transition: border-color 0.15s; }
+        .forja-history-row:hover { border-color: var(--accent) !important; }
+        .forja-history-grid {
+          display: grid;
+          grid-template-columns: 1fr auto auto;
+          gap: 24px;
+          align-items: center;
+        }
+        .forja-history-stats-row {
+          display: flex;
+          gap: 24px;
+          align-items: center;
+        }
+        @media (max-width: 768px) {
+          .forja-history-stats { grid-template-columns: repeat(2, 1fr); }
+          .forja-history-grid { grid-template-columns: 1fr; gap: 12px; }
+          .forja-history-stats-row { justify-content: flex-start; }
+        }
+      `}</style>
+    </>
   )
 }

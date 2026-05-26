@@ -27,13 +27,13 @@ function CustomTooltip({ active, payload, label }: {
   if (!active || !payload?.length) return null
   return (
     <div style={{
-      background: 'var(--surface-2)',
-      border: '1px solid var(--border-md)',
+      background: 'var(--bg-2)',
+      border: '1px solid var(--border)',
       borderLeft: '2px solid var(--accent)',
       padding: '8px 12px',
       fontFamily: "'JetBrains Mono', monospace",
     }}>
-      <div style={{ fontSize: 9, color: 'var(--fg-3)', letterSpacing: '0.1em', marginBottom: 2 }}>
+      <div style={{ fontSize: 9, color: 'var(--text-faint)', letterSpacing: '0.1em', marginBottom: 2 }}>
         {label ? formatDate(label) : ''}
       </div>
       <div style={{ fontSize: 14, color: 'var(--accent)', fontWeight: 700 }}>
@@ -82,10 +82,10 @@ export function LoadProgressChart({ data, exerciseName: _ }: Props) {
         <Line
           type="monotone"
           dataKey="maxLoad"
-          stroke="#6c8ef7"
+          stroke="#d4ff3a"
           strokeWidth={2}
-          dot={{ fill: '#6c8ef7', r: 3, strokeWidth: 0 }}
-          activeDot={{ fill: '#6c8ef7', r: 5, strokeWidth: 0 }}
+          dot={{ fill: '#d4ff3a', r: 3, strokeWidth: 0 }}
+          activeDot={{ fill: '#d4ff3a', r: 5, strokeWidth: 0 }}
         />
       </LineChart>
     </ResponsiveContainer>

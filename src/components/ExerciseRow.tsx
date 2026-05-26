@@ -1,6 +1,6 @@
-﻿import { X } from 'lucide-react'
 import type { WorkoutExercise } from '../types'
 import { MUSCLE_GROUP_LABELS } from '../types'
+import { Icon } from './ui/Icon'
 
 interface ExerciseRowProps {
   item: WorkoutExercise & { exercise?: { name: string; muscle_group: string } }
@@ -23,141 +23,100 @@ export function ExerciseRow({
 
   return (
     <div
+      className="card"
       style={{
-        background: 'var(--surface)',
-        border: '1px solid var(--border)',
+        padding: editable ? '14px 16px' : '12px 16px',
         borderLeft: '2px solid var(--accent)',
-        borderRadius: 4,
-        padding: editable ? '10px 12px' : '8px 12px',
         display: 'flex',
-        gap: 10,
+        gap: 14,
         alignItems: editable ? 'flex-start' : 'center',
       }}
     >
       {/* Número */}
       <div
+        className="pill-num"
         style={{
-          fontFamily: "'JetBrains Mono', monospace",
-          fontSize: 10,
-          color: 'var(--accent)',
-          opacity: 0.6,
-          minWidth: 16,
-          paddingTop: editable ? 2 : 0,
+          background: 'var(--accent)',
+          color: 'var(--accent-fg)',
+          flexShrink: 0,
+          paddingTop: editable ? 0 : 0,
         }}
       >
         {String(index + 1).padStart(2, '0')}
       </div>
 
-      {/* Conteúdo principal */}
+      {/* Conteúdo */}
       <div style={{ flex: 1, minWidth: 0 }}>
-        {/* Nome + grupo muscular */}
-        <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, marginBottom: editable ? 8 : 0 }}>
+        <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, marginBottom: editable ? 10 : 4, flexWrap: 'wrap' }}>
           <span
+            className="f-display"
             style={{
-              fontFamily: "'Outfit', sans-serif",
-              fontWeight: 700,
-              fontSize: 13,
-              color: 'var(--fg)',
-              lineHeight: 1.2,
+              fontSize: 18,
+              color: 'var(--text)',
+              lineHeight: 1,
             }}
           >
-            {item.exercise?.name ?? 'Exercício'}
+            {(item.exercise?.name ?? 'Exercício').toUpperCase()}
           </span>
           {muscleLabel && (
-            <span
-              style={{
-                fontFamily: "'JetBrains Mono', monospace",
-                fontSize: 9,
-                color: 'var(--fg-3)',
-                opacity: 0.5,
-                textTransform: 'uppercase',
-                letterSpacing: '0.1em',
-              }}
-            >
+            <span className="chip muscle" style={{ fontSize: 9, padding: '2px 8px' }}>
               {muscleLabel}
             </span>
           )}
         </div>
 
-        {/* Modo visualização: séries × reps · carga · descanso */}
+        {/* Modo visualização */}
         {!editable && (
           <div
             style={{
-              fontFamily: "'JetBrains Mono', monospace",
-              fontSize: 10,
-              color: 'var(--fg-3)',
+              fontFamily: 'var(--f-mono)',
+              fontSize: 11,
+              color: 'var(--text-dim)',
               display: 'flex',
-              gap: 12,
+              gap: 14,
               flexWrap: 'wrap',
-              marginTop: 2,
             }}
           >
-            <span style={{ color: 'var(--fg-2)' }}>
+            <span style={{ color: 'var(--text)' }}>
               {item.sets} × {item.reps}
             </span>
             {item.suggested_load && (
-              <span>{item.suggested_load} kg</span>
+              <span style={{ color: 'var(--accent)' }}>{item.suggested_load} kg</span>
             )}
-            {item.rest_seconds && (
-              <span style={{ opacity: 0.5 }}>{item.rest_seconds}s descanso</span>
-            )}
+            {item.rest_seconds > 0 && <span>{item.rest_seconds}s descanso</span>}
             {item.notes && (
-              <span style={{ opacity: 0.4, fontStyle: 'italic' }}>{item.notes}</span>
+              <span style={{ opacity: 0.5, fontStyle: 'italic' }}>{item.notes}</span>
             )}
           </div>
         )}
 
-        {/* Modo edição: inputs */}
+        {/* Modo edição */}
         {editable && (
-          <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center' }}>
-            {/* Séries */}
-            <label style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-              <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 8, color: 'var(--fg-3)', letterSpacing: '0.1em', textTransform: 'uppercase' }}>Séries</span>
+          <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', alignItems: 'center' }}>
+            <FormField label="Séries">
               <input
                 type="number"
                 min={1}
                 max={20}
                 value={item.sets}
                 onChange={(e) => onChange?.({ sets: Number(e.target.value) })}
-                style={{
-                  width: 48,
-                  background: 'rgba(255,255,255,0.04)',
-                  border: '1px solid var(--border-md)',
-                  borderRadius: 4,
-                  padding: '4px 6px',
-                  color: 'var(--fg)',
-                  fontFamily: "'JetBrains Mono', monospace",
-                  fontSize: 12,
-                  textAlign: 'center',
-                }}
+                className="set-input"
+                style={{ width: 56 }}
               />
-            </label>
+            </FormField>
 
-            {/* Repetições */}
-            <label style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-              <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 8, color: 'var(--fg-3)', letterSpacing: '0.1em', textTransform: 'uppercase' }}>Reps</span>
+            <FormField label="Reps">
               <input
                 type="text"
                 value={item.reps}
                 onChange={(e) => onChange?.({ reps: e.target.value })}
                 placeholder="12"
-                style={{
-                  width: 52,
-                  background: 'rgba(255,255,255,0.04)',
-                  border: '1px solid var(--border-md)',
-                  borderRadius: 4,
-                  padding: '4px 6px',
-                  color: 'var(--fg)',
-                  fontFamily: "'JetBrains Mono', monospace",
-                  fontSize: 12,
-                  textAlign: 'center',
-                }}
+                className="set-input"
+                style={{ width: 64 }}
               />
-            </label>
+            </FormField>
 
-            {/* Carga */}
-            <label style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-              <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 8, color: 'var(--fg-3)', letterSpacing: '0.1em', textTransform: 'uppercase' }}>Carga (kg)</span>
+            <FormField label="Carga (kg)">
               <input
                 type="number"
                 min={0}
@@ -167,96 +126,83 @@ export function ExerciseRow({
                   onChange?.({ suggested_load: e.target.value ? Number(e.target.value) : undefined })
                 }
                 placeholder="—"
-                style={{
-                  width: 60,
-                  background: 'rgba(255,255,255,0.04)',
-                  border: '1px solid var(--border-md)',
-                  borderRadius: 4,
-                  padding: '4px 6px',
-                  color: 'var(--fg)',
-                  fontFamily: "'JetBrains Mono', monospace",
-                  fontSize: 12,
-                  textAlign: 'center',
-                }}
+                className="set-input"
+                style={{ width: 70 }}
               />
-            </label>
+            </FormField>
 
-            {/* Descanso */}
-            <label style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-              <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 8, color: 'var(--fg-3)', letterSpacing: '0.1em', textTransform: 'uppercase' }}>Descanso (s)</span>
+            <FormField label="Desc. (s)">
               <input
                 type="number"
                 min={0}
                 step={15}
                 value={item.rest_seconds}
                 onChange={(e) => onChange?.({ rest_seconds: Number(e.target.value) })}
-                style={{
-                  width: 64,
-                  background: 'rgba(255,255,255,0.04)',
-                  border: '1px solid var(--border-md)',
-                  borderRadius: 4,
-                  padding: '4px 6px',
-                  color: 'var(--fg)',
-                  fontFamily: "'JetBrains Mono', monospace",
-                  fontSize: 12,
-                  textAlign: 'center',
-                }}
+                className="set-input"
+                style={{ width: 70 }}
               />
-            </label>
+            </FormField>
 
-            {/* Observação */}
-            <label style={{ display: 'flex', flexDirection: 'column', gap: 2, flex: 1, minWidth: 120 }}>
-              <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 8, color: 'var(--fg-3)', letterSpacing: '0.1em', textTransform: 'uppercase' }}>Obs.</span>
+            <FormField label="Obs." style={{ flex: 1, minWidth: 120 }}>
               <input
                 type="text"
                 value={item.notes ?? ''}
                 onChange={(e) => onChange?.({ notes: e.target.value || undefined })}
                 placeholder="Observação opcional"
-                style={{
-                  background: 'rgba(255,255,255,0.04)',
-                  border: '1px solid var(--border-md)',
-                  borderRadius: 4,
-                  padding: '4px 8px',
-                  color: 'var(--fg)',
-                  fontFamily: "'JetBrains Mono', monospace",
-                  fontSize: 11,
-                  width: '100%',
-                }}
+                className="set-input"
+                style={{ width: '100%', textAlign: 'left' }}
               />
-            </label>
+            </FormField>
           </div>
         )}
       </div>
 
-      {/* Botão remover */}
+      {/* Remover */}
       {editable && onRemove && (
         <button
           onClick={onRemove}
+          className="btn ghost"
           style={{
-            background: 'transparent',
+            padding: 6,
+            color: 'var(--text-faint)',
             border: 'none',
-            color: 'var(--fg-3)',
-            cursor: 'pointer',
-            padding: '2px 4px',
-            display: 'flex',
-            alignItems: 'center',
-            opacity: 0.4,
-            transition: 'opacity 0.15s, color 0.15s',
+            background: 'transparent',
           }}
-          onMouseEnter={(e) => {
-            const el = e.currentTarget as HTMLButtonElement
-            el.style.opacity = '1'
-            el.style.color = 'var(--danger)'
-          }}
-          onMouseLeave={(e) => {
-            const el = e.currentTarget as HTMLButtonElement
-            el.style.opacity = '0.4'
-            el.style.color = 'var(--fg-3)'
-          }}
+          onMouseEnter={(e) => (e.currentTarget.style.color = 'var(--danger)')}
+          onMouseLeave={(e) => (e.currentTarget.style.color = 'var(--text-faint)')}
+          title="Remover"
         >
-          <X size={14} />
+          <Icon name="x" size={14} />
         </button>
       )}
     </div>
+  )
+}
+
+function FormField({
+  label,
+  children,
+  style,
+}: {
+  label: string
+  children: React.ReactNode
+  style?: React.CSSProperties
+}) {
+  return (
+    <label style={{ display: 'flex', flexDirection: 'column', gap: 4, ...style }}>
+      <span
+        style={{
+          fontFamily: 'var(--f-mono)',
+          fontSize: 8,
+          color: 'var(--text-faint)',
+          letterSpacing: '0.1em',
+          textTransform: 'uppercase',
+          fontWeight: 600,
+        }}
+      >
+        {label}
+      </span>
+      {children}
+    </label>
   )
 }

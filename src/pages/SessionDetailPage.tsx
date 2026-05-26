@@ -1,8 +1,9 @@
-﻿import { useState, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import { useParams, Link, useNavigate } from 'react-router-dom'
 import { motion } from 'motion/react'
-import { ArrowLeft, RefreshCw, TrendingUp, Clock, Dumbbell, Hash } from 'lucide-react'
 import { getSessionDetail } from '../services/history.service'
+import { Topbar } from '../components/layout/Topbar'
+import { Icon } from '../components/ui/Icon'
 import { MUSCLE_GROUP_LABELS } from '../types'
 import type { WorkoutLogDetail, ExerciseLogDetail } from '../types'
 
@@ -15,15 +16,16 @@ const DIFFICULTY_LABEL: Record<string, string> = {
 
 function formatDate(iso: string): string {
   return new Date(iso).toLocaleDateString('pt-BR', {
-    weekday: 'long', day: '2-digit', month: 'long', year: 'numeric',
+    weekday: 'long',
+    day: '2-digit',
+    month: 'long',
+    year: 'numeric',
   })
 }
 
-/** Agrupa ExerciseLogDetail por exercise_id */
-function groupByExercise(logs: ExerciseLogDetail[]): { exercise: ExerciseLogDetail['exercise']; sets: ExerciseLogDetail[] }[] {
+function groupByExercise(logs: ExerciseLogDetail[]) {
   const order: string[] = []
   const map: Record<string, { exercise: ExerciseLogDetail['exercise']; sets: ExerciseLogDetail[] }> = {}
-
   for (const log of logs) {
     if (!map[log.exercise_id]) {
       map[log.exercise_id] = { exercise: log.exercise, sets: [] }
@@ -31,7 +33,6 @@ function groupByExercise(logs: ExerciseLogDetail[]): { exercise: ExerciseLogDeta
     }
     map[log.exercise_id].sets.push(log)
   }
-
   return order.map((id) => map[id])
 }
 
@@ -56,312 +57,236 @@ export function SessionDetailPage() {
     }
   }
 
-  useEffect(() => { load() }, [logId])
+  useEffect(() => { void load() }, [logId])
 
   const exerciseGroups = session?.exercise_logs ? groupByExercise(session.exercise_logs) : []
   const totalSets = session?.exercise_logs?.length ?? 0
-  const workoutName = (session?.workout as { name?: string } | undefined)?.name ?? 'Treino'
+  const workoutName = (session?.workout as { name?: string } | undefined)?.name ?? 'TREINO'
+  const totalVolume = exerciseGroups.reduce(
+    (sum, g) => sum + g.sets.reduce((s, set) => s + (Number(set.load_kg) || 0) * set.reps_completed, 0),
+    0,
+  )
 
   return (
-    <div className="min-h-screen" style={{ background: 'var(--bg)' }}>
-
-      {/* Grid decorativo */}
-      <div className="fixed inset-0 pointer-events-none z-0"
-        style={{ display: 'grid', gridTemplateColumns: 'repeat(12, 1fr)' }}>
-        {Array.from({ length: 12 }).map((_, i) => (
-          <span key={i} style={{ borderRight: '1px solid var(--border)' }} />
-        ))}
-      </div>
-
-      {/* Header */}
-      <header className="sticky top-0 z-20" style={{
-        padding: '14px 16px',
-        background: 'rgba(6, 7, 26,0.7)',
-        borderBottom: '1px solid var(--border)',
-        backdropFilter: 'blur(12px)',
-      }}>
-        <div className="max-w-xl mx-auto flex items-center gap-3">
-          <Link to="/historico" style={{
-            color: 'var(--fg-3)', opacity: 0.5, display: 'flex', alignItems: 'center',
-          }}>
-            <ArrowLeft size={16} />
+    <>
+      <Topbar
+        eyebrow={loading ? 'CARREGANDO...' : session ? formatDate(session.started_at).toUpperCase() : 'SESSÃO'}
+        title={loading ? '—' : workoutName.toUpperCase()}
+        actions={
+          <Link to="/historico" className="btn ghost">
+            <Icon name="arrowL" size={14} /> Voltar
           </Link>
-          <div style={{ flex: 1, minWidth: 0 }}>
-            {loading ? (
-              <div className="skeleton" style={{ height: 16, width: 140, borderRadius: 3 }} />
-            ) : (
-              <>
-                <div style={{
-                  fontFamily: "'JetBrains Mono', monospace", fontSize: 9,
-                  color: 'var(--fg-3)', letterSpacing: '0.15em',
-                  textTransform: 'uppercase', marginBottom: 1,
-                }}>
-                  // detalhe da sessão
-                </div>
-                <div style={{
-                  fontFamily: "'Outfit', sans-serif", fontWeight: 800,
-                  fontSize: 15, color: 'var(--fg)',
-                  overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
-                }}>
-                  {workoutName}
-                </div>
-              </>
-            )}
+        }
+      />
+
+      <div className="content">
+        {loading && (
+          <>
+            <div className="skeleton" style={{ height: 120, borderRadius: 14 }} />
+            {[1, 2, 3].map((i) => (
+              <div key={i} className="skeleton" style={{ height: 140, borderRadius: 14 }} />
+            ))}
+          </>
+        )}
+
+        {!loading && error && (
+          <div
+            className="card"
+            style={{ borderLeft: '2px solid var(--danger)', background: 'rgba(255,61,85,0.05)' }}
+          >
+            <div style={{ color: 'var(--danger)', marginBottom: 8 }}>⚠ {error}</div>
+            <button onClick={load} className="btn ghost">Tentar novamente</button>
           </div>
-        </div>
-      </header>
+        )}
 
-      {/* Conteúdo */}
-      <main className="relative z-10">
-        <div className="max-w-xl mx-auto" style={{ padding: '20px 16px 40px' }}>
-
-          {/* Loading */}
-          {loading && (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-              <div className="skeleton" style={{ height: 80, borderRadius: 4 }} />
-              {[1, 2, 3].map((i) => (
-                <div key={i} className="skeleton" style={{ height: 100, borderRadius: 4 }} />
-              ))}
-            </div>
-          )}
-
-          {/* Erro */}
-          {!loading && error && (
-            <div style={{
-              borderLeft: '2px solid var(--danger)',
-              background: 'rgba(239,68,68,0.05)',
-              borderRadius: '0 4px 4px 0',
-              padding: '12px 16px',
-            }}>
-              <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 11, color: 'var(--danger)', marginBottom: 6 }}>
-                ⚠ {error}
-              </div>
-              <button onClick={load} style={{
-                display: 'flex', alignItems: 'center', gap: 5,
-                background: 'transparent', border: '1px solid var(--border-md)',
-                borderRadius: 4, padding: '5px 12px', color: 'var(--fg-2)',
-                fontFamily: "'JetBrains Mono', monospace", fontSize: 10,
-                letterSpacing: '0.1em', cursor: 'pointer', textTransform: 'uppercase',
-              }}>
-                <RefreshCw size={10} /> Tentar novamente
-              </button>
-            </div>
-          )}
-
-          {!loading && !error && session && (
-            <motion.div
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.3 }}
+        {!loading && !error && session && (
+          <motion.div
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3 }}
+            style={{ display: 'flex', flexDirection: 'column', gap: 24 }}
+          >
+            {/* Meta da sessão */}
+            <div
+              className="card card-accent"
+              style={{ padding: 32, position: 'relative', overflow: 'hidden' }}
             >
-              {/* Meta da sessão */}
-              <div style={{
-                background: 'var(--surface)',
-                border: '1px solid var(--border)',
-                borderLeft: '2px solid var(--accent)',
-                padding: '16px',
-                marginBottom: 12,
-                position: 'relative',
-                overflow: 'hidden',
-              }}>
-                {/* Hatch */}
-                <div style={{
-                  position: 'absolute', inset: 0,
-                  backgroundImage: 'repeating-linear-gradient(-45deg, transparent, transparent 16px, rgba(108, 142, 247,0.02) 16px, rgba(108, 142, 247,0.02) 17px)',
-                  pointerEvents: 'none',
-                }} />
-
-                <div style={{
-                  fontFamily: "'JetBrains Mono', monospace", fontSize: 9,
-                  color: 'var(--accent)', letterSpacing: '0.15em',
-                  textTransform: 'uppercase', marginBottom: 6, position: 'relative',
-                }}>
-                  {formatDate(session.started_at)}
+              <div className="eyebrow" style={{ color: 'rgba(0,0,0,0.55)' }}>SESSÃO COMPLETA</div>
+              <div className="forja-session-meta">
+                <div>
+                  <div className="stat-label" style={{ color: 'rgba(0,0,0,0.55)' }}>Duração</div>
+                  <div className="f-display" style={{ fontSize: 64, lineHeight: 0.95 }}>
+                    {session.duration_minutes ?? '—'}
+                    <span className="stat-unit" style={{ color: 'rgba(0,0,0,0.6)' }}>min</span>
+                  </div>
                 </div>
+                <div style={{ width: 1, height: 70, background: 'rgba(0,0,0,0.2)' }} />
+                <div>
+                  <div className="stat-label" style={{ color: 'rgba(0,0,0,0.55)' }}>Exercícios</div>
+                  <div className="f-display" style={{ fontSize: 64, lineHeight: 0.95 }}>
+                    {String(exerciseGroups.length).padStart(2, '0')}
+                  </div>
+                </div>
+                <div style={{ width: 1, height: 70, background: 'rgba(0,0,0,0.2)' }} />
+                <div>
+                  <div className="stat-label" style={{ color: 'rgba(0,0,0,0.55)' }}>Séries</div>
+                  <div className="f-display" style={{ fontSize: 64, lineHeight: 0.95 }}>
+                    {totalSets}
+                  </div>
+                </div>
+                <div style={{ width: 1, height: 70, background: 'rgba(0,0,0,0.2)' }} />
+                <div>
+                  <div className="stat-label" style={{ color: 'rgba(0,0,0,0.55)' }}>Volume</div>
+                  <div className="f-display" style={{ fontSize: 64, lineHeight: 0.95 }}>
+                    {Math.round(totalVolume)}
+                    <span className="stat-unit" style={{ color: 'rgba(0,0,0,0.6)' }}>kg</span>
+                  </div>
+                </div>
+              </div>
 
-                <div style={{
-                  display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)',
-                  gap: 8, position: 'relative',
-                }}>
-                  {[
-                    { icon: <Clock size={12} />, val: session.duration_minutes ? `${session.duration_minutes}` : '—', label: 'min' },
-                    { icon: <Dumbbell size={12} />, val: String(exerciseGroups.length), label: 'exercícios' },
-                    { icon: <Hash size={12} />, val: String(totalSets), label: 'séries' },
-                  ].map(({ icon, val, label }) => (
-                    <div key={label} style={{
-                      background: 'var(--surface-2)',
-                      border: '1px solid var(--border)',
-                      borderRadius: 4, padding: '10px 8px', textAlign: 'center',
-                    }}>
-                      <div style={{ color: 'var(--fg-3)', display: 'flex', justifyContent: 'center', marginBottom: 4 }}>
-                        {icon}
-                      </div>
-                      <div style={{
-                        fontFamily: "'Outfit', sans-serif", fontWeight: 800,
-                        fontSize: 18, color: 'var(--accent)', lineHeight: 1, marginBottom: 2,
-                      }}>
-                        {val}
-                      </div>
-                      <div style={{
-                        fontFamily: "'JetBrains Mono', monospace", fontSize: 7,
-                        color: 'var(--fg-3)', letterSpacing: '0.1em', textTransform: 'uppercase',
-                      }}>
-                        {label}
-                      </div>
+              {(session.difficulty || session.notes) && (
+                <div style={{ marginTop: 18, display: 'flex', gap: 18, flexWrap: 'wrap' }}>
+                  {session.difficulty && (
+                    <div style={{ fontSize: 14, color: 'rgba(0,0,0,0.7)' }}>
+                      {DIFFICULTY_LABEL[session.difficulty]}
                     </div>
-                  ))}
+                  )}
+                  {session.notes && (
+                    <div style={{ fontSize: 14, color: 'rgba(0,0,0,0.7)', fontStyle: 'italic' }}>
+                      "{session.notes}"
+                    </div>
+                  )}
                 </div>
+              )}
+            </div>
 
-                {session.difficulty && (
-                  <div style={{
-                    marginTop: 10, fontFamily: "'JetBrains Mono', monospace",
-                    fontSize: 10, color: 'var(--fg-2)', position: 'relative',
-                  }}>
-                    {DIFFICULTY_LABEL[session.difficulty]}
-                  </div>
-                )}
-
-                {session.notes && (
-                  <div style={{
-                    marginTop: 8, fontFamily: "'JetBrains Mono', monospace",
-                    fontSize: 10, color: 'var(--fg-3)', fontStyle: 'italic',
-                    position: 'relative',
-                  }}>
-                    // {session.notes}
-                  </div>
-                )}
+            {/* Exercícios */}
+            <div className="col gap-3">
+              <div className="label-sm">
+                {exerciseGroups.length} exercício{exerciseGroups.length !== 1 ? 's' : ''} registrado{exerciseGroups.length !== 1 ? 's' : ''}
               </div>
-
-              {/* Exercícios */}
-              <div style={{
-                fontFamily: "'JetBrains Mono', monospace", fontSize: 9,
-                color: 'var(--fg-3)', letterSpacing: '0.15em',
-                textTransform: 'uppercase', marginBottom: 10,
-              }}>
-                // {exerciseGroups.length} exercício{exerciseGroups.length !== 1 ? 's' : ''}
-              </div>
-
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-                {exerciseGroups.map(({ exercise, sets }) => (
-                  <div key={exercise?.id} style={{
-                    background: 'var(--surface)',
-                    border: '1px solid var(--border)',
-                    borderRadius: 4,
-                    overflow: 'hidden',
-                  }}>
-                    {/* Cabeçalho do exercício */}
-                    <div style={{
-                      display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-                      padding: '10px 14px',
-                      borderBottom: '1px solid var(--border)',
-                    }}>
+              {exerciseGroups.map(({ exercise, sets }) => {
+                const exVolume = sets.reduce((s, set) => s + (Number(set.load_kg) || 0) * set.reps_completed, 0)
+                return (
+                  <div key={exercise?.id} className="card" style={{ padding: 0, overflow: 'hidden' }}>
+                    {/* Cabeçalho */}
+                    <div
+                      style={{
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                        padding: '14px 20px',
+                        borderBottom: '1px solid var(--hairline)',
+                      }}
+                    >
                       <div>
-                        <div style={{
-                          fontFamily: "'Outfit', sans-serif", fontWeight: 800,
-                          fontSize: 13, color: 'var(--fg)', marginBottom: 2,
-                        }}>
-                          {exercise?.name ?? 'Exercício'}
+                        <div
+                          className="f-display"
+                          style={{ fontSize: 24, color: 'var(--text)', lineHeight: 1 }}
+                        >
+                          {(exercise?.name ?? 'EXERCÍCIO').toUpperCase()}
                         </div>
                         {exercise?.muscle_group && (
-                          <div style={{
-                            display: 'inline-block',
-                            fontFamily: "'JetBrains Mono', monospace", fontSize: 8,
-                            color: 'var(--accent)', letterSpacing: '0.1em',
-                            textTransform: 'uppercase',
-                            border: '1px solid rgba(108, 142, 247,0.2)',
-                            padding: '1px 6px',
-                          }}>
+                          <span
+                            className="chip muscle"
+                            style={{ fontSize: 9, padding: '2px 8px', marginTop: 6 }}
+                          >
                             {MUSCLE_GROUP_LABELS[exercise.muscle_group]}
-                          </div>
+                          </span>
                         )}
                       </div>
-
-                      {/* Botão ver evolução */}
-                      <button
-                        onClick={() => navigate(`/progresso?exercise=${exercise?.id}`)}
-                        title="Ver evolução de carga"
-                        style={{
-                          display: 'flex', alignItems: 'center', gap: 4,
-                          background: 'transparent',
-                          border: '1px solid var(--border-md)',
-                          borderRadius: 4, padding: '5px 8px',
-                          color: 'var(--fg-3)',
-                          fontFamily: "'JetBrains Mono', monospace", fontSize: 8,
-                          letterSpacing: '0.08em', textTransform: 'uppercase',
-                          cursor: 'pointer', flexShrink: 0,
-                          transition: 'border-color 0.15s, color 0.15s',
-                        }}
-                        onMouseEnter={(e) => {
-                          e.currentTarget.style.borderColor = 'var(--accent)'
-                          e.currentTarget.style.color = 'var(--accent)'
-                        }}
-                        onMouseLeave={(e) => {
-                          e.currentTarget.style.borderColor = 'var(--border-md)'
-                          e.currentTarget.style.color = 'var(--fg-3)'
-                        }}
-                      >
-                        <TrendingUp size={10} />
-                        evolução
-                      </button>
+                      <div style={{ display: 'flex', gap: 18, alignItems: 'center' }}>
+                        <div style={{ textAlign: 'right' }}>
+                          <div className="stat-label">Volume</div>
+                          <div className="f-display" style={{ fontSize: 20, color: 'var(--accent)' }}>
+                            {Math.round(exVolume)}
+                            <span className="stat-unit" style={{ fontSize: 11 }}>kg</span>
+                          </div>
+                        </div>
+                        <button
+                          onClick={() => navigate(`/progresso?exercise=${exercise?.id}`)}
+                          className="btn ghost"
+                          title="Ver evolução"
+                        >
+                          <Icon name="trending" size={14} />
+                        </button>
+                      </div>
                     </div>
 
                     {/* Séries */}
-                    <div style={{ padding: '8px 14px' }}>
-                      <div style={{
-                        display: 'grid',
-                        gridTemplateColumns: '40px 1fr 1fr 20px',
-                        gap: 4,
-                        marginBottom: 4,
-                      }}>
-                        {['SÉR.', 'REPS', 'CARGA', ''].map((h) => (
-                          <div key={h} style={{
-                            fontFamily: "'JetBrains Mono', monospace", fontSize: 7,
-                            color: 'var(--fg-3)', letterSpacing: '0.1em',
-                            textTransform: 'uppercase',
-                          }}>
-                            {h}
-                          </div>
-                        ))}
+                    <div style={{ padding: 0 }}>
+                      <div
+                        style={{
+                          display: 'grid',
+                          gridTemplateColumns: '40px 1fr 1fr 1fr',
+                          gap: 12,
+                          padding: '10px 20px',
+                          borderBottom: '1px solid var(--hairline)',
+                          color: 'var(--text-faint)',
+                          fontSize: 9,
+                          textTransform: 'uppercase',
+                          letterSpacing: '0.12em',
+                          fontWeight: 600,
+                        }}
+                      >
+                        <div>SÉR.</div>
+                        <div>Reps</div>
+                        <div>Carga</div>
+                        <div style={{ textAlign: 'right' }}>Volume</div>
                       </div>
                       {sets.map((set) => (
-                        <div key={set.id} style={{
-                          display: 'grid',
-                          gridTemplateColumns: '40px 1fr 1fr 20px',
-                          gap: 4,
-                          padding: '5px 0',
-                          borderTop: '1px solid var(--border)',
-                        }}>
-                          <div style={{
-                            fontFamily: "'JetBrains Mono', monospace", fontSize: 10,
-                            color: 'var(--fg-3)',
-                          }}>
-                            {set.set_number}
+                        <div
+                          key={set.id}
+                          style={{
+                            display: 'grid',
+                            gridTemplateColumns: '40px 1fr 1fr 1fr',
+                            gap: 12,
+                            padding: '10px 20px',
+                            borderBottom: '1px solid var(--hairline)',
+                            alignItems: 'center',
+                          }}
+                        >
+                          <div
+                            className="f-display"
+                            style={{ fontSize: 22, color: 'var(--text-dim)' }}
+                          >
+                            {String(set.set_number).padStart(2, '0')}
                           </div>
-                          <div style={{
-                            fontFamily: "'JetBrains Mono', monospace", fontSize: 10,
-                            color: 'var(--fg)',
-                          }}>
-                            {set.reps_completed} rep{set.reps_completed !== 1 ? 's' : ''}
+                          <div className="f-mono" style={{ fontSize: 13, color: 'var(--text)' }}>
+                            {set.reps_completed}
                           </div>
-                          <div style={{
-                            fontFamily: "'JetBrains Mono', monospace", fontSize: 10,
-                            color: 'var(--fg)',
-                          }}>
-                            {set.load_kg > 0 ? `${set.load_kg} kg` : 'peso corp.'}
+                          <div className="f-mono" style={{ fontSize: 13, color: 'var(--text)' }}>
+                            {set.load_kg ? `${set.load_kg}kg` : 'peso corp.'}
                           </div>
-                          <div style={{ fontSize: 10, color: 'var(--success)' }}>✓</div>
+                          <div
+                            className="f-mono"
+                            style={{ fontSize: 13, color: 'var(--text-dim)', textAlign: 'right' }}
+                          >
+                            {Math.round((Number(set.load_kg) || 0) * set.reps_completed)}kg
+                          </div>
                         </div>
                       ))}
                     </div>
                   </div>
-                ))}
-              </div>
+                )
+              })}
+            </div>
+          </motion.div>
+        )}
+      </div>
 
-            </motion.div>
-          )}
-
-        </div>
-      </main>
-    </div>
+      <style>{`
+        .forja-session-meta {
+          display: flex;
+          gap: 36px;
+          margin-top: 12px;
+          align-items: center;
+          flex-wrap: wrap;
+        }
+        @media (max-width: 768px) {
+          .forja-session-meta { gap: 20px; }
+        }
+      `}</style>
+    </>
   )
 }

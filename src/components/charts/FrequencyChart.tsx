@@ -28,13 +28,13 @@ function CustomTooltip({ active, payload, label }: {
   const count = payload[0].value
   return (
     <div style={{
-      background: 'var(--surface-2)',
-      border: '1px solid var(--border-md)',
+      background: 'var(--bg-2)',
+      border: '1px solid var(--border)',
       borderLeft: '2px solid var(--accent)',
       padding: '8px 12px',
       fontFamily: "'JetBrains Mono', monospace",
     }}>
-      <div style={{ fontSize: 9, color: 'var(--fg-3)', letterSpacing: '0.1em', marginBottom: 2 }}>
+      <div style={{ fontSize: 9, color: 'var(--text-faint)', letterSpacing: '0.1em', marginBottom: 2 }}>
         semana de {label ? formatWeek(label) : ''}
       </div>
       <div style={{ fontSize: 14, color: 'var(--accent)', fontWeight: 700 }}>
@@ -78,14 +78,14 @@ export function FrequencyChart({ data }: Props) {
           allowDecimals={false}
           width={24}
         />
-        <Tooltip content={<CustomTooltip />} cursor={{ fill: 'rgba(108, 142, 247,0.05)' }} />
+        <Tooltip content={<CustomTooltip />} cursor={{ fill: 'rgba(212, 255, 58, 0.05)' }} />
         <Bar dataKey="count" radius={[3, 3, 0, 0]}>
           {data.map((entry, index) => (
             <Cell
               key={`cell-${index}`}
               fill={entry.count === maxCount && entry.count > 0
-                ? '#6c8ef7'
-                : `rgba(108, 142, 247,${entry.count > 0 ? 0.4 : 0.1})`
+                ? '#d4ff3a'
+                : `rgba(212, 255, 58, ${entry.count > 0 ? 0.4 : 0.12})`
               }
             />
           ))}

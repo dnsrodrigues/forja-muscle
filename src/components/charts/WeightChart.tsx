@@ -26,13 +26,13 @@ function CustomTooltip({ active, payload, label }: {
   if (!active || !payload?.length) return null
   return (
     <div style={{
-      background: 'var(--surface-2)',
-      border: '1px solid var(--border-md)',
+      background: 'var(--bg-2)',
+      border: '1px solid var(--border)',
       borderLeft: '2px solid var(--accent)',
       padding: '8px 12px',
       fontFamily: "'JetBrains Mono', monospace",
     }}>
-      <div style={{ fontSize: 9, color: 'var(--fg-3)', letterSpacing: '0.1em', marginBottom: 2 }}>
+      <div style={{ fontSize: 9, color: 'var(--text-faint)', letterSpacing: '0.1em', marginBottom: 2 }}>
         {label ? formatDate(label) : ''}
       </div>
       <div style={{ fontSize: 14, color: 'var(--accent)', fontWeight: 700 }}>
@@ -60,8 +60,8 @@ export function WeightChart({ data }: Props) {
       <AreaChart data={sorted} margin={{ top: 8, right: 8, left: -20, bottom: 0 }}>
         <defs>
           <linearGradient id="weightGradient" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="5%" stopColor="#6c8ef7" stopOpacity={0.15} />
-            <stop offset="95%" stopColor="#6c8ef7" stopOpacity={0} />
+            <stop offset="5%" stopColor="#d4ff3a" stopOpacity={0.15} />
+            <stop offset="95%" stopColor="#d4ff3a" stopOpacity={0} />
           </linearGradient>
         </defs>
         <CartesianGrid
@@ -97,11 +97,11 @@ export function WeightChart({ data }: Props) {
         <Area
           type="monotone"
           dataKey="weight"
-          stroke="#6c8ef7"
+          stroke="#d4ff3a"
           strokeWidth={2}
           fill="url(#weightGradient)"
-          dot={{ fill: '#6c8ef7', r: 3, strokeWidth: 0 }}
-          activeDot={{ fill: '#6c8ef7', r: 5, strokeWidth: 0 }}
+          dot={{ fill: '#d4ff3a', r: 3, strokeWidth: 0 }}
+          activeDot={{ fill: '#d4ff3a', r: 5, strokeWidth: 0 }}
         />
       </AreaChart>
     </ResponsiveContainer>

@@ -3,27 +3,13 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { motion } from 'motion/react'
-import {
-  ArrowLeft,
-  Scale,
-  Ruler,
-  CheckCircle2,
-  AlertCircle,
-  Dumbbell,
-  Target,
-  User,
-  CalendarDays,
-  ChevronDown,
-} from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { updateProfile } from '../services/profile.service'
-import { Button } from '../components/ui/Button'
-import { Input } from '../components/ui/Input'
-import { Avatar } from '../components/ui/Avatar'
-import { ThemeSwitcher } from '../components/ui/ThemeSwitcher'
+import { Topbar } from '../components/layout/Topbar'
+import { Icon } from '../components/ui/Icon'
 
-// ─── Schema de validação ─────────────────────────────────────────────────────
+// ─── Schema ───────────────────────────────────────────────────────────────────
 
 const toOptionalNumber = (val: unknown) => {
   if (val === '' || val === null || val === undefined) return undefined
@@ -43,10 +29,10 @@ const profileSchema = z.object({
 
 type ProfileFormData = z.infer<typeof profileSchema>
 
-// ─── Componente ──────────────────────────────────────────────────────────────
+// ─── Página ──────────────────────────────────────────────────────────────────
 
 export function ProfilePage() {
-  const { user, profile, isAdmin } = useAuth()
+  const { user, profile, isAdmin, signOut } = useAuth()
   const [saveStatus, setSaveStatus] = useState<'idle' | 'success' | 'error'>('idle')
   const [errorMsg, setErrorMsg] = useState('')
 
@@ -78,386 +64,292 @@ export function ProfilePage() {
         weight: data.weight,
         height: data.height,
         birth_date: data.birth_date || undefined,
-        gender: data.gender || undefined,
+        gender: data.gender === '' ? undefined : data.gender,
         goal: data.goal || undefined,
         target_weight: data.target_weight,
-      } as Parameters<typeof updateProfile>[1]
-
+      }
       await updateProfile(user.id, cleaned)
       setSaveStatus('success')
-      reset(data)
+      reset(data, { keepValues: true })
       setTimeout(() => setSaveStatus('idle'), 3000)
     } catch (err) {
       setSaveStatus('error')
-      setErrorMsg(err instanceof Error ? err.message : 'Erro ao salvar. Tente novamente.')
+      setErrorMsg(err instanceof Error ? err.message : 'Erro ao salvar')
     }
   }
 
-  const displayName = profile?.full_name ?? 'Usuário'
+  const initial = (profile?.full_name ?? 'A').charAt(0).toUpperCase()
+  const memberSince = profile?.created_at
+    ? new Date(profile.created_at).toLocaleDateString('pt-BR', { month: 'short', year: 'numeric' }).toUpperCase()
+    : '—'
 
-  // ── Render ─────────────────────────────────────────────────────────────────
+  // Idade calculada
+  let ageLabel = ''
+  if (profile?.birth_date) {
+    const d = new Date(profile.birth_date)
+    const age = Math.floor((Date.now() - d.getTime()) / (365.25 * 24 * 3600 * 1000))
+    ageLabel = ` · ${age} anos`
+  }
+
   return (
-    <div className="min-h-screen">
+    <>
+      <Topbar
+        eyebrow={`MEMBRO DESDE ${memberSince}`}
+        title="PERFIL"
+        actions={
+          <>
+            <Link to="/dashboard" className="btn ghost">
+              <Icon name="arrowL" size={14} /> Voltar
+            </Link>
+            <button onClick={() => void signOut()} className="btn ghost">
+              <Icon name="logout" size={14} /> Sair
+            </button>
+          </>
+        }
+      />
 
-      {/* ── Header ──────────────────────────────────────── */}
-      <header
-        className="sticky top-0 z-20 px-4 py-3"
-        style={{
-          background: 'rgba(6,4,4,0.7)',
-          borderBottom: '1px solid var(--line)',
-          backdropFilter: 'blur(20px)',
-        }}
-      >
-        <div className="max-w-2xl mx-auto flex items-center justify-between">
-          <Link
-            to="/dashboard"
-            className="flex items-center gap-2 text-sm font-medium transition-colors"
-            style={{ color: 'var(--faint)' }}
-            onMouseEnter={(e) => { e.currentTarget.style.color = 'var(--ink)' }}
-            onMouseLeave={(e) => { e.currentTarget.style.color = 'var(--faint)' }}
-          >
-            <ArrowLeft size={14} />
-            Voltar
-          </Link>
-          <div className="flex items-center gap-3">
-            <ThemeSwitcher />
-            <div style={{ width: 1, height: 20, background: 'var(--line)' }} />
-            <div className="flex items-center gap-2">
-              <div
-                className="w-6 h-6 rounded-md flex items-center justify-center"
-                style={{ background: 'linear-gradient(135deg, var(--accent-two), var(--accent) 60%)' }}
-              >
-                <Dumbbell size={12} style={{ color: 'var(--bg)' }} />
-              </div>
-              <span
-                className="font-display text-sm font-bold"
-                style={{ color: 'var(--ink)' }}
-              >
-                MUSCLE TRAINING
-              </span>
-            </div>
-          </div>
-        </div>
-      </header>
-
-      <main className="max-w-2xl mx-auto px-4 pb-16">
-
-        {/* ── Hero do perfil ───────────────────────────── */}
+      <div className="content">
+        {/* HEADER do perfil */}
         <motion.div
-          initial={{ opacity: 0, y: -16 }}
+          initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-          className="relative mt-6 mb-6 rounded-2xl overflow-hidden"
-          style={{
-            background: 'linear-gradient(135deg, color-mix(in srgb, var(--accent) 8%, var(--bg-soft)), var(--bg-soft))',
-            border: '1px solid var(--line)',
-          }}
+          transition={{ duration: 0.4 }}
+          className="card"
+          style={{ padding: 0, overflow: 'hidden' }}
         >
-          {/* Grade decorativa sutil */}
           <div
-            className="absolute inset-0 opacity-[0.04]"
-            style={{
-              backgroundImage:
-                'repeating-linear-gradient(0deg, var(--accent) 0, var(--accent) 1px, transparent 1px, transparent 44px), repeating-linear-gradient(90deg, var(--accent) 0, var(--accent) 1px, transparent 1px, transparent 44px)',
-            }}
+            className="ph-img"
+            style={{ height: 180, borderRadius: 0, border: 'none' }}
           />
-
-          {/* Barra de acento lateral */}
-          <div
-            className="absolute left-0 top-0 bottom-0 w-0.5"
-            style={{ background: 'linear-gradient(to bottom, var(--accent), transparent)' }}
-          />
-
-          <div className="relative px-6 py-8 flex items-center gap-5">
-            <Avatar
-              name={displayName}
-              src={profile?.avatar_url}
-              size="xl"
-              style={{ boxShadow: '0 16px 40px var(--accent-glow)' } as React.CSSProperties}
-            />
-            <div className="flex-1 min-w-0">
+          <div className="forja-profile-header">
+            <div className="forja-profile-avatar">{initial}</div>
+            <div style={{ flex: 1, paddingBottom: 10, minWidth: 0 }}>
               <h1
-                className="font-display text-2xl font-bold tracking-tight truncate"
-                style={{ color: 'var(--ink)' }}
+                className="f-display"
+                style={{ fontSize: 48, margin: 0, color: 'var(--text)', lineHeight: 1 }}
               >
-                {displayName}
+                {(profile?.full_name ?? 'ATLETA').toUpperCase()}
               </h1>
-              <p
-                className="text-xs font-light mt-0.5 truncate"
-                style={{ color: 'var(--faint)' }}
-              >
-                {profile?.email}
-              </p>
-              <span
-                className="inline-flex items-center gap-1.5 mt-2 text-xs font-medium px-3 py-1 rounded-lg"
-                style={{
-                  background: isAdmin
-                    ? 'color-mix(in srgb, var(--accent) 14%, transparent)'
-                    : 'var(--glass)',
-                  color: isAdmin ? 'var(--accent)' : 'var(--muted)',
-                  border: '1px solid var(--line)',
-                }}
-              >
-                {isAdmin ? '⭐ Admin' : '💪 Aluno'}
-              </span>
+              <div style={{ display: 'flex', gap: 8, marginTop: 8, flexWrap: 'wrap' }}>
+                {isAdmin && <span className="chip solid">Personal Trainer</span>}
+                {!isAdmin && <span className="chip">Aluno</span>}
+                {profile?.goal && <span className="chip">{profile.goal.split(' ')[0]}</span>}
+                {profile?.email && (
+                  <span className="chip muscle" style={{ maxWidth: 280, overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                    {profile.email}
+                  </span>
+                )}
+              </div>
             </div>
           </div>
-
-          {/* Métricas rápidas */}
-          {(profile?.weight || profile?.height || profile?.target_weight) && (
-            <div
-              className="relative px-6 py-4 flex gap-6"
-              style={{ borderTop: '1px solid var(--line)' }}
-            >
-              {profile?.weight && (
-                <div className="flex items-center gap-2">
-                  <Scale size={13} style={{ color: 'var(--accent)' }} />
-                  <span className="font-display text-lg font-bold" style={{ color: 'var(--ink)' }}>{profile.weight}</span>
-                  <span className="text-xs" style={{ color: 'var(--faint)' }}>kg</span>
-                </div>
-              )}
-              {profile?.height && (
-                <div className="flex items-center gap-2">
-                  <Ruler size={13} style={{ color: 'var(--accent)' }} />
-                  <span className="font-display text-lg font-bold" style={{ color: 'var(--ink)' }}>{profile.height}</span>
-                  <span className="text-xs" style={{ color: 'var(--faint)' }}>cm</span>
-                </div>
-              )}
-              {profile?.target_weight && (
-                <div className="flex items-center gap-2">
-                  <Target size={13} style={{ color: 'var(--accent)' }} />
-                  <span className="font-display text-lg font-bold" style={{ color: 'var(--ink)' }}>{profile.target_weight}</span>
-                  <span className="text-xs" style={{ color: 'var(--faint)' }}>kg alvo</span>
-                </div>
-              )}
-            </div>
-          )}
         </motion.div>
 
-        {/* ── Formulário ──────────────────────────────── */}
-        <form onSubmit={handleSubmit(onSubmit)} noValidate>
-
-          {/* DADOS PESSOAIS */}
-          <motion.section
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4, delay: 0.1 }}
-            className="mb-5"
+        {/* DADOS PESSOAIS — formulário */}
+        <motion.form
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4, delay: 0.08 }}
+          onSubmit={handleSubmit(onSubmit)}
+          className="card"
+          noValidate
+        >
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              marginBottom: 18,
+              flexWrap: 'wrap',
+              gap: 12,
+            }}
           >
-            <SectionTitle icon={<User size={13} />} label="Dados pessoais" />
+            <h2 className="card-title">DADOS PESSOAIS</h2>
+            <button
+              type="submit"
+              className="btn primary"
+              disabled={!isDirty || isSubmitting}
+            >
+              <Icon name="check" size={14} stroke={2.5} />
+              {isSubmitting ? 'Salvando...' : 'Salvar'}
+            </button>
+          </div>
 
-            <div className="glass-card rounded-2xl p-5 flex flex-col gap-4">
-              <Input
-                label="Nome completo"
-                placeholder="Seu nome"
-                error={errors.full_name?.message}
-                {...register('full_name')}
-              />
-
-              <div className="flex flex-col gap-1.5">
-                <label className="text-sm font-medium flex items-center gap-1.5" style={{ color: 'var(--muted)' }}>
-                  <CalendarDays size={12} style={{ color: 'var(--faint)' }} />
-                  Data de nascimento
-                </label>
-                <input
-                  type="date"
-                  className="w-full h-11 px-4 rounded-xl text-sm outline-none transition-all [color-scheme:dark]"
-                  style={{
-                    background: 'var(--glass)',
-                    color: 'var(--ink)',
-                    border: '1px solid var(--line)',
-                  }}
-                  {...register('birth_date')}
-                />
-              </div>
-
-              <div className="flex flex-col gap-1.5">
-                <label className="text-sm font-medium flex items-center gap-1.5" style={{ color: 'var(--muted)' }}>
-                  <ChevronDown size={12} style={{ color: 'var(--faint)' }} />
-                  Gênero
-                </label>
-                <div className="relative">
-                  <select
-                    className="w-full h-11 px-4 pr-10 rounded-xl text-sm outline-none transition-all appearance-none cursor-pointer [color-scheme:dark]"
-                    style={{
-                      background: 'var(--glass)',
-                      color: 'var(--ink)',
-                      border: '1px solid var(--line)',
-                    }}
-                    {...register('gender')}
-                  >
-                    <option value="">Prefiro não informar</option>
-                    <option value="male">Masculino</option>
-                    <option value="female">Feminino</option>
-                    <option value="other">Outro</option>
-                  </select>
-                  <ChevronDown size={14} className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" style={{ color: 'var(--faint)' }} />
-                </div>
-              </div>
+          {/* Status */}
+          {saveStatus === 'success' && (
+            <div
+              className="chip success"
+              style={{ marginBottom: 16, padding: '6px 12px' }}
+            >
+              ✓ Perfil atualizado com sucesso
             </div>
-          </motion.section>
+          )}
+          {saveStatus === 'error' && (
+            <div
+              style={{
+                marginBottom: 16,
+                padding: '10px 14px',
+                background: 'rgba(255,61,85,0.08)',
+                border: '1px solid rgba(255,61,85,0.25)',
+                borderRadius: 'var(--r-2)',
+                color: 'var(--danger)',
+                fontSize: 12,
+              }}
+            >
+              ⚠ {errorMsg || 'Erro ao salvar'}
+            </div>
+          )}
 
-          {/* DADOS FÍSICOS */}
-          <motion.section
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4, delay: 0.16 }}
-            className="mb-5"
-          >
-            <SectionTitle icon={<Scale size={13} />} label="Dados físicos" />
+          <div className="forja-profile-grid">
+            <Field label="Nome completo" error={errors.full_name?.message}>
+              <input className="input" {...register('full_name')} placeholder="Seu nome" />
+            </Field>
 
-            <div className="glass-card rounded-2xl p-5 flex flex-col gap-4">
-              <div className="grid grid-cols-2 gap-3">
-                <Input
-                  label="Peso atual (kg)"
-                  placeholder="Ex: 80"
-                  type="number"
-                  step="0.1"
-                  min="0"
-                  error={errors.weight?.message}
-                  {...register('weight')}
-                />
-                <Input
-                  label="Altura (cm)"
-                  placeholder="Ex: 175"
-                  type="number"
-                  min="0"
-                  error={errors.height?.message}
-                  {...register('height')}
-                />
-              </div>
-              <Input
-                label="Peso alvo (kg)"
-                placeholder="Ex: 75"
+            <Field label={`Nascimento${ageLabel}`} error={errors.birth_date?.message}>
+              <input className="input" type="date" {...register('birth_date')} />
+            </Field>
+
+            <Field label="Peso atual (kg)" error={errors.weight?.message}>
+              <input
+                className="input"
                 type="number"
-                step="0.1"
-                min="0"
-                hint="Quanto você quer pesar?"
-                error={errors.target_weight?.message}
+                step={0.1}
+                placeholder="Ex: 82.5"
+                {...register('weight')}
+              />
+            </Field>
+
+            <Field label="Altura (cm)" error={errors.height?.message}>
+              <input
+                className="input"
+                type="number"
+                placeholder="Ex: 178"
+                {...register('height')}
+              />
+            </Field>
+
+            <Field label="Peso alvo (kg)" error={errors.target_weight?.message}>
+              <input
+                className="input"
+                type="number"
+                step={0.1}
+                placeholder="Ex: 85"
                 {...register('target_weight')}
               />
-            </div>
-          </motion.section>
+            </Field>
 
-          {/* MEU OBJETIVO */}
-          <motion.section
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4, delay: 0.22 }}
-            className="mb-8"
-          >
-            <SectionTitle icon={<Target size={13} />} label="Meu objetivo" />
+            <Field label="Gênero" error={errors.gender?.message}>
+              <select className="input" {...register('gender')}>
+                <option value="">— Não informar —</option>
+                <option value="male">Masculino</option>
+                <option value="female">Feminino</option>
+                <option value="other">Outro</option>
+              </select>
+            </Field>
 
-            <div className="glass-card rounded-2xl p-5">
-              <div className="flex flex-col gap-1.5">
-                <label className="text-sm font-medium" style={{ color: 'var(--muted)' }}>
-                  O que você quer conquistar?
-                </label>
-                <textarea
-                  rows={3}
-                  placeholder="Ex: Ganhar massa muscular, emagrecer 10kg..."
-                  className="w-full px-4 py-3 rounded-xl text-sm resize-none outline-none transition-all"
-                  style={{
-                    background: 'var(--glass)',
-                    color: 'var(--ink)',
-                    border: '1px solid var(--line)',
-                  }}
-                  onFocus={(e) => {
-                    e.currentTarget.style.borderColor = 'color-mix(in srgb, var(--accent) 60%, white)'
-                    e.currentTarget.style.boxShadow = '0 0 0 4px var(--accent-glow)'
-                  }}
-                  {...register('goal', {
-                    onBlur: (e) => {
-                      e.currentTarget.style.borderColor = 'var(--line)'
-                      e.currentTarget.style.boxShadow = 'none'
-                    },
-                  })}
-                />
-                {errors.goal && (
-                  <p className="text-xs text-red-400 flex items-center gap-1">
-                    <span>⚠</span> {errors.goal.message}
-                  </p>
-                )}
-                <p className="text-xs text-right" style={{ color: 'var(--faint)' }}>máx. 300 caracteres</p>
+            <Field
+              label="Objetivo"
+              error={errors.goal?.message}
+              style={{ gridColumn: '1 / -1' }}
+            >
+              <textarea
+                className="input"
+                placeholder="Ex: Hipertrofia · Bulking — ganhar 5kg de massa magra em 6 meses"
+                rows={3}
+                {...register('goal')}
+              />
+            </Field>
+          </div>
+        </motion.form>
+
+        {/* Conta */}
+        <motion.div
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4, delay: 0.16 }}
+          className="card"
+        >
+          <h2 className="card-title">CONTA</h2>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 18, marginTop: 18 }}>
+            <div>
+              <div className="label-sm">Email</div>
+              <div style={{ fontSize: 14, marginTop: 4, color: 'var(--text)' }}>
+                {profile?.email ?? '—'}
               </div>
             </div>
-          </motion.section>
+            <div>
+              <div className="label-sm">Tipo de conta</div>
+              <div style={{ fontSize: 14, marginTop: 4, color: 'var(--text)' }}>
+                {isAdmin ? 'Personal Trainer' : 'Aluno'}
+              </div>
+            </div>
+          </div>
+        </motion.div>
+      </div>
 
-          {/* ── Feedback + Botão ─────────────────────── */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.4, delay: 0.28 }}
-            className="flex flex-col gap-3"
-          >
-            {saveStatus === 'success' && (
-              <motion.div
-                initial={{ opacity: 0, y: 4 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="flex items-center gap-2 text-sm rounded-xl px-4 py-3"
-                style={{
-                  background: 'rgba(34,197,94,0.08)',
-                  border: '1px solid rgba(34,197,94,0.2)',
-                  color: 'rgb(134,239,172)',
-                }}
-              >
-                <CheckCircle2 size={15} />
-                Perfil salvo com sucesso!
-              </motion.div>
-            )}
-
-            {saveStatus === 'error' && (
-              <motion.div
-                initial={{ opacity: 0, y: 4 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="flex items-center gap-2 text-sm rounded-xl px-4 py-3"
-                style={{
-                  background: 'rgba(239,68,68,0.08)',
-                  border: '1px solid rgba(239,68,68,0.2)',
-                  color: 'rgb(252,165,165)',
-                }}
-              >
-                <AlertCircle size={15} />
-                {errorMsg}
-              </motion.div>
-            )}
-
-            <Button
-              type="submit"
-              size="lg"
-              loading={isSubmitting}
-              disabled={!isDirty || isSubmitting}
-              className="w-full"
-            >
-              {isSubmitting ? 'Salvando...' : 'Salvar perfil'}
-            </Button>
-
-            {!isDirty && saveStatus === 'idle' && (
-              <p className="text-center text-xs" style={{ color: 'var(--faint)' }}>
-                Faça uma alteração para habilitar o botão
-              </p>
-            )}
-          </motion.div>
-
-        </form>
-      </main>
-    </div>
+      <style>{`
+        .forja-profile-header {
+          padding: 20px 28px 28px;
+          display: flex;
+          gap: 24px;
+          align-items: flex-end;
+          margin-top: -70px;
+          position: relative;
+          flex-wrap: wrap;
+        }
+        .forja-profile-avatar {
+          width: 140px;
+          height: 140px;
+          border-radius: 16px;
+          background: linear-gradient(135deg, #1a1b1c, #050506);
+          border: 4px solid var(--bg-0);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-family: var(--f-display);
+          font-size: 72px;
+          color: var(--accent);
+          flex-shrink: 0;
+        }
+        .forja-profile-grid {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 18px;
+        }
+        @media (max-width: 768px) {
+          .forja-profile-grid { grid-template-columns: 1fr; }
+          .forja-profile-avatar { width: 100px; height: 100px; font-size: 48px; }
+        }
+      `}</style>
+    </>
   )
 }
 
-// ─── Componente auxiliar ──────────────────────────────────────────────────────
+// ─── Componente auxiliar: campo de formulário ──────────────────────────────
 
-function SectionTitle({ icon, label }: { icon: React.ReactNode; label: string }) {
+function Field({
+  label,
+  error,
+  children,
+  style,
+}: {
+  label: string
+  error?: string
+  children: React.ReactNode
+  style?: React.CSSProperties
+}) {
   return (
-    <div className="flex items-center gap-2 mb-3 px-1">
-      <span style={{ color: 'var(--accent)' }}>{icon}</span>
-      <span
-        className="text-xs font-semibold uppercase tracking-[0.16em]"
-        style={{ color: 'var(--faint)' }}
-      >
+    <div style={style}>
+      <div className="label-sm" style={{ marginBottom: 6 }}>
         {label}
-      </span>
-      <div className="flex-1 h-px" style={{ background: 'var(--line)' }} />
+      </div>
+      {children}
+      {error && (
+        <div
+          style={{ fontSize: 11, color: 'var(--danger)', marginTop: 4, letterSpacing: '0.04em' }}
+        >
+          ⚠ {error}
+        </div>
+      )}
     </div>
   )
 }
