@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+﻿import { useState, useEffect } from 'react'
 import { useParams, useSearchParams, useNavigate, Link } from 'react-router-dom'
 import { motion } from 'motion/react'
 import { ArrowLeft, Plus, Save, Loader2, GripVertical } from 'lucide-react'
@@ -298,7 +298,7 @@ export function WorkoutFormPage() {
         className="sticky top-0 z-20"
         style={{
           padding: '14px 16px',
-          background: 'rgba(5,5,10,0.7)',
+          background: 'rgba(6, 7, 26,0.7)',
           borderBottom: '1px solid var(--border)',
           backdropFilter: 'blur(12px)',
         }}
@@ -312,10 +312,10 @@ export function WorkoutFormPage() {
               <ArrowLeft size={16} />
             </Link>
             <div>
-              <div style={{ fontFamily: "'DM Mono', monospace", fontSize: 9, color: 'var(--fg-3)', letterSpacing: '0.15em', textTransform: 'uppercase', marginBottom: 1 }}>
+              <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 9, color: 'var(--fg-3)', letterSpacing: '0.15em', textTransform: 'uppercase', marginBottom: 1 }}>
                 // {isEditing ? 'editar' : 'nova'} ficha
               </div>
-              <div style={{ fontFamily: "'Syne', sans-serif", fontWeight: 800, fontSize: 16, color: 'var(--fg)' }}>
+              <div style={{ fontFamily: "'Outfit', sans-serif", fontWeight: 800, fontSize: 16, color: 'var(--fg)' }}>
                 {isEditing ? (name || 'Carregando...') : 'Criar Ficha'}
               </div>
             </div>
@@ -327,11 +327,11 @@ export function WorkoutFormPage() {
             disabled={saving}
             style={{
               display: 'flex', alignItems: 'center', gap: 5,
-              background: saving ? 'rgba(200,240,74,0.5)' : 'var(--accent)',
+              background: saving ? 'rgba(108, 142, 247,0.5)' : 'var(--accent)',
               border: 'none', borderRadius: 4,
               padding: '8px 14px',
               color: 'var(--bg)',
-              fontFamily: "'Syne', sans-serif", fontWeight: 800,
+              fontFamily: "'Outfit', sans-serif", fontWeight: 800,
               fontSize: 10, letterSpacing: '0.15em', textTransform: 'uppercase',
               cursor: saving ? 'not-allowed' : 'pointer',
             }}
@@ -358,7 +358,7 @@ export function WorkoutFormPage() {
       {/* Erro de carregamento */}
       {loadError && (
         <div className="max-w-xl mx-auto" style={{ padding: '20px 16px' }}>
-          <div style={{ borderLeft: '2px solid var(--danger)', background: 'rgba(239,68,68,0.05)', padding: '12px 16px', fontFamily: "'DM Mono', monospace", fontSize: 11, color: 'var(--danger)' }}>
+          <div style={{ borderLeft: '2px solid var(--danger)', background: 'rgba(239,68,68,0.05)', padding: '12px 16px', fontFamily: "'JetBrains Mono', monospace", fontSize: 11, color: 'var(--danger)' }}>
             ⚠ {loadError}
           </div>
         </div>
@@ -378,7 +378,7 @@ export function WorkoutFormPage() {
             {/* ─── Nome ─── */}
             <div style={{ marginBottom: 20 }}>
               <label>
-                <div style={{ fontFamily: "'DM Mono', monospace", fontSize: 9, color: 'var(--fg-3)', letterSpacing: '0.15em', textTransform: 'uppercase', marginBottom: 6 }}>
+                <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 9, color: 'var(--fg-3)', letterSpacing: '0.15em', textTransform: 'uppercase', marginBottom: 6 }}>
                   Nome da Ficha *
                 </div>
                 <input
@@ -393,7 +393,7 @@ export function WorkoutFormPage() {
                     borderRadius: 4,
                     padding: '10px 12px',
                     color: 'var(--fg)',
-                    fontFamily: "'Syne', sans-serif",
+                    fontFamily: "'Outfit', sans-serif",
                     fontWeight: 700,
                     fontSize: 14,
                     outline: 'none',
@@ -402,7 +402,7 @@ export function WorkoutFormPage() {
                   onBlur={(e) => (e.target.style.borderColor = errors.name ? 'var(--danger)' : 'var(--border-md)')}
                 />
                 {errors.name && (
-                  <div style={{ fontFamily: "'DM Mono', monospace", fontSize: 9, color: 'var(--danger)', marginTop: 4 }}>
+                  <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 9, color: 'var(--danger)', marginTop: 4 }}>
                     // {errors.name}
                   </div>
                 )}
@@ -411,7 +411,7 @@ export function WorkoutFormPage() {
 
             {/* ─── Dias da semana ─── */}
             <div style={{ marginBottom: 20 }}>
-              <div style={{ fontFamily: "'DM Mono', monospace", fontSize: 9, color: 'var(--fg-3)', letterSpacing: '0.15em', textTransform: 'uppercase', marginBottom: 8 }}>
+              <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 9, color: 'var(--fg-3)', letterSpacing: '0.15em', textTransform: 'uppercase', marginBottom: 8 }}>
                 Dias da Semana
               </div>
               <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
@@ -427,7 +427,7 @@ export function WorkoutFormPage() {
                         borderRadius: 3,
                         padding: '5px 10px',
                         color: active ? 'var(--bg)' : 'var(--fg-3)',
-                        fontFamily: "'DM Mono', monospace",
+                        fontFamily: "'JetBrains Mono', monospace",
                         fontSize: 10,
                         letterSpacing: '0.08em',
                         cursor: 'pointer',
@@ -454,10 +454,10 @@ export function WorkoutFormPage() {
                 justifyContent: 'space-between',
               }}>
                 <div>
-                  <div style={{ fontFamily: "'Syne', sans-serif", fontWeight: 700, fontSize: 12, color: 'var(--fg)', marginBottom: 2 }}>
+                  <div style={{ fontFamily: "'Outfit', sans-serif", fontWeight: 700, fontSize: 12, color: 'var(--fg)', marginBottom: 2 }}>
                     Ficha de biblioteca
                   </div>
-                  <div style={{ fontFamily: "'DM Mono', monospace", fontSize: 9, color: 'var(--fg-3)', fontStyle: 'italic' }}>
+                  <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 9, color: 'var(--fg-3)', fontStyle: 'italic' }}>
                     // reutilizável para múltiplos alunos
                   </div>
                 </div>
@@ -491,11 +491,11 @@ export function WorkoutFormPage() {
                 display: 'flex', alignItems: 'center', justifyContent: 'space-between',
                 marginBottom: 10,
               }}>
-                <div style={{ fontFamily: "'DM Mono', monospace", fontSize: 9, color: 'var(--fg-3)', letterSpacing: '0.15em', textTransform: 'uppercase' }}>
+                <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 9, color: 'var(--fg-3)', letterSpacing: '0.15em', textTransform: 'uppercase' }}>
                   // {exercises.length} exercício{exercises.length !== 1 ? 's' : ''}
                 </div>
                 {errors.exercises && (
-                  <div style={{ fontFamily: "'DM Mono', monospace", fontSize: 9, color: 'var(--danger)' }}>
+                  <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 9, color: 'var(--danger)' }}>
                     // {errors.exercises}
                   </div>
                 )}
@@ -534,22 +534,22 @@ export function WorkoutFormPage() {
                   width: '100%',
                   display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
                   background: 'transparent',
-                  border: `1px dashed ${errors.exercises ? 'var(--danger)' : 'rgba(200,240,74,0.3)'}`,
+                  border: `1px dashed ${errors.exercises ? 'var(--danger)' : 'rgba(108, 142, 247,0.3)'}`,
                   borderRadius: 4,
                   padding: '12px',
                   color: 'var(--accent)',
-                  fontFamily: "'DM Mono', monospace",
+                  fontFamily: "'JetBrains Mono', monospace",
                   fontSize: 10, letterSpacing: '0.1em', textTransform: 'uppercase',
                   cursor: 'pointer',
                   transition: 'background 0.15s, border-color 0.15s',
                 }}
                 onMouseEnter={(e) => {
-                  (e.currentTarget as HTMLButtonElement).style.background = 'rgba(200,240,74,0.04)'
+                  (e.currentTarget as HTMLButtonElement).style.background = 'rgba(108, 142, 247,0.04)'
                   ;(e.currentTarget as HTMLButtonElement).style.borderColor = 'var(--accent)'
                 }}
                 onMouseLeave={(e) => {
                   (e.currentTarget as HTMLButtonElement).style.background = 'transparent'
-                  ;(e.currentTarget as HTMLButtonElement).style.borderColor = errors.exercises ? 'var(--danger)' : 'rgba(200,240,74,0.3)'
+                  ;(e.currentTarget as HTMLButtonElement).style.borderColor = errors.exercises ? 'var(--danger)' : 'rgba(108, 142, 247,0.3)'
                 }}
               >
                 <Plus size={13} />

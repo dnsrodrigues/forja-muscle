@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+﻿import { useState, useEffect } from 'react'
 import { X, Search, Check } from 'lucide-react'
 import { supabase } from '../lib/supabase'
 import { assignTemplateToStudent } from '../services/workout.service'
@@ -86,7 +86,7 @@ export function AssignWorkoutModal({
         onClick={onClose}
         style={{
           position: 'fixed', inset: 0,
-          background: 'rgba(5,5,10,0.8)',
+          background: 'rgba(6, 7, 26,0.8)',
           zIndex: 40, backdropFilter: 'blur(4px)',
         }}
       />
@@ -114,10 +114,10 @@ export function AssignWorkoutModal({
           display: 'flex', alignItems: 'center', justifyContent: 'space-between',
         }}>
           <div>
-            <div style={{ fontFamily: "'Syne', sans-serif", fontWeight: 800, fontSize: 14, color: 'var(--fg)' }}>
+            <div style={{ fontFamily: "'Outfit', sans-serif", fontWeight: 800, fontSize: 14, color: 'var(--fg)' }}>
               Atribuir Ficha
             </div>
-            <div style={{ fontFamily: "'DM Mono', monospace", fontSize: 9, color: 'var(--fg-3)', marginTop: 2, fontStyle: 'italic' }}>
+            <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 9, color: 'var(--fg-3)', marginTop: 2, fontStyle: 'italic' }}>
               // {workout.name}
             </div>
           </div>
@@ -145,7 +145,7 @@ export function AssignWorkoutModal({
               placeholder="Buscar aluno..."
               style={{
                 background: 'transparent', border: 'none', outline: 'none',
-                color: 'var(--fg)', fontFamily: "'DM Mono', monospace", fontSize: 12, flex: 1,
+                color: 'var(--fg)', fontFamily: "'JetBrains Mono', monospace", fontSize: 12, flex: 1,
               }}
             />
           </div>
@@ -158,7 +158,7 @@ export function AssignWorkoutModal({
             borderLeft: '2px solid var(--danger)',
             background: 'rgba(239,68,68,0.05)',
             padding: '8px 12px',
-            fontFamily: "'DM Mono', monospace",
+            fontFamily: "'JetBrains Mono', monospace",
             fontSize: 10, color: 'var(--danger)',
           }}>
             ⚠ {error}
@@ -168,13 +168,13 @@ export function AssignWorkoutModal({
         {/* Lista */}
         <div style={{ overflowY: 'auto', flex: 1, padding: '8px' }}>
           {loading && (
-            <div style={{ padding: '24px', textAlign: 'center', fontFamily: "'DM Mono', monospace", fontSize: 11, color: 'var(--fg-3)', fontStyle: 'italic' }}>
+            <div style={{ padding: '24px', textAlign: 'center', fontFamily: "'JetBrains Mono', monospace", fontSize: 11, color: 'var(--fg-3)', fontStyle: 'italic' }}>
               // carregando alunos...
             </div>
           )}
 
           {!loading && filtered.length === 0 && (
-            <div style={{ padding: '24px', textAlign: 'center', fontFamily: "'DM Mono', monospace", fontSize: 11, color: 'var(--fg-3)', fontStyle: 'italic' }}>
+            <div style={{ padding: '24px', textAlign: 'center', fontFamily: "'JetBrains Mono', monospace", fontSize: 11, color: 'var(--fg-3)', fontStyle: 'italic' }}>
               // nenhum aluno encontrado
             </div>
           )}
@@ -190,19 +190,19 @@ export function AssignWorkoutModal({
                   display: 'flex', alignItems: 'center',
                   padding: '9px 10px', borderRadius: 3,
                   gap: 10,
-                  background: isAssigned ? 'rgba(200,240,74,0.06)' : 'transparent',
-                  border: isAssigned ? '1px solid rgba(200,240,74,0.2)' : '1px solid transparent',
+                  background: isAssigned ? 'rgba(108, 142, 247,0.06)' : 'transparent',
+                  border: isAssigned ? '1px solid rgba(108, 142, 247,0.2)' : '1px solid transparent',
                   marginBottom: 2,
                   transition: 'background 0.1s',
                 }}
               >
                 <Avatar name={student.full_name} size="xs" />
                 <div style={{ flex: 1, minWidth: 0 }}>
-                  <div style={{ fontFamily: "'Syne', sans-serif", fontWeight: 700, fontSize: 13, color: 'var(--fg)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                  <div style={{ fontFamily: "'Outfit', sans-serif", fontWeight: 700, fontSize: 13, color: 'var(--fg)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                     {student.full_name}
                   </div>
                   {student.goal && (
-                    <div style={{ fontFamily: "'DM Mono', monospace", fontSize: 9, color: 'var(--fg-3)', opacity: 0.5 }}>
+                    <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 9, color: 'var(--fg-3)', opacity: 0.5 }}>
                       {student.goal}
                     </div>
                   )}
@@ -213,11 +213,11 @@ export function AssignWorkoutModal({
                   style={{
                     display: 'flex', alignItems: 'center', gap: 4,
                     background: isAssigned ? 'transparent' : 'var(--accent)',
-                    border: isAssigned ? '1px solid rgba(200,240,74,0.3)' : 'none',
+                    border: isAssigned ? '1px solid rgba(108, 142, 247,0.3)' : 'none',
                     borderRadius: 3,
                     padding: '5px 10px',
                     color: isAssigned ? 'var(--accent)' : 'var(--bg)',
-                    fontFamily: "'DM Mono', monospace",
+                    fontFamily: "'JetBrains Mono', monospace",
                     fontSize: 9, letterSpacing: '0.1em',
                     textTransform: 'uppercase',
                     cursor: isAssigned ? 'default' : 'pointer',
@@ -247,7 +247,7 @@ export function AssignWorkoutModal({
               borderRadius: 4,
               padding: '7px 16px',
               color: hasAssignedAny ? 'var(--bg)' : 'var(--fg-2)',
-              fontFamily: "'Syne', sans-serif",
+              fontFamily: "'Outfit', sans-serif",
               fontWeight: 800,
               fontSize: 10,
               letterSpacing: '0.15em',

@@ -1,4 +1,4 @@
-import { motion, AnimatePresence } from 'motion/react'
+﻿import { motion, AnimatePresence } from 'motion/react'
 import { Pause, Play, SkipForward } from 'lucide-react'
 
 interface RestTimerProps {
@@ -29,9 +29,9 @@ export function RestTimer({ seconds, isRunning, onPause, onResume, onSkip }: Res
           transition={{ type: 'spring', stiffness: 400, damping: 30 }}
           style={{
             background: isDone
-              ? 'rgba(200,240,74,0.15)'
-              : 'rgba(200,240,74,0.07)',
-            borderBottom: `1px solid ${isDone ? 'rgba(200,240,74,0.4)' : 'rgba(200,240,74,0.18)'}`,
+              ? 'rgba(108, 142, 247,0.15)'
+              : 'rgba(108, 142, 247,0.07)',
+            borderBottom: `1px solid ${isDone ? 'rgba(108, 142, 247,0.4)' : 'rgba(108, 142, 247,0.18)'}`,
             padding: '8px 16px',
             display: 'flex',
             alignItems: 'center',
@@ -43,7 +43,7 @@ export function RestTimer({ seconds, isRunning, onPause, onResume, onSkip }: Res
           <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
             <div>
               <div style={{
-                fontFamily: "'DM Mono', monospace",
+                fontFamily: "'JetBrains Mono', monospace",
                 fontSize: 8,
                 color: 'var(--accent)',
                 letterSpacing: '0.15em',
@@ -59,7 +59,7 @@ export function RestTimer({ seconds, isRunning, onPause, onResume, onSkip }: Res
                 animate={{ scale: 1 }}
                 transition={{ duration: 0.1 }}
                 style={{
-                  fontFamily: "'Syne', sans-serif",
+                  fontFamily: "'Outfit', sans-serif",
                   fontWeight: 800,
                   fontSize: 24,
                   color: 'var(--accent)',
@@ -87,7 +87,7 @@ export function RestTimer({ seconds, isRunning, onPause, onResume, onSkip }: Res
                   borderRadius: 4,
                   padding: '5px 10px',
                   color: 'var(--fg-2)',
-                  fontFamily: "'DM Mono', monospace",
+                  fontFamily: "'JetBrains Mono', monospace",
                   fontSize: 9,
                   letterSpacing: '0.08em',
                   textTransform: 'uppercase',
@@ -112,7 +112,7 @@ export function RestTimer({ seconds, isRunning, onPause, onResume, onSkip }: Res
                   borderRadius: 4,
                   padding: '5px 10px',
                   color: 'var(--fg-2)',
-                  fontFamily: "'DM Mono', monospace",
+                  fontFamily: "'JetBrains Mono', monospace",
                   fontSize: 9,
                   letterSpacing: '0.08em',
                   textTransform: 'uppercase',
@@ -134,7 +134,7 @@ export function RestTimer({ seconds, isRunning, onPause, onResume, onSkip }: Res
                 borderRadius: 4,
                 padding: '6px 14px',
                 color: '#05050a',
-                fontFamily: "'Syne', sans-serif",
+                fontFamily: "'Outfit', sans-serif",
                 fontWeight: 800,
                 fontSize: 10,
                 letterSpacing: '0.06em',

@@ -1,4 +1,4 @@
-import {
+﻿import {
   ResponsiveContainer,
   AreaChart,
   Area,
@@ -30,7 +30,7 @@ function CustomTooltip({ active, payload, label }: {
       border: '1px solid var(--border-md)',
       borderLeft: '2px solid var(--accent)',
       padding: '8px 12px',
-      fontFamily: "'DM Mono', monospace",
+      fontFamily: "'JetBrains Mono', monospace",
     }}>
       <div style={{ fontSize: 9, color: 'var(--fg-3)', letterSpacing: '0.1em', marginBottom: 2 }}>
         {label ? formatDate(label) : ''}
@@ -60,8 +60,8 @@ export function WeightChart({ data }: Props) {
       <AreaChart data={sorted} margin={{ top: 8, right: 8, left: -20, bottom: 0 }}>
         <defs>
           <linearGradient id="weightGradient" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="5%" stopColor="#c8f04a" stopOpacity={0.15} />
-            <stop offset="95%" stopColor="#c8f04a" stopOpacity={0} />
+            <stop offset="5%" stopColor="#6c8ef7" stopOpacity={0.15} />
+            <stop offset="95%" stopColor="#6c8ef7" stopOpacity={0} />
           </linearGradient>
         </defs>
         <CartesianGrid
@@ -73,7 +73,7 @@ export function WeightChart({ data }: Props) {
           dataKey="date"
           tickFormatter={formatDate}
           tick={{
-            fontFamily: "'DM Mono', monospace",
+            fontFamily: "'JetBrains Mono', monospace",
             fontSize: 8,
             fill: 'rgba(240,237,230,0.35)',
           }}
@@ -83,7 +83,7 @@ export function WeightChart({ data }: Props) {
         />
         <YAxis
           tick={{
-            fontFamily: "'DM Mono', monospace",
+            fontFamily: "'JetBrains Mono', monospace",
             fontSize: 8,
             fill: 'rgba(240,237,230,0.35)',
           }}
@@ -97,11 +97,11 @@ export function WeightChart({ data }: Props) {
         <Area
           type="monotone"
           dataKey="weight"
-          stroke="#c8f04a"
+          stroke="#6c8ef7"
           strokeWidth={2}
           fill="url(#weightGradient)"
-          dot={{ fill: '#c8f04a', r: 3, strokeWidth: 0 }}
-          activeDot={{ fill: '#c8f04a', r: 5, strokeWidth: 0 }}
+          dot={{ fill: '#6c8ef7', r: 3, strokeWidth: 0 }}
+          activeDot={{ fill: '#6c8ef7', r: 5, strokeWidth: 0 }}
         />
       </AreaChart>
     </ResponsiveContainer>

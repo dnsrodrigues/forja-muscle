@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+﻿import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { motion } from 'motion/react'
 import { ArrowLeft, Plus, RefreshCw } from 'lucide-react'
@@ -82,7 +82,7 @@ export function MeasurementsPage() {
       {/* Header */}
       <header className="sticky top-0 z-20" style={{
         padding: '14px 16px',
-        background: 'rgba(5,5,10,0.7)',
+        background: 'rgba(6, 7, 26,0.7)',
         borderBottom: '1px solid var(--border)',
         backdropFilter: 'blur(12px)',
       }}>
@@ -94,14 +94,14 @@ export function MeasurementsPage() {
           </Link>
           <div>
             <div style={{
-              fontFamily: "'DM Mono', monospace", fontSize: 9,
+              fontFamily: "'JetBrains Mono', monospace", fontSize: 9,
               color: 'var(--fg-3)', letterSpacing: '0.15em',
               textTransform: 'uppercase', marginBottom: 1,
             }}>
               // medidas
             </div>
             <div style={{
-              fontFamily: "'Syne', sans-serif", fontWeight: 800, fontSize: 16, color: 'var(--fg)',
+              fontFamily: "'Outfit', sans-serif", fontWeight: 800, fontSize: 16, color: 'var(--fg)',
             }}>
               Peso & Medidas
             </div>
@@ -127,14 +127,14 @@ export function MeasurementsPage() {
               borderRadius: '0 4px 4px 0',
               padding: '12px 16px',
             }}>
-              <div style={{ fontFamily: "'DM Mono', monospace", fontSize: 11, color: 'var(--danger)', marginBottom: 6 }}>
+              <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 11, color: 'var(--danger)', marginBottom: 6 }}>
                 ⚠ {error}
               </div>
               <button onClick={load} style={{
                 display: 'flex', alignItems: 'center', gap: 5,
                 background: 'transparent', border: '1px solid var(--border-md)',
                 borderRadius: 4, padding: '5px 12px', color: 'var(--fg-2)',
-                fontFamily: "'DM Mono', monospace", fontSize: 10,
+                fontFamily: "'JetBrains Mono', monospace", fontSize: 10,
                 letterSpacing: '0.1em', cursor: 'pointer', textTransform: 'uppercase',
               }}>
                 <RefreshCw size={10} /> Tentar novamente
@@ -164,7 +164,7 @@ export function MeasurementsPage() {
                 }}>
                   <div>
                     <div style={{
-                      fontFamily: "'DM Mono', monospace", fontSize: 9,
+                      fontFamily: "'JetBrains Mono', monospace", fontSize: 9,
                       color: 'var(--fg-3)', letterSpacing: '0.15em',
                       textTransform: 'uppercase', marginBottom: 2,
                     }}>
@@ -173,14 +173,14 @@ export function MeasurementsPage() {
                     {lastWeight && (
                       <div style={{ display: 'flex', alignItems: 'baseline', gap: 8 }}>
                         <span style={{
-                          fontFamily: "'Syne', sans-serif", fontWeight: 800,
+                          fontFamily: "'Outfit', sans-serif", fontWeight: 800,
                           fontSize: 22, color: 'var(--fg)', letterSpacing: '-0.02em',
                         }}>
                           {Number(lastWeight.weight_kg).toFixed(1)} kg
                         </span>
                         {weightDelta !== null && (
                           <span style={{
-                            fontFamily: "'DM Mono', monospace", fontSize: 10,
+                            fontFamily: "'JetBrains Mono', monospace", fontSize: 10,
                             color: weightDelta <= 0 ? 'var(--success)' : 'var(--danger)',
                           }}>
                             {weightDelta > 0 ? '+' : ''}{weightDelta.toFixed(1)}kg
@@ -195,7 +195,7 @@ export function MeasurementsPage() {
                       display: 'flex', alignItems: 'center', gap: 5,
                       background: 'var(--accent)', border: 'none', borderRadius: 4,
                       padding: '7px 12px', color: 'var(--bg)',
-                      fontFamily: "'Syne', sans-serif", fontWeight: 800,
+                      fontFamily: "'Outfit', sans-serif", fontWeight: 800,
                       fontSize: 9, letterSpacing: '0.12em', textTransform: 'uppercase',
                       cursor: 'pointer',
                     }}
@@ -208,7 +208,7 @@ export function MeasurementsPage() {
                   {weights.length === 0 ? (
                     <div style={{
                       height: 80, display: 'flex', alignItems: 'center', justifyContent: 'center',
-                      fontFamily: "'DM Mono', monospace", fontSize: 10,
+                      fontFamily: "'JetBrains Mono', monospace", fontSize: 10,
                       color: 'var(--fg-3)', fontStyle: 'italic',
                     }}>
                       // nenhum peso registrado
@@ -227,7 +227,7 @@ export function MeasurementsPage() {
                               borderBottom: idx < 9 ? '1px solid var(--border)' : 'none',
                             }}>
                               <div style={{
-                                fontFamily: "'DM Mono', monospace", fontSize: 10,
+                                fontFamily: "'JetBrains Mono', monospace", fontSize: 10,
                                 color: 'var(--fg-3)',
                               }}>
                                 {formatDate(w.measured_at)}
@@ -235,14 +235,14 @@ export function MeasurementsPage() {
                               <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                                 {delta !== null && delta !== 0 && (
                                   <span style={{
-                                    fontFamily: "'DM Mono', monospace", fontSize: 9,
+                                    fontFamily: "'JetBrains Mono', monospace", fontSize: 9,
                                     color: delta <= 0 ? 'var(--success)' : 'var(--danger)',
                                   }}>
                                     {delta > 0 ? '+' : ''}{delta.toFixed(1)}
                                   </span>
                                 )}
                                 <span style={{
-                                  fontFamily: "'DM Mono', monospace", fontSize: 11,
+                                  fontFamily: "'JetBrains Mono', monospace", fontSize: 11,
                                   color: 'var(--fg)', fontWeight: idx === 0 ? 700 : 400,
                                 }}>
                                   {Number(w.weight_kg).toFixed(1)} kg
@@ -270,7 +270,7 @@ export function MeasurementsPage() {
                   display: 'flex', alignItems: 'center', justifyContent: 'space-between',
                 }}>
                   <div style={{
-                    fontFamily: "'DM Mono', monospace", fontSize: 9,
+                    fontFamily: "'JetBrains Mono', monospace", fontSize: 9,
                     color: 'var(--fg-3)', letterSpacing: '0.15em', textTransform: 'uppercase',
                   }}>
                     // medidas corporais
@@ -281,7 +281,7 @@ export function MeasurementsPage() {
                       display: 'flex', alignItems: 'center', gap: 5,
                       background: 'var(--accent)', border: 'none', borderRadius: 4,
                       padding: '7px 12px', color: 'var(--bg)',
-                      fontFamily: "'Syne', sans-serif", fontWeight: 800,
+                      fontFamily: "'Outfit', sans-serif", fontWeight: 800,
                       fontSize: 9, letterSpacing: '0.12em', textTransform: 'uppercase',
                       cursor: 'pointer',
                     }}
@@ -294,7 +294,7 @@ export function MeasurementsPage() {
                   {measurements.length === 0 ? (
                     <div style={{
                       height: 80, display: 'flex', alignItems: 'center', justifyContent: 'center',
-                      fontFamily: "'DM Mono', monospace", fontSize: 10,
+                      fontFamily: "'JetBrains Mono', monospace", fontSize: 10,
                       color: 'var(--fg-3)', fontStyle: 'italic',
                     }}>
                       // nenhuma medição registrada
@@ -305,7 +305,7 @@ export function MeasurementsPage() {
                       {lastMeasurement && (
                         <div style={{ marginBottom: 16 }}>
                           <div style={{
-                            fontFamily: "'DM Mono', monospace", fontSize: 8,
+                            fontFamily: "'JetBrains Mono', monospace", fontSize: 8,
                             color: 'var(--fg-3)', letterSpacing: '0.12em',
                             textTransform: 'uppercase', marginBottom: 10,
                           }}>
@@ -324,13 +324,13 @@ export function MeasurementsPage() {
                                 display: 'flex', justifyContent: 'space-between', alignItems: 'center',
                               }}>
                                 <span style={{
-                                  fontFamily: "'DM Mono', monospace", fontSize: 8,
+                                  fontFamily: "'JetBrains Mono', monospace", fontSize: 8,
                                   color: 'var(--fg-3)', letterSpacing: '0.08em', textTransform: 'uppercase',
                                 }}>
                                   {f.label}
                                 </span>
                                 <span style={{
-                                  fontFamily: "'DM Mono', monospace", fontSize: 12,
+                                  fontFamily: "'JetBrains Mono', monospace", fontSize: 12,
                                   color: 'var(--fg)',
                                 }}>
                                   {Number(lastMeasurement[f.key]).toFixed(1)} cm
@@ -345,7 +345,7 @@ export function MeasurementsPage() {
                       {measurements.length > 1 && (
                         <>
                           <div style={{
-                            fontFamily: "'DM Mono', monospace", fontSize: 8,
+                            fontFamily: "'JetBrains Mono', monospace", fontSize: 8,
                             color: 'var(--fg-3)', letterSpacing: '0.12em',
                             textTransform: 'uppercase', marginBottom: 8,
                             paddingTop: 12, borderTop: '1px solid var(--border)',
@@ -361,7 +361,7 @@ export function MeasurementsPage() {
                                 borderBottom: '1px solid var(--border)',
                               }}>
                                 <span style={{
-                                  fontFamily: "'DM Mono', monospace", fontSize: 9,
+                                  fontFamily: "'JetBrains Mono', monospace", fontSize: 9,
                                   color: 'var(--fg-3)',
                                 }}>
                                   {formatDate(m.measured_at)}
@@ -369,7 +369,7 @@ export function MeasurementsPage() {
                                 <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', justifyContent: 'flex-end' }}>
                                   {MEASUREMENT_FIELDS.filter((f) => m[f.key] != null).slice(0, 4).map((f) => (
                                     <span key={f.key} style={{
-                                      fontFamily: "'DM Mono', monospace", fontSize: 8,
+                                      fontFamily: "'JetBrains Mono', monospace", fontSize: 8,
                                       color: 'var(--fg-3)',
                                     }}>
                                       {f.label.substring(0, 3)}: {Number(m[f.key]).toFixed(0)}

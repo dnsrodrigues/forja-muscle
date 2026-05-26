@@ -1,4 +1,4 @@
-import { useState } from 'react'
+﻿import { useState } from 'react'
 import { motion, AnimatePresence } from 'motion/react'
 import { Clock, Dumbbell, Hash } from 'lucide-react'
 import type { WorkoutDifficulty } from '../types'
@@ -49,7 +49,7 @@ export function WorkoutFinishModal({
             style={{
               position: 'fixed',
               inset: 0,
-              background: 'rgba(5,5,10,0.85)',
+              background: 'rgba(6, 7, 26,0.85)',
               backdropFilter: 'blur(8px)',
               zIndex: 50,
             }}
@@ -87,7 +87,7 @@ export function WorkoutFinishModal({
 
             {/* Título */}
             <div style={{
-              fontFamily: "'DM Mono', monospace",
+              fontFamily: "'JetBrains Mono', monospace",
               fontSize: 9,
               color: 'var(--accent)',
               letterSpacing: '0.15em',
@@ -97,7 +97,7 @@ export function WorkoutFinishModal({
               // treino concluído
             </div>
             <div style={{
-              fontFamily: "'Syne', sans-serif",
+              fontFamily: "'Outfit', sans-serif",
               fontWeight: 800,
               fontSize: 24,
               color: 'var(--fg)',
@@ -130,7 +130,7 @@ export function WorkoutFinishModal({
                     {icon}
                   </div>
                   <div style={{
-                    fontFamily: "'Syne', sans-serif",
+                    fontFamily: "'Outfit', sans-serif",
                     fontWeight: 800,
                     fontSize: 20,
                     color: 'var(--accent)',
@@ -140,7 +140,7 @@ export function WorkoutFinishModal({
                     {value}
                   </div>
                   <div style={{
-                    fontFamily: "'DM Mono', monospace",
+                    fontFamily: "'JetBrains Mono', monospace",
                     fontSize: 8,
                     color: 'var(--fg-3)',
                     letterSpacing: '0.1em',
@@ -154,7 +154,7 @@ export function WorkoutFinishModal({
 
             {/* Dificuldade */}
             <div style={{
-              fontFamily: "'DM Mono', monospace",
+              fontFamily: "'JetBrains Mono', monospace",
               fontSize: 9,
               color: 'var(--fg-3)',
               letterSpacing: '0.15em',
@@ -186,7 +186,7 @@ export function WorkoutFinishModal({
                 >
                   <div style={{ fontSize: 20, lineHeight: 1, marginBottom: 4 }}>{emoji}</div>
                   <div style={{
-                    fontFamily: "'DM Mono', monospace",
+                    fontFamily: "'JetBrains Mono', monospace",
                     fontSize: 8,
                     color: difficulty === key ? 'var(--accent)' : 'var(--fg-3)',
                     letterSpacing: '0.06em',
@@ -200,7 +200,7 @@ export function WorkoutFinishModal({
 
             {/* Observações */}
             <div style={{
-              fontFamily: "'DM Mono', monospace",
+              fontFamily: "'JetBrains Mono', monospace",
               fontSize: 9,
               color: 'var(--fg-3)',
               letterSpacing: '0.15em',
@@ -220,7 +220,7 @@ export function WorkoutFinishModal({
                 border: '1px solid var(--border-md)',
                 borderRadius: 6,
                 padding: '10px 12px',
-                fontFamily: "'DM Mono', monospace",
+                fontFamily: "'JetBrains Mono', monospace",
                 fontSize: 11,
                 color: 'var(--fg)',
                 resize: 'none',
@@ -242,7 +242,7 @@ export function WorkoutFinishModal({
                 border: 'none',
                 borderRadius: 8,
                 padding: '14px',
-                fontFamily: "'Syne', sans-serif",
+                fontFamily: "'Outfit', sans-serif",
                 fontWeight: 800,
                 fontSize: 13,
                 color: difficulty ? '#05050a' : 'var(--fg-3)',

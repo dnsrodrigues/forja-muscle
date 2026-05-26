@@ -1,4 +1,4 @@
-import { type InputHTMLAttributes, forwardRef, useState } from 'react'
+﻿import { type InputHTMLAttributes, forwardRef, useState } from 'react'
 import { Eye, EyeOff } from 'lucide-react'
 
 interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
@@ -21,7 +21,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
           <label
             htmlFor={inputId}
             style={{
-              fontFamily: "'DM Mono', monospace",
+              fontFamily: "'JetBrains Mono', monospace",
               fontSize: '10px',
               fontWeight: 400,
               letterSpacing: '0.15em',
@@ -45,7 +45,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
               border: error ? '1px solid var(--danger)' : '1px solid var(--border-md)',
               borderRadius: '4px',
               color: 'var(--fg)',
-              fontFamily: "'DM Mono', monospace",
+              fontFamily: "'JetBrains Mono', monospace",
               fontSize: '13px',
               letterSpacing: '0.04em',
             }}
@@ -77,7 +77,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
 
         {error && (
           <p style={{
-            fontFamily: "'DM Mono', monospace",
+            fontFamily: "'JetBrains Mono', monospace",
             fontSize: '11px',
             color: 'var(--danger)',
             letterSpacing: '0.04em',
@@ -88,7 +88,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
 
         {hint && !error && (
           <p style={{
-            fontFamily: "'DM Mono', monospace",
+            fontFamily: "'JetBrains Mono', monospace",
             fontSize: '11px',
             color: 'var(--fg-3)',
             fontStyle: 'italic',

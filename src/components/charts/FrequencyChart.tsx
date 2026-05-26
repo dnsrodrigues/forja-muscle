@@ -1,4 +1,4 @@
-import {
+﻿import {
   ResponsiveContainer,
   BarChart,
   Bar,
@@ -32,7 +32,7 @@ function CustomTooltip({ active, payload, label }: {
       border: '1px solid var(--border-md)',
       borderLeft: '2px solid var(--accent)',
       padding: '8px 12px',
-      fontFamily: "'DM Mono', monospace",
+      fontFamily: "'JetBrains Mono', monospace",
     }}>
       <div style={{ fontSize: 9, color: 'var(--fg-3)', letterSpacing: '0.1em', marginBottom: 2 }}>
         semana de {label ? formatWeek(label) : ''}
@@ -59,7 +59,7 @@ export function FrequencyChart({ data }: Props) {
           dataKey="week"
           tickFormatter={formatWeek}
           tick={{
-            fontFamily: "'DM Mono', monospace",
+            fontFamily: "'JetBrains Mono', monospace",
             fontSize: 7,
             fill: 'rgba(240,237,230,0.35)',
           }}
@@ -69,7 +69,7 @@ export function FrequencyChart({ data }: Props) {
         />
         <YAxis
           tick={{
-            fontFamily: "'DM Mono', monospace",
+            fontFamily: "'JetBrains Mono', monospace",
             fontSize: 8,
             fill: 'rgba(240,237,230,0.35)',
           }}
@@ -78,14 +78,14 @@ export function FrequencyChart({ data }: Props) {
           allowDecimals={false}
           width={24}
         />
-        <Tooltip content={<CustomTooltip />} cursor={{ fill: 'rgba(200,240,74,0.05)' }} />
+        <Tooltip content={<CustomTooltip />} cursor={{ fill: 'rgba(108, 142, 247,0.05)' }} />
         <Bar dataKey="count" radius={[3, 3, 0, 0]}>
           {data.map((entry, index) => (
             <Cell
               key={`cell-${index}`}
               fill={entry.count === maxCount && entry.count > 0
-                ? '#c8f04a'
-                : `rgba(200,240,74,${entry.count > 0 ? 0.4 : 0.1})`
+                ? '#6c8ef7'
+                : `rgba(108, 142, 247,${entry.count > 0 ? 0.4 : 0.1})`
               }
             />
           ))}

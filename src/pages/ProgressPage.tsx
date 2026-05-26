@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+﻿import { useState, useEffect } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import { motion } from 'motion/react'
 import { ArrowLeft, RefreshCw } from 'lucide-react'
@@ -87,7 +87,7 @@ export function ProgressPage() {
       {/* Header */}
       <header className="sticky top-0 z-20" style={{
         padding: '14px 16px',
-        background: 'rgba(5,5,10,0.7)',
+        background: 'rgba(6, 7, 26,0.7)',
         borderBottom: '1px solid var(--border)',
         backdropFilter: 'blur(12px)',
       }}>
@@ -99,14 +99,14 @@ export function ProgressPage() {
           </Link>
           <div>
             <div style={{
-              fontFamily: "'DM Mono', monospace", fontSize: 9,
+              fontFamily: "'JetBrains Mono', monospace", fontSize: 9,
               color: 'var(--fg-3)', letterSpacing: '0.15em',
               textTransform: 'uppercase', marginBottom: 1,
             }}>
               // progresso
             </div>
             <div style={{
-              fontFamily: "'Syne', sans-serif", fontWeight: 800, fontSize: 16, color: 'var(--fg)',
+              fontFamily: "'Outfit', sans-serif", fontWeight: 800, fontSize: 16, color: 'var(--fg)',
             }}>
               Evolução
             </div>
@@ -134,14 +134,14 @@ export function ProgressPage() {
               borderRadius: '0 4px 4px 0',
               padding: '12px 16px',
             }}>
-              <div style={{ fontFamily: "'DM Mono', monospace", fontSize: 11, color: 'var(--danger)', marginBottom: 6 }}>
+              <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 11, color: 'var(--danger)', marginBottom: 6 }}>
                 ⚠ {error}
               </div>
               <button onClick={init} style={{
                 display: 'flex', alignItems: 'center', gap: 5,
                 background: 'transparent', border: '1px solid var(--border-md)',
                 borderRadius: 4, padding: '5px 12px', color: 'var(--fg-2)',
-                fontFamily: "'DM Mono', monospace", fontSize: 10,
+                fontFamily: "'JetBrains Mono', monospace", fontSize: 10,
                 letterSpacing: '0.1em', cursor: 'pointer', textTransform: 'uppercase',
               }}>
                 <RefreshCw size={10} /> Tentar novamente
@@ -157,13 +157,13 @@ export function ProgressPage() {
             }}>
               <div style={{ fontSize: 36, marginBottom: 12 }}>📊</div>
               <div style={{
-                fontFamily: "'Syne', sans-serif", fontWeight: 800,
+                fontFamily: "'Outfit', sans-serif", fontWeight: 800,
                 fontSize: 15, color: 'var(--fg)', marginBottom: 8,
               }}>
                 Nenhum treino registrado
               </div>
               <div style={{
-                fontFamily: "'DM Mono', monospace", fontSize: 10,
+                fontFamily: "'JetBrains Mono', monospace", fontSize: 10,
                 color: 'var(--fg-3)', fontStyle: 'italic', marginBottom: 20,
               }}>
                 // complete uma sessão para ver sua evolução
@@ -172,7 +172,7 @@ export function ProgressPage() {
                 display: 'inline-flex', alignItems: 'center', gap: 6,
                 background: 'var(--accent)', border: 'none', borderRadius: 4,
                 padding: '9px 18px', color: 'var(--bg)',
-                fontFamily: "'Syne', sans-serif", fontWeight: 800,
+                fontFamily: "'Outfit', sans-serif", fontWeight: 800,
                 fontSize: 10, letterSpacing: '0.15em', textTransform: 'uppercase',
                 textDecoration: 'none',
               }}>
@@ -202,14 +202,14 @@ export function ProgressPage() {
                   display: 'flex', alignItems: 'center', justifyContent: 'space-between',
                 }}>
                   <div style={{
-                    fontFamily: "'DM Mono', monospace", fontSize: 9,
+                    fontFamily: "'JetBrains Mono', monospace", fontSize: 9,
                     color: 'var(--fg-3)', letterSpacing: '0.15em', textTransform: 'uppercase',
                   }}>
                     // evolução de carga
                   </div>
                   {loadDelta !== null && (
                     <div style={{
-                      fontFamily: "'DM Mono', monospace", fontSize: 10,
+                      fontFamily: "'JetBrains Mono', monospace", fontSize: 10,
                       color: loadDelta >= 0 ? 'var(--success)' : 'var(--danger)',
                       border: `1px solid ${loadDelta >= 0 ? 'rgba(74,222,128,0.3)' : 'rgba(239,68,68,0.3)'}`,
                       padding: '2px 8px',
@@ -223,7 +223,7 @@ export function ProgressPage() {
                   {/* Seletor de exercício */}
                   <div style={{ marginBottom: 16 }}>
                     <div style={{
-                      fontFamily: "'DM Mono', monospace", fontSize: 8,
+                      fontFamily: "'JetBrains Mono', monospace", fontSize: 8,
                       color: 'var(--fg-3)', letterSpacing: '0.12em',
                       textTransform: 'uppercase', marginBottom: 6,
                     }}>
@@ -238,7 +238,7 @@ export function ProgressPage() {
                         border: '1px solid var(--border-md)',
                         borderRadius: 4,
                         padding: '9px 12px',
-                        fontFamily: "'DM Mono', monospace",
+                        fontFamily: "'JetBrains Mono', monospace",
                         fontSize: 11,
                         color: 'var(--fg)',
                         outline: 'none',
@@ -259,7 +259,7 @@ export function ProgressPage() {
                   ) : loadData.length === 0 ? (
                     <div style={{
                       height: 120, display: 'flex', alignItems: 'center', justifyContent: 'center',
-                      fontFamily: "'DM Mono', monospace", fontSize: 10,
+                      fontFamily: "'JetBrains Mono', monospace", fontSize: 10,
                       color: 'var(--fg-3)', fontStyle: 'italic',
                     }}>
                       // sem dados de carga para este exercício
@@ -286,15 +286,15 @@ export function ProgressPage() {
                   display: 'flex', alignItems: 'center', justifyContent: 'space-between',
                 }}>
                   <div style={{
-                    fontFamily: "'DM Mono', monospace", fontSize: 9,
+                    fontFamily: "'JetBrains Mono', monospace", fontSize: 9,
                     color: 'var(--fg-3)', letterSpacing: '0.15em', textTransform: 'uppercase',
                   }}>
                     // frequência — últimas 8 semanas
                   </div>
                   <div style={{
-                    fontFamily: "'DM Mono', monospace", fontSize: 10,
+                    fontFamily: "'JetBrains Mono', monospace", fontSize: 10,
                     color: 'var(--accent)',
-                    border: '1px solid rgba(200,240,74,0.25)',
+                    border: '1px solid rgba(108, 142, 247,0.25)',
                     padding: '2px 8px',
                   }}>
                     {totalRecentWorkouts} treino{totalRecentWorkouts !== 1 ? 's' : ''}

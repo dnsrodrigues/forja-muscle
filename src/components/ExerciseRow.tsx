@@ -1,4 +1,4 @@
-import { X, GripVertical } from 'lucide-react'
+﻿import { X } from 'lucide-react'
 import type { WorkoutExercise } from '../types'
 import { MUSCLE_GROUP_LABELS } from '../types'
 
@@ -34,17 +34,10 @@ export function ExerciseRow({
         alignItems: editable ? 'flex-start' : 'center',
       }}
     >
-      {/* Drag handle (só no modo edição) */}
-      {editable && (
-        <div style={{ paddingTop: 2, color: 'var(--fg-3)', opacity: 0.3, cursor: 'grab' }}>
-          <GripVertical size={14} />
-        </div>
-      )}
-
       {/* Número */}
       <div
         style={{
-          fontFamily: "'DM Mono', monospace",
+          fontFamily: "'JetBrains Mono', monospace",
           fontSize: 10,
           color: 'var(--accent)',
           opacity: 0.6,
@@ -61,7 +54,7 @@ export function ExerciseRow({
         <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, marginBottom: editable ? 8 : 0 }}>
           <span
             style={{
-              fontFamily: "'Syne', sans-serif",
+              fontFamily: "'Outfit', sans-serif",
               fontWeight: 700,
               fontSize: 13,
               color: 'var(--fg)',
@@ -73,7 +66,7 @@ export function ExerciseRow({
           {muscleLabel && (
             <span
               style={{
-                fontFamily: "'DM Mono', monospace",
+                fontFamily: "'JetBrains Mono', monospace",
                 fontSize: 9,
                 color: 'var(--fg-3)',
                 opacity: 0.5,
@@ -90,7 +83,7 @@ export function ExerciseRow({
         {!editable && (
           <div
             style={{
-              fontFamily: "'DM Mono', monospace",
+              fontFamily: "'JetBrains Mono', monospace",
               fontSize: 10,
               color: 'var(--fg-3)',
               display: 'flex',
@@ -119,7 +112,7 @@ export function ExerciseRow({
           <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center' }}>
             {/* Séries */}
             <label style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-              <span style={{ fontFamily: "'DM Mono', monospace", fontSize: 8, color: 'var(--fg-3)', letterSpacing: '0.1em', textTransform: 'uppercase' }}>Séries</span>
+              <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 8, color: 'var(--fg-3)', letterSpacing: '0.1em', textTransform: 'uppercase' }}>Séries</span>
               <input
                 type="number"
                 min={1}
@@ -133,7 +126,7 @@ export function ExerciseRow({
                   borderRadius: 4,
                   padding: '4px 6px',
                   color: 'var(--fg)',
-                  fontFamily: "'DM Mono', monospace",
+                  fontFamily: "'JetBrains Mono', monospace",
                   fontSize: 12,
                   textAlign: 'center',
                 }}
@@ -142,7 +135,7 @@ export function ExerciseRow({
 
             {/* Repetições */}
             <label style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-              <span style={{ fontFamily: "'DM Mono', monospace", fontSize: 8, color: 'var(--fg-3)', letterSpacing: '0.1em', textTransform: 'uppercase' }}>Reps</span>
+              <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 8, color: 'var(--fg-3)', letterSpacing: '0.1em', textTransform: 'uppercase' }}>Reps</span>
               <input
                 type="text"
                 value={item.reps}
@@ -155,7 +148,7 @@ export function ExerciseRow({
                   borderRadius: 4,
                   padding: '4px 6px',
                   color: 'var(--fg)',
-                  fontFamily: "'DM Mono', monospace",
+                  fontFamily: "'JetBrains Mono', monospace",
                   fontSize: 12,
                   textAlign: 'center',
                 }}
@@ -164,7 +157,7 @@ export function ExerciseRow({
 
             {/* Carga */}
             <label style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-              <span style={{ fontFamily: "'DM Mono', monospace", fontSize: 8, color: 'var(--fg-3)', letterSpacing: '0.1em', textTransform: 'uppercase' }}>Carga (kg)</span>
+              <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 8, color: 'var(--fg-3)', letterSpacing: '0.1em', textTransform: 'uppercase' }}>Carga (kg)</span>
               <input
                 type="number"
                 min={0}
@@ -181,7 +174,7 @@ export function ExerciseRow({
                   borderRadius: 4,
                   padding: '4px 6px',
                   color: 'var(--fg)',
-                  fontFamily: "'DM Mono', monospace",
+                  fontFamily: "'JetBrains Mono', monospace",
                   fontSize: 12,
                   textAlign: 'center',
                 }}
@@ -190,7 +183,7 @@ export function ExerciseRow({
 
             {/* Descanso */}
             <label style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-              <span style={{ fontFamily: "'DM Mono', monospace", fontSize: 8, color: 'var(--fg-3)', letterSpacing: '0.1em', textTransform: 'uppercase' }}>Descanso (s)</span>
+              <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 8, color: 'var(--fg-3)', letterSpacing: '0.1em', textTransform: 'uppercase' }}>Descanso (s)</span>
               <input
                 type="number"
                 min={0}
@@ -204,7 +197,7 @@ export function ExerciseRow({
                   borderRadius: 4,
                   padding: '4px 6px',
                   color: 'var(--fg)',
-                  fontFamily: "'DM Mono', monospace",
+                  fontFamily: "'JetBrains Mono', monospace",
                   fontSize: 12,
                   textAlign: 'center',
                 }}
@@ -213,7 +206,7 @@ export function ExerciseRow({
 
             {/* Observação */}
             <label style={{ display: 'flex', flexDirection: 'column', gap: 2, flex: 1, minWidth: 120 }}>
-              <span style={{ fontFamily: "'DM Mono', monospace", fontSize: 8, color: 'var(--fg-3)', letterSpacing: '0.1em', textTransform: 'uppercase' }}>Obs.</span>
+              <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 8, color: 'var(--fg-3)', letterSpacing: '0.1em', textTransform: 'uppercase' }}>Obs.</span>
               <input
                 type="text"
                 value={item.notes ?? ''}
@@ -225,7 +218,7 @@ export function ExerciseRow({
                   borderRadius: 4,
                   padding: '4px 8px',
                   color: 'var(--fg)',
-                  fontFamily: "'DM Mono', monospace",
+                  fontFamily: "'JetBrains Mono', monospace",
                   fontSize: 11,
                   width: '100%',
                 }}

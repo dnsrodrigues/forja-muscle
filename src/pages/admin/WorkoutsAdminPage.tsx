@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+﻿import { useState, useEffect } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { motion } from 'motion/react'
 import { ArrowLeft, Plus, RefreshCw, Edit2, ChevronDown, ChevronRight, Trash2, AlertTriangle } from 'lucide-react'
@@ -116,7 +116,7 @@ export function WorkoutsAdminPage() {
         className="sticky top-0 z-20"
         style={{
           padding: '14px 16px',
-          background: 'rgba(5,5,10,0.7)',
+          background: 'rgba(6, 7, 26,0.7)',
           borderBottom: '1px solid var(--border)',
           backdropFilter: 'blur(12px)',
         }}
@@ -131,7 +131,7 @@ export function WorkoutsAdminPage() {
             </Link>
             <div>
               <div style={{
-                fontFamily: "'DM Mono', monospace",
+                fontFamily: "'JetBrains Mono', monospace",
                 fontSize: 9,
                 color: 'var(--fg-3)',
                 letterSpacing: '0.15em',
@@ -141,7 +141,7 @@ export function WorkoutsAdminPage() {
                 // admin
               </div>
               <div style={{
-                fontFamily: "'Syne', sans-serif",
+                fontFamily: "'Outfit', sans-serif",
                 fontWeight: 800,
                 fontSize: 16,
                 color: 'var(--fg)',
@@ -163,7 +163,7 @@ export function WorkoutsAdminPage() {
               borderRadius: 4,
               padding: '8px 14px',
               color: 'var(--bg)',
-              fontFamily: "'Syne', sans-serif",
+              fontFamily: "'Outfit', sans-serif",
               fontWeight: 800,
               fontSize: 10,
               letterSpacing: '0.15em',
@@ -199,7 +199,7 @@ export function WorkoutsAdminPage() {
               padding: '12px 16px',
               marginBottom: 16,
             }}>
-              <div style={{ fontFamily: "'DM Mono', monospace", fontSize: 11, color: 'var(--danger)', marginBottom: 6 }}>
+              <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 11, color: 'var(--danger)', marginBottom: 6 }}>
                 ⚠ {error}
               </div>
               <button
@@ -208,7 +208,7 @@ export function WorkoutsAdminPage() {
                   display: 'flex', alignItems: 'center', gap: 5,
                   background: 'transparent', border: '1px solid var(--border-md)',
                   borderRadius: 4, padding: '5px 12px', color: 'var(--fg-2)',
-                  fontFamily: "'DM Mono', monospace", fontSize: 10,
+                  fontFamily: "'JetBrains Mono', monospace", fontSize: 10,
                   letterSpacing: '0.1em', cursor: 'pointer', textTransform: 'uppercase',
                 }}
               >
@@ -228,7 +228,7 @@ export function WorkoutsAdminPage() {
               {/* ── SEÇÃO: Biblioteca (Templates) ── */}
               <section>
                 <div style={{
-                  fontFamily: "'DM Mono', monospace",
+                  fontFamily: "'JetBrains Mono', monospace",
                   fontSize: 9,
                   color: 'var(--fg-3)',
                   letterSpacing: '0.15em',
@@ -246,7 +246,7 @@ export function WorkoutsAdminPage() {
                     textAlign: 'center',
                   }}>
                     <div style={{ fontSize: 28, marginBottom: 10 }}>📋</div>
-                    <div style={{ fontFamily: "'Syne', sans-serif", fontWeight: 800, fontSize: 14, color: 'var(--fg)', marginBottom: 8 }}>
+                    <div style={{ fontFamily: "'Outfit', sans-serif", fontWeight: 800, fontSize: 14, color: 'var(--fg)', marginBottom: 8 }}>
                       Nenhuma ficha criada ainda
                     </div>
                     <button
@@ -255,7 +255,7 @@ export function WorkoutsAdminPage() {
                         display: 'inline-flex', alignItems: 'center', gap: 6,
                         background: 'var(--accent)', border: 'none', borderRadius: 4,
                         padding: '9px 18px', color: 'var(--bg)',
-                        fontFamily: "'Syne', sans-serif", fontWeight: 800,
+                        fontFamily: "'Outfit', sans-serif", fontWeight: 800,
                         fontSize: 10, letterSpacing: '0.15em', textTransform: 'uppercase', cursor: 'pointer',
                       }}
                     >
@@ -290,7 +290,7 @@ export function WorkoutsAdminPage() {
                   borderBottom: '1px solid var(--border)',
                 }}>
                   <div style={{
-                    fontFamily: "'DM Mono', monospace",
+                    fontFamily: "'JetBrains Mono', monospace",
                     fontSize: 9,
                     color: 'var(--fg-3)',
                     letterSpacing: '0.15em',
@@ -306,7 +306,7 @@ export function WorkoutsAdminPage() {
                     borderRadius: 4,
                     padding: '24px',
                     textAlign: 'center',
-                    fontFamily: "'DM Mono', monospace",
+                    fontFamily: "'JetBrains Mono', monospace",
                     fontSize: 10,
                     color: 'var(--fg-3)',
                     fontStyle: 'italic',
@@ -345,7 +345,7 @@ export function WorkoutsAdminPage() {
                                 display: 'flex',
                                 alignItems: 'center',
                                 justifyContent: 'center',
-                                fontFamily: "'Syne', sans-serif",
+                                fontFamily: "'Outfit', sans-serif",
                                 fontWeight: 800,
                                 fontSize: 11,
                                 color: 'var(--bg)',
@@ -355,7 +355,7 @@ export function WorkoutsAdminPage() {
                               </div>
                               <div>
                                 <div style={{
-                                  fontFamily: "'Syne', sans-serif",
+                                  fontFamily: "'Outfit', sans-serif",
                                   fontWeight: 800,
                                   fontSize: 13,
                                   color: 'var(--fg)',
@@ -364,7 +364,7 @@ export function WorkoutsAdminPage() {
                                   {student.full_name}
                                 </div>
                                 <div style={{
-                                  fontFamily: "'DM Mono', monospace",
+                                  fontFamily: "'JetBrains Mono', monospace",
                                   fontSize: 9,
                                   color: 'var(--fg-3)',
                                   marginTop: 2,
@@ -411,7 +411,7 @@ export function WorkoutsAdminPage() {
                                     {/* Info da ficha */}
                                     <div style={{ flex: 1, minWidth: 0 }}>
                                       <div style={{
-                                        fontFamily: "'Syne', sans-serif",
+                                        fontFamily: "'Outfit', sans-serif",
                                         fontWeight: 800,
                                         fontSize: 12,
                                         color: 'var(--fg)',
@@ -430,7 +430,7 @@ export function WorkoutsAdminPage() {
                                       }}>
                                         {daysLabel && (
                                           <span style={{
-                                            fontFamily: "'DM Mono', monospace",
+                                            fontFamily: "'JetBrains Mono', monospace",
                                             fontSize: 9,
                                             color: 'var(--accent)',
                                             letterSpacing: '0.08em',
@@ -439,7 +439,7 @@ export function WorkoutsAdminPage() {
                                           </span>
                                         )}
                                         <span style={{
-                                          fontFamily: "'DM Mono', monospace",
+                                          fontFamily: "'JetBrains Mono', monospace",
                                           fontSize: 9,
                                           color: 'var(--fg-3)',
                                         }}>
@@ -460,7 +460,7 @@ export function WorkoutsAdminPage() {
                                         }}>
                                           <AlertTriangle size={10} style={{ color: 'var(--danger)' }} />
                                           <span style={{
-                                            fontFamily: "'DM Mono', monospace", fontSize: 8,
+                                            fontFamily: "'JetBrains Mono', monospace", fontSize: 8,
                                             color: 'var(--danger)', letterSpacing: '0.06em',
                                           }}>
                                             Desvincular?
@@ -470,7 +470,7 @@ export function WorkoutsAdminPage() {
                                             style={{
                                               background: 'transparent', border: '1px solid var(--border-md)',
                                               borderRadius: 3, padding: '2px 6px', color: 'var(--fg-3)',
-                                              fontFamily: "'DM Mono', monospace", fontSize: 7,
+                                              fontFamily: "'JetBrains Mono', monospace", fontSize: 7,
                                               textTransform: 'uppercase', cursor: 'pointer',
                                             }}
                                           >
@@ -484,7 +484,7 @@ export function WorkoutsAdminPage() {
                                             style={{
                                               background: 'var(--danger)', border: 'none',
                                               borderRadius: 3, padding: '2px 6px', color: '#fff',
-                                              fontFamily: "'DM Mono', monospace", fontSize: 7,
+                                              fontFamily: "'JetBrains Mono', monospace", fontSize: 7,
                                               textTransform: 'uppercase', cursor: 'pointer',
                                             }}
                                           >
@@ -502,7 +502,7 @@ export function WorkoutsAdminPage() {
                                               border: '1px solid var(--border-md)',
                                               borderRadius: 4, padding: '5px 10px',
                                               color: 'var(--fg-2)',
-                                              fontFamily: "'DM Mono', monospace", fontSize: 9,
+                                              fontFamily: "'JetBrains Mono', monospace", fontSize: 9,
                                               letterSpacing: '0.1em', textTransform: 'uppercase',
                                               cursor: 'pointer',
                                               transition: 'border-color 0.15s, color 0.15s',
@@ -528,7 +528,7 @@ export function WorkoutsAdminPage() {
                                               border: '1px solid rgba(239,68,68,0.3)',
                                               borderRadius: 4, padding: '5px 10px',
                                               color: 'var(--danger)',
-                                              fontFamily: "'DM Mono', monospace", fontSize: 9,
+                                              fontFamily: "'JetBrains Mono', monospace", fontSize: 9,
                                               letterSpacing: '0.1em', textTransform: 'uppercase',
                                               cursor: 'pointer',
                                               transition: 'border-color 0.15s',

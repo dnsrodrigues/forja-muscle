@@ -1,4 +1,4 @@
-import { useTheme } from '../../context/ThemeContext'
+﻿import { useTheme } from '../../context/ThemeContext'
 import { motion, AnimatePresence } from 'motion/react'
 
 interface ThemeSwitcherProps {
@@ -22,7 +22,7 @@ export function ThemeSwitcher({ className = '' }: ThemeSwitcherProps) {
         background: 'var(--surface)',
         border: '1px solid var(--border-md)',
         borderRadius: '4px',
-        fontFamily: "'DM Mono', monospace",
+        fontFamily: "'JetBrains Mono', monospace",
         fontSize: 10,
         letterSpacing: '0.12em',
         textTransform: 'uppercase',

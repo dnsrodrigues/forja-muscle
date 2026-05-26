@@ -1,4 +1,4 @@
-import { type ButtonHTMLAttributes, forwardRef } from 'react'
+﻿import { type ButtonHTMLAttributes, forwardRef } from 'react'
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: 'primary' | 'secondary' | 'ghost' | 'danger'
@@ -33,7 +33,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       primary: {
         background: 'var(--accent)',
         color: 'var(--bg)',
-        fontFamily: "'Syne', sans-serif",
+        fontFamily: "'Outfit', sans-serif",
         fontWeight: 700,
         borderRadius: '4px',
       },
@@ -41,21 +41,21 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         background: 'transparent',
         color: 'var(--fg)',
         border: '1px solid var(--border-md)',
-        fontFamily: "'Syne', sans-serif",
+        fontFamily: "'Outfit', sans-serif",
         fontWeight: 700,
         borderRadius: '4px',
       },
       ghost: {
         background: 'transparent',
         color: 'var(--fg-2)',
-        fontFamily: "'Syne', sans-serif",
+        fontFamily: "'Outfit', sans-serif",
         fontWeight: 700,
         borderRadius: '4px',
       },
       danger: {
         background: 'var(--danger)',
         color: 'var(--bg)',
-        fontFamily: "'Syne', sans-serif",
+        fontFamily: "'Outfit', sans-serif",
         fontWeight: 700,
         borderRadius: '4px',
       },
@@ -80,7 +80,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
           <span
             className="w-[13px] h-[13px] border-2 rounded-full animate-spin"
             style={{
-              borderColor: 'rgba(5,5,10,0.3)',
+              borderColor: 'rgba(6, 7, 26,0.3)',
               borderTopColor: 'var(--bg)',
             }}
           />

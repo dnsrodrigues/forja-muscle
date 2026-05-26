@@ -1,4 +1,4 @@
-interface AvatarProps {
+﻿interface AvatarProps {
   name: string
   src?: string | null
   size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl'
@@ -53,7 +53,7 @@ export function Avatar({ name, src, size = 'md', className = '', style }: Avatar
         ...baseStyle,
         background: 'var(--accent)',
         color: 'var(--bg)',
-        fontFamily: "'Syne', sans-serif",
+        fontFamily: "'Outfit', sans-serif",
         fontWeight: 800,
         fontSize: font,
         letterSpacing: '0.08em',

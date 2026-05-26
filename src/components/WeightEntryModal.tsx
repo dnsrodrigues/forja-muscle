@@ -1,4 +1,4 @@
-import { useState } from 'react'
+﻿import { useState } from 'react'
 import { motion, AnimatePresence } from 'motion/react'
 import type { UserWeight } from '../types'
 
@@ -45,7 +45,7 @@ export function WeightEntryModal({ isOpen, lastWeight, onClose, onSaved, onSave 
             exit={{ opacity: 0 }}
             style={{
               position: 'fixed', inset: 0,
-              background: 'rgba(5,5,10,0.85)',
+              background: 'rgba(6, 7, 26,0.85)',
               backdropFilter: 'blur(8px)',
               zIndex: 50,
             }}
@@ -74,14 +74,14 @@ export function WeightEntryModal({ isOpen, lastWeight, onClose, onSaved, onSave 
             }} />
 
             <div style={{
-              fontFamily: "'DM Mono', monospace",
+              fontFamily: "'JetBrains Mono', monospace",
               fontSize: 9, color: 'var(--accent)',
               letterSpacing: '0.15em', textTransform: 'uppercase', marginBottom: 4,
             }}>
               // registrar peso
             </div>
             <div style={{
-              fontFamily: "'Syne', sans-serif", fontWeight: 800,
+              fontFamily: "'Outfit', sans-serif", fontWeight: 800,
               fontSize: 22, color: 'var(--fg)', letterSpacing: '-0.02em', marginBottom: 24,
             }}>
               Quanto você pesa hoje?
@@ -90,7 +90,7 @@ export function WeightEntryModal({ isOpen, lastWeight, onClose, onSaved, onSave 
             {/* Peso */}
             <div style={{ marginBottom: 16 }}>
               <div style={{
-                fontFamily: "'DM Mono', monospace", fontSize: 9,
+                fontFamily: "'JetBrains Mono', monospace", fontSize: 9,
                 color: 'var(--fg-3)', letterSpacing: '0.15em',
                 textTransform: 'uppercase', marginBottom: 6,
               }}>
@@ -113,7 +113,7 @@ export function WeightEntryModal({ isOpen, lastWeight, onClose, onSaved, onSave 
                     border: '1px solid var(--border-md)',
                     borderRadius: 6,
                     padding: '12px 14px',
-                    fontFamily: "'Syne', sans-serif",
+                    fontFamily: "'Outfit', sans-serif",
                     fontWeight: 800,
                     fontSize: 22,
                     color: 'var(--fg)',
@@ -124,7 +124,7 @@ export function WeightEntryModal({ isOpen, lastWeight, onClose, onSaved, onSave 
                   onBlur={(e) => (e.target.style.borderColor = 'var(--border-md)')}
                 />
                 <div style={{
-                  fontFamily: "'Syne', sans-serif", fontWeight: 800,
+                  fontFamily: "'Outfit', sans-serif", fontWeight: 800,
                   fontSize: 18, color: 'var(--fg-3)',
                 }}>
                   kg
@@ -135,7 +135,7 @@ export function WeightEntryModal({ isOpen, lastWeight, onClose, onSaved, onSave 
             {/* Data */}
             <div style={{ marginBottom: 24 }}>
               <div style={{
-                fontFamily: "'DM Mono', monospace", fontSize: 9,
+                fontFamily: "'JetBrains Mono', monospace", fontSize: 9,
                 color: 'var(--fg-3)', letterSpacing: '0.15em',
                 textTransform: 'uppercase', marginBottom: 6,
               }}>
@@ -152,7 +152,7 @@ export function WeightEntryModal({ isOpen, lastWeight, onClose, onSaved, onSave 
                   border: '1px solid var(--border-md)',
                   borderRadius: 6,
                   padding: '10px 14px',
-                  fontFamily: "'DM Mono', monospace",
+                  fontFamily: "'JetBrains Mono', monospace",
                   fontSize: 12,
                   color: 'var(--fg)',
                   outline: 'none',
@@ -165,7 +165,7 @@ export function WeightEntryModal({ isOpen, lastWeight, onClose, onSaved, onSave 
 
             {error && (
               <div style={{
-                fontFamily: "'DM Mono', monospace", fontSize: 10,
+                fontFamily: "'JetBrains Mono', monospace", fontSize: 10,
                 color: 'var(--danger)', marginBottom: 12,
               }}>
                 ⚠ {error}
@@ -179,7 +179,7 @@ export function WeightEntryModal({ isOpen, lastWeight, onClose, onSaved, onSave 
                 width: '100%',
                 background: canSave ? 'var(--accent)' : 'var(--surface-3)',
                 border: 'none', borderRadius: 8, padding: '14px',
-                fontFamily: "'Syne', sans-serif", fontWeight: 800,
+                fontFamily: "'Outfit', sans-serif", fontWeight: 800,
                 fontSize: 13, letterSpacing: '0.04em', textTransform: 'uppercase',
                 color: canSave ? '#05050a' : 'var(--fg-3)',
                 cursor: canSave && !saving ? 'pointer' : 'not-allowed',

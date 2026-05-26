@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback } from 'react'
+﻿import { useState, useEffect, useRef, useCallback } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'motion/react'
 import { X, ChevronDown, ChevronUp, ExternalLink, Check } from 'lucide-react'
@@ -10,6 +10,8 @@ import {
   finishWorkoutSession,
   deleteWorkoutSession,
 } from '../services/workout-log.service'
+import { getLastSetData } from '../services/history.service'
+import type { LastSetRecord } from '../services/history.service'
 import { ExerciseSetRow } from '../components/ExerciseSetRow'
 import { RestTimer } from '../components/RestTimer'
 import { WorkoutFinishModal } from '../components/WorkoutFinishModal'
@@ -47,6 +49,9 @@ export function WorkoutSessionPage() {
   // ── Séries concluídas: Record<workoutExercise.id, número de séries feitas> ──
   const [setsCompleted, setSetsCompleted] = useState<Record<string, number>>({})
 
+  // ── Histórico da última sessão: { [exerciseLibraryId]: { [setNumber]: {reps, loadKg} } }
+  const [lastSetData, setLastSetData] = useState<Record<string, Record<number, LastSetRecord>>>({})
+
   // ── Timer de descanso ──
   const [timerSeconds, setTimerSeconds] = useState(0)
   const [isTimerRunning, setIsTimerRunning] = useState(false)
@@ -77,6 +82,16 @@ export function WorkoutSessionPage() {
           data.exercises.sort((a, b) => a.order_index - b.order_index)
         }
         setWorkout(data)
+
+        // Busca histórico da última sessão para pré-preencher os inputs
+        const exerciseLibraryIds = (data.exercises ?? [])
+          .map(ex => ex.exercise?.id)
+          .filter((id): id is string => Boolean(id))
+
+        if (exerciseLibraryIds.length > 0) {
+          const lastData = await getLastSetData(profile!.id, exerciseLibraryIds)
+          setLastSetData(lastData)
+        }
 
         // Cria sessão no banco
         const logId = await startWorkoutSession(id!, profile!.id)
@@ -163,19 +178,28 @@ export function WorkoutSessionPage() {
 
       // Verificar se terminou todas as séries deste exercício
       if (next[exercise.id] >= exercise.sets) {
-        const exercises = workout?.exercises ?? []
-        const isLast = currentIdx >= exercises.length - 1
+        const allExercises = workout?.exercises ?? []
+        const isLast = currentIdx >= allExercises.length - 1
+
+        // Só abre o modal quando TODOS os exercícios estiverem concluídos
+        const allDone = allExercises.every(ex => (next[ex.id] ?? 0) >= ex.sets)
 
         setTimeout(() => {
-          if (isLast) {
-            // Último exercício — abre modal de finalização
+          if (allDone) {
+            // Todos os exercícios concluídos — abre modal de finalização
             skipTimer()
             setShowFinishModal(true)
-          } else {
-            // Avança para o próximo
-            setCurrentIdx((i) => i + 1)
+          } else if (!isLast) {
+            // Avança para o próximo, mas só se o aluno não navegou manualmente
+            // durante o intervalo de 800ms (evita pular exercícios)
+            setCurrentIdx((i) => {
+              if (i === currentIdx) return currentIdx + 1
+              return i // aluno navegou manualmente — respeita a escolha dele
+            })
             setExpandedInstructions(false)
           }
+          // Se é o último por índice mas ainda há exercícios pendentes:
+          // não avança automaticamente — aluno navega pela lista abaixo
         }, 800)
       }
 
@@ -229,11 +253,14 @@ export function WorkoutSessionPage() {
 
   const exercises = workout?.exercises ?? []
   const currentExercise = exercises[currentIdx] ?? null
-  const totalSets = Object.values(setsCompleted).reduce((a, b) => a + b, 0)
 
   function isExerciseDone(ex: WorkoutExercise) {
     return (setsCompleted[ex.id] ?? 0) >= ex.sets
   }
+
+  const exercisesDone = exercises.filter(isExerciseDone).length
+  const exercisesLeft = exercises.length - exercisesDone
+  const totalSets = Object.values(setsCompleted).reduce((a, b) => a + b, 0)
 
   // ─────────────────────────────────────────────────────────────────
   // Estado de erro/boot
@@ -244,7 +271,7 @@ export function WorkoutSessionPage() {
       <div className="min-h-screen" style={{ background: 'var(--bg)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
         <div style={{ textAlign: 'center' }}>
           <div style={{
-            fontFamily: "'Syne', sans-serif",
+            fontFamily: "'Outfit', sans-serif",
             fontWeight: 800,
             fontSize: 18,
             color: 'var(--accent)',
@@ -254,7 +281,7 @@ export function WorkoutSessionPage() {
             Iniciando treino...
           </div>
           <div style={{
-            fontFamily: "'DM Mono', monospace",
+            fontFamily: "'JetBrains Mono', monospace",
             fontSize: 10,
             color: 'var(--fg-3)',
             letterSpacing: '0.1em',
@@ -270,7 +297,7 @@ export function WorkoutSessionPage() {
     return (
       <div className="min-h-screen" style={{ background: 'var(--bg)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24 }}>
         <div style={{ maxWidth: 400, width: '100%', textAlign: 'center' }}>
-          <div style={{ fontFamily: "'DM Mono', monospace", fontSize: 11, color: 'var(--danger)', marginBottom: 12 }}>
+          <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 11, color: 'var(--danger)', marginBottom: 12 }}>
             ⚠ {loadError}
           </div>
           <button
@@ -281,7 +308,7 @@ export function WorkoutSessionPage() {
               borderRadius: 4,
               padding: '8px 16px',
               color: 'var(--fg-2)',
-              fontFamily: "'DM Mono', monospace",
+              fontFamily: "'JetBrains Mono', monospace",
               fontSize: 10,
               cursor: 'pointer',
             }}
@@ -313,7 +340,7 @@ export function WorkoutSessionPage() {
         className="sticky top-0 z-30"
         style={{
           padding: '12px 16px',
-          background: 'rgba(5,5,10,0.85)',
+          background: 'rgba(6, 7, 26,0.85)',
           borderBottom: '1px solid var(--border)',
           backdropFilter: 'blur(12px)',
         }}
@@ -329,7 +356,7 @@ export function WorkoutSessionPage() {
               background: 'transparent',
               border: 'none',
               color: 'var(--fg-3)',
-              fontFamily: "'DM Mono', monospace",
+              fontFamily: "'JetBrains Mono', monospace",
               fontSize: 10,
               letterSpacing: '0.08em',
               cursor: 'pointer',
@@ -343,7 +370,7 @@ export function WorkoutSessionPage() {
           {/* Nome da ficha */}
           <div style={{ flex: 1, minWidth: 0, textAlign: 'center' }}>
             <div style={{
-              fontFamily: "'Syne', sans-serif",
+              fontFamily: "'Outfit', sans-serif",
               fontWeight: 800,
               fontSize: 15,
               color: 'var(--fg)',
@@ -365,7 +392,7 @@ export function WorkoutSessionPage() {
               borderRadius: 4,
               padding: '5px 10px',
               color: 'var(--accent)',
-              fontFamily: "'DM Mono', monospace",
+              fontFamily: "'JetBrains Mono', monospace",
               fontSize: 9,
               letterSpacing: '0.08em',
               textTransform: 'uppercase',
@@ -398,14 +425,15 @@ export function WorkoutSessionPage() {
           {/* Barra de progresso */}
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 20 }}>
             <div style={{
-              fontFamily: "'DM Mono', monospace",
+              fontFamily: "'JetBrains Mono', monospace",
               fontSize: 9,
-              color: 'var(--fg-3)',
+              color: exercisesDone > 0 ? 'var(--accent)' : 'var(--fg-3)',
               letterSpacing: '0.1em',
               textTransform: 'uppercase',
               whiteSpace: 'nowrap',
+              transition: 'color 0.3s',
             }}>
-              {currentIdx + 1}/{exercises.length}
+              {exercisesDone}/{exercises.length}
             </div>
             <div style={{
               flex: 1,
@@ -415,20 +443,23 @@ export function WorkoutSessionPage() {
               overflow: 'hidden',
             }}>
               <motion.div
-                animate={{ width: `${((currentIdx + 1) / exercises.length) * 100}%` }}
+                animate={{ width: exercises.length > 0 ? `${(exercisesDone / exercises.length) * 100}%` : '0%' }}
                 transition={{ duration: 0.4 }}
                 style={{ height: '100%', background: 'var(--accent)', borderRadius: 2 }}
               />
             </div>
             <div style={{
-              fontFamily: "'DM Mono', monospace",
+              fontFamily: "'JetBrains Mono', monospace",
               fontSize: 9,
               color: 'var(--fg-3)',
               letterSpacing: '0.1em',
               textTransform: 'uppercase',
               whiteSpace: 'nowrap',
             }}>
-              {totalSets} séries
+              {exercisesLeft > 0
+                ? `${exercisesLeft} restante${exercisesLeft !== 1 ? 's' : ''}`
+                : '✓ todos feitos'
+              }
             </div>
           </div>
 
@@ -456,22 +487,39 @@ export function WorkoutSessionPage() {
                   borderBottom: '1px solid var(--border)',
                 }}>
                   <div style={{
-                    fontFamily: "'DM Mono', monospace",
-                    fontSize: 8,
-                    color: 'var(--fg-3)',
-                    letterSpacing: '0.15em',
-                    textTransform: 'uppercase',
+                    display: 'flex',
+                    alignItems: 'baseline',
+                    gap: 8,
                     marginBottom: 4,
                   }}>
-                    {currentExercise.exercise?.muscle_group
-                      ? MUSCLE_GROUP_LABELS[currentExercise.exercise.muscle_group]
-                      : ''}
-                    {' · '}
-                    {currentExercise.sets} × {currentExercise.reps}
-                    {currentExercise.rest_seconds > 0 && ` · ${currentExercise.rest_seconds}s`}
+                    <span style={{
+                      fontFamily: "'JetBrains Mono', monospace",
+                      fontSize: 11,
+                      fontWeight: 700,
+                      color: 'var(--accent)',
+                      opacity: 0.7,
+                      letterSpacing: '0.05em',
+                      flexShrink: 0,
+                    }}>
+                      {String(currentIdx + 1).padStart(2, '0')}
+                    </span>
+                    <span style={{
+                      fontFamily: "'JetBrains Mono', monospace",
+                      fontSize: 8,
+                      color: 'var(--fg-3)',
+                      letterSpacing: '0.15em',
+                      textTransform: 'uppercase',
+                    }}>
+                      {currentExercise.exercise?.muscle_group
+                        ? MUSCLE_GROUP_LABELS[currentExercise.exercise.muscle_group]
+                        : ''}
+                      {' · '}
+                      {currentExercise.sets} × {currentExercise.reps}
+                      {currentExercise.rest_seconds > 0 && ` · ${currentExercise.rest_seconds}s`}
+                    </span>
                   </div>
                   <div style={{
-                    fontFamily: "'Syne', sans-serif",
+                    fontFamily: "'Outfit', sans-serif",
                     fontWeight: 800,
                     fontSize: 18,
                     color: 'var(--fg)',
@@ -499,7 +547,7 @@ export function WorkoutSessionPage() {
                       }}
                     >
                       <div style={{
-                        fontFamily: "'DM Mono', monospace",
+                        fontFamily: "'JetBrains Mono', monospace",
                         fontSize: 9,
                         color: 'var(--fg-3)',
                         letterSpacing: '0.1em',
@@ -529,7 +577,7 @@ export function WorkoutSessionPage() {
                             {/* Notas da ficha */}
                             {currentExercise.notes && (
                               <div style={{
-                                fontFamily: "'DM Mono', monospace",
+                                fontFamily: "'JetBrains Mono', monospace",
                                 fontSize: 11,
                                 color: 'var(--fg-2)',
                                 fontStyle: 'italic',
@@ -542,7 +590,7 @@ export function WorkoutSessionPage() {
                             {/* Descrição do exercício */}
                             {!currentExercise.notes && currentExercise.exercise?.description && (
                               <div style={{
-                                fontFamily: "'DM Mono', monospace",
+                                fontFamily: "'JetBrains Mono', monospace",
                                 fontSize: 11,
                                 color: 'var(--fg-2)',
                                 fontStyle: 'italic',
@@ -562,7 +610,7 @@ export function WorkoutSessionPage() {
                                   display: 'inline-flex',
                                   alignItems: 'center',
                                   gap: 5,
-                                  fontFamily: "'DM Mono', monospace",
+                                  fontFamily: "'JetBrains Mono', monospace",
                                   fontSize: 9,
                                   color: 'var(--accent)',
                                   letterSpacing: '0.08em',
@@ -582,10 +630,26 @@ export function WorkoutSessionPage() {
 
                 {/* Lista de séries */}
                 <div style={{ padding: '8px 16px 12px' }}>
+                  {/* Indicador de histórico disponível */}
+                  {currentExercise.exercise?.id && lastSetData[currentExercise.exercise.id] && (
+                    <div style={{
+                      fontFamily: "'JetBrains Mono', monospace",
+                      fontSize: 8,
+                      color: 'var(--accent)',
+                      opacity: 0.6,
+                      letterSpacing: '0.12em',
+                      textTransform: 'uppercase',
+                      marginBottom: 6,
+                    }}>
+                      ↺ pré-preenchido com a última sessão
+                    </div>
+                  )}
                   {Array.from({ length: currentExercise.sets }).map((_, i) => {
                     const setNum = i + 1
                     const doneCount = setsCompleted[currentExercise.id] ?? 0
                     const isCompleted = setNum <= doneCount
+                    const exLibId = currentExercise.exercise?.id
+                    const lastSet = exLibId ? lastSetData[exLibId]?.[setNum] : undefined
 
                     return (
                       <ExerciseSetRow
@@ -593,6 +657,8 @@ export function WorkoutSessionPage() {
                         setNumber={setNum}
                         suggestedReps={currentExercise.reps}
                         suggestedLoad={currentExercise.suggested_load ?? null}
+                        lastReps={lastSet?.reps}
+                        lastLoad={lastSet?.loadKg}
                         isCompleted={isCompleted}
                         onComplete={(reps, loadKg) =>
                           handleSetComplete(currentExercise, setNum, reps, loadKg)
@@ -609,7 +675,7 @@ export function WorkoutSessionPage() {
           {exercises.length > 1 && (
             <>
               <div style={{
-                fontFamily: "'DM Mono', monospace",
+                fontFamily: "'JetBrains Mono', monospace",
                 fontSize: 9,
                 color: 'var(--fg-3)',
                 letterSpacing: '0.15em',
@@ -641,6 +707,7 @@ export function WorkoutSessionPage() {
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'space-between',
+                        gap: 10,
                         background: done ? 'var(--success-muted)' : 'var(--surface)',
                         border: `1px solid ${done ? 'rgba(74,222,128,0.2)' : 'var(--border)'}`,
                         borderRadius: 8,
@@ -650,9 +717,23 @@ export function WorkoutSessionPage() {
                         width: '100%',
                       }}
                     >
-                      <div style={{ minWidth: 0 }}>
+                      {/* Número de ordem */}
+                      <div style={{
+                        fontFamily: "'JetBrains Mono', monospace",
+                        fontSize: 11,
+                        fontWeight: 700,
+                        color: done ? 'var(--success)' : 'var(--fg-3)',
+                        opacity: done ? 0.7 : 0.4,
+                        letterSpacing: '0.05em',
+                        flexShrink: 0,
+                        minWidth: 20,
+                      }}>
+                        {String(idx + 1).padStart(2, '0')}
+                      </div>
+
+                      <div style={{ minWidth: 0, flex: 1 }}>
                         <div style={{
-                          fontFamily: "'Syne', sans-serif",
+                          fontFamily: "'Outfit', sans-serif",
                           fontWeight: 800,
                           fontSize: 12,
                           color: done ? 'var(--success)' : 'var(--fg-2)',
@@ -665,7 +746,7 @@ export function WorkoutSessionPage() {
                           {ex.exercise?.name ?? '—'}
                         </div>
                         <div style={{
-                          fontFamily: "'DM Mono', monospace",
+                          fontFamily: "'JetBrains Mono', monospace",
                           fontSize: 9,
                           color: 'var(--fg-3)',
                           letterSpacing: '0.06em',
@@ -687,7 +768,7 @@ export function WorkoutSessionPage() {
                         }}>
                           <Check size={12} color="var(--success)" strokeWidth={3} />
                           <span style={{
-                            fontFamily: "'DM Mono', monospace",
+                            fontFamily: "'JetBrains Mono', monospace",
                             fontSize: 8,
                             color: 'var(--success)',
                             letterSpacing: '0.1em',
@@ -711,7 +792,7 @@ export function WorkoutSessionPage() {
               style={{
                 background: 'transparent',
                 border: 'none',
-                fontFamily: "'DM Mono', monospace",
+                fontFamily: "'JetBrains Mono', monospace",
                 fontSize: 9,
                 color: 'var(--fg-3)',
                 letterSpacing: '0.15em',
@@ -749,7 +830,7 @@ export function WorkoutSessionPage() {
               style={{
                 position: 'fixed',
                 inset: 0,
-                background: 'rgba(5,5,10,0.85)',
+                background: 'rgba(6, 7, 26,0.85)',
                 backdropFilter: 'blur(8px)',
                 zIndex: 50,
               }}
@@ -784,7 +865,7 @@ export function WorkoutSessionPage() {
               }} />
 
               <div style={{
-                fontFamily: "'DM Mono', monospace",
+                fontFamily: "'JetBrains Mono', monospace",
                 fontSize: 9,
                 color: 'var(--fg-3)',
                 letterSpacing: '0.15em',
@@ -794,7 +875,7 @@ export function WorkoutSessionPage() {
                 // sair do treino
               </div>
               <div style={{
-                fontFamily: "'Syne', sans-serif",
+                fontFamily: "'Outfit', sans-serif",
                 fontWeight: 800,
                 fontSize: 18,
                 color: 'var(--fg)',
@@ -804,7 +885,7 @@ export function WorkoutSessionPage() {
                 Tem certeza?
               </div>
               <div style={{
-                fontFamily: "'DM Mono', monospace",
+                fontFamily: "'JetBrains Mono', monospace",
                 fontSize: 11,
                 color: 'var(--fg-3)',
                 lineHeight: 1.6,
@@ -826,7 +907,7 @@ export function WorkoutSessionPage() {
                     border: '1px solid var(--accent-glow)',
                     borderRadius: 8,
                     padding: '13px',
-                    fontFamily: "'Syne', sans-serif",
+                    fontFamily: "'Outfit', sans-serif",
                     fontWeight: 800,
                     fontSize: 12,
                     color: 'var(--accent)',
@@ -848,7 +929,7 @@ export function WorkoutSessionPage() {
                     border: '1px solid rgba(248,113,113,0.2)',
                     borderRadius: 8,
                     padding: '13px',
-                    fontFamily: "'Syne', sans-serif",
+                    fontFamily: "'Outfit', sans-serif",
                     fontWeight: 800,
                     fontSize: 12,
                     color: 'var(--danger)',
@@ -870,7 +951,7 @@ export function WorkoutSessionPage() {
                     border: '1px solid var(--border)',
                     borderRadius: 8,
                     padding: '11px',
-                    fontFamily: "'DM Mono', monospace",
+                    fontFamily: "'JetBrains Mono', monospace",
                     fontSize: 10,
                     color: 'var(--fg-3)',
                     letterSpacing: '0.1em',

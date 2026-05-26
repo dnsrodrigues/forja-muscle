@@ -1,10 +1,12 @@
-import { useState } from 'react'
+﻿import { useState } from 'react'
 import { Check } from 'lucide-react'
 
 interface ExerciseSetRowProps {
   setNumber: number
   suggestedReps: string       // ex: "8-12" ou "12" — vem da ficha
   suggestedLoad: number | null
+  lastReps?: number           // valor real da última sessão (tem prioridade)
+  lastLoad?: number | null    // carga real da última sessão (tem prioridade)
   isCompleted: boolean
   onComplete: (reps: number, loadKg: number | null) => void
 }
@@ -13,16 +15,22 @@ export function ExerciseSetRow({
   setNumber,
   suggestedReps,
   suggestedLoad,
+  lastReps,
+  lastLoad,
   isCompleted,
   onComplete,
 }: ExerciseSetRowProps) {
-  // Pré-preenche com valores sugeridos da ficha
-  const defaultReps = suggestedReps.includes('-')
-    ? suggestedReps.split('-')[1]   // pega o máximo do range "8-12" → "12"
-    : suggestedReps
+  // Prioridade: histórico real > valor sugerido da ficha
+  const defaultReps = lastReps != null
+    ? String(lastReps)
+    : (suggestedReps.includes('-') ? suggestedReps.split('-')[1] : suggestedReps)
+
+  const defaultLoad = lastLoad != null
+    ? String(lastLoad)
+    : (suggestedLoad != null ? String(suggestedLoad) : '')
 
   const [reps, setReps] = useState(defaultReps)
-  const [load, setLoad] = useState(suggestedLoad != null ? String(suggestedLoad) : '')
+  const [load, setLoad] = useState(defaultLoad)
 
   function handleComplete() {
     const repsNum = parseInt(reps, 10)
@@ -45,7 +53,7 @@ export function ExerciseSetRow({
     >
       {/* Número da série */}
       <div style={{
-        fontFamily: "'DM Mono', monospace",
+        fontFamily: "'JetBrains Mono', monospace",
         fontSize: 9,
         color: isCompleted ? 'var(--accent)' : 'var(--fg-3)',
         letterSpacing: '0.1em',
@@ -59,7 +67,7 @@ export function ExerciseSetRow({
       {/* Input reps */}
       <div style={{ flex: 1 }}>
         <div style={{
-          fontFamily: "'DM Mono', monospace",
+          fontFamily: "'JetBrains Mono', monospace",
           fontSize: 8,
           color: 'var(--fg-3)',
           letterSpacing: '0.1em',
@@ -81,7 +89,7 @@ export function ExerciseSetRow({
             border: `1px solid ${isCompleted ? 'var(--accent-glow)' : 'var(--border-md)'}`,
             borderRadius: 4,
             padding: '7px 10px',
-            fontFamily: "'DM Mono', monospace",
+            fontFamily: "'JetBrains Mono', monospace",
             fontSize: 14,
             fontWeight: 700,
             color: isCompleted ? 'var(--accent)' : 'var(--fg)',
@@ -101,7 +109,7 @@ export function ExerciseSetRow({
       {/* Input carga */}
       <div style={{ flex: 1 }}>
         <div style={{
-          fontFamily: "'DM Mono', monospace",
+          fontFamily: "'JetBrains Mono', monospace",
           fontSize: 8,
           color: 'var(--fg-3)',
           letterSpacing: '0.1em',
@@ -124,7 +132,7 @@ export function ExerciseSetRow({
             border: `1px solid ${isCompleted ? 'var(--accent-glow)' : 'var(--border-md)'}`,
             borderRadius: 4,
             padding: '7px 10px',
-            fontFamily: "'DM Mono', monospace",
+            fontFamily: "'JetBrains Mono', monospace",
             fontSize: 14,
             fontWeight: 700,
             color: isCompleted ? 'var(--accent)' : 'var(--fg)',
@@ -178,7 +186,7 @@ export function ExerciseSetRow({
           onMouseUp={(e) => (e.currentTarget.style.transform = 'scale(1)')}
           title="Marcar série como feita"
         >
-          <Check size={16} color="#05050a" strokeWidth={3} />
+          <Check size={16} color="var(--bg)" strokeWidth={3} />
         </button>
       )}
     </div>

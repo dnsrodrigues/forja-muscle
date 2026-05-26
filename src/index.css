@@ -1,32 +1,49 @@
 @import "tailwindcss";
 
 /* ══════════════════════════════════════════════════════════════════
-   Design System v2 "Nova" — Syne + DM Mono
-   Paleta: Lime #c8f04a × Dark #05050a
-   Implementado em 25/05/2026
+   Design System v3 "Aurora" — Outfit + JetBrains Mono
+   Inspirado em: glassmorphism cosmic com blobs radiais
+   Paleta: Cosmic Blue #6c8ef7 × Deep Navy #06071a × Purple #c44fe0
+   Implementado em 26/05/2026
 ══════════════════════════════════════════════════════════════════ */
 
-@theme {
-  --font-sans: 'DM Mono', ui-monospace, monospace;
-  --font-mono: 'DM Mono', ui-monospace, monospace;
+/* ── Propriedade CSS animável para borda giratória ─────────── */
+@property --glow-r {
+  syntax: "<angle>";
+  inherits: true;
+  initial-value: 0deg;
 }
 
-/* ── Tokens Nova ──────────────────────────────────────────────── */
+@theme {
+  --font-sans: 'Outfit', ui-sans-serif, system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+}
+
+/* ── Tokens Aurora ──────────────────────────────────────────── */
 :root {
-  --bg:            #05050a;
-  --surface:       #0e0e16;
-  --surface-2:     #15151f;
-  --surface-3:     #1c1c28;
+  --bg:            #06071a;
+  --surface:       #0c0e28;
+  --surface-2:     #111336;
+  --surface-3:     #171a40;
 
-  --border:        rgba(240, 237, 230, 0.08);
-  --border-md:     rgba(240, 237, 230, 0.14);
-  --border-strong: rgba(240, 237, 230, 0.22);
+  --border:        rgba(255, 255, 255, 0.07);
+  --border-md:     rgba(255, 255, 255, 0.13);
+  --border-strong: rgba(255, 255, 255, 0.24);
 
-  --accent:        #c8f04a;
-  --accent-dark:   #b5d93e;
-  --accent-light:  #d4f464;
-  --accent-glow:   rgba(200, 240, 74, 0.2);
-  --accent-muted:  rgba(200, 240, 74, 0.1);
+  /* Primário: azul electric */
+  --accent:        #6c8ef7;
+  --accent-dark:   #5577e8;
+  --accent-light:  #8ba8fb;
+  --accent-glow:   rgba(108, 142, 247, 0.28);
+  --accent-muted:  rgba(108, 142, 247, 0.13);
+
+  /* Secundário: roxo */
+  --accent-2:       #c44fe0;
+  --accent-2-glow:  rgba(196, 79, 224, 0.22);
+  --accent-2-muted: rgba(196, 79, 224, 0.1);
+
+  /* Terciário: magenta/pink */
+  --accent-3:      #f260c7;
 
   --success:       #4ade80;
   --success-muted: rgba(74, 222, 128, 0.1);
@@ -34,19 +51,63 @@
   --danger-muted:  rgba(248, 113, 113, 0.1);
   --warning:       #fbbf24;
 
-  --fg:            #f0ede6;
-  --fg-2:          rgba(240, 237, 230, 0.45);
-  --fg-3:          rgba(240, 237, 230, 0.2);
+  /* Texto */
+  --fg:            #eeedf8;
+  --fg-2:          rgba(238, 237, 248, 0.55);
+  --fg-3:          rgba(238, 237, 248, 0.28);
 
-  /* ── Aliases v3 → v2 (compatibilidade com código existente) ── */
+  /* Aliases de compatibilidade com código existente */
   --bg-soft:       var(--surface);
   --bg-hover:      var(--surface-2);
   --ink:           var(--fg);
   --muted:         var(--fg-2);
   --faint:         var(--fg-3);
   --line:          var(--border);
-  --glass:         rgba(240, 237, 230, 0.04);
-  --glass-strong:  rgba(240, 237, 230, 0.07);
+  --glass:         rgba(255, 255, 255, 0.04);
+  --glass-strong:  rgba(255, 255, 255, 0.08);
+  --accent-two:    var(--accent-light);
+  --accent-three:  var(--accent-dark);
+}
+
+/* ── Modo Claro ─────────────────────────────────────────────── */
+[data-theme="light"] {
+  --bg:            #f0f1ff;
+  --surface:       #e6e8ff;
+  --surface-2:     #dadcff;
+  --surface-3:     #ced0f5;
+
+  --border:        rgba(10, 12, 60, 0.09);
+  --border-md:     rgba(10, 12, 60, 0.16);
+  --border-strong: rgba(10, 12, 60, 0.28);
+
+  --accent:        #3d5ee8;
+  --accent-dark:   #2d4dd4;
+  --accent-light:  #5272f0;
+  --accent-glow:   rgba(61, 94, 232, 0.2);
+  --accent-muted:  rgba(61, 94, 232, 0.1);
+
+  --accent-2:       #9a2ec4;
+  --accent-2-glow:  rgba(154, 46, 196, 0.18);
+  --accent-2-muted: rgba(154, 46, 196, 0.08);
+
+  --success:       #16a34a;
+  --success-muted: rgba(22, 163, 74, 0.1);
+  --danger:        #dc2626;
+  --danger-muted:  rgba(220, 38, 38, 0.08);
+  --warning:       #d97706;
+
+  --fg:            #0e0f2e;
+  --fg-2:          rgba(14, 15, 46, 0.55);
+  --fg-3:          rgba(14, 15, 46, 0.3);
+
+  --bg-soft:       var(--surface);
+  --bg-hover:      var(--surface-2);
+  --ink:           var(--fg);
+  --muted:         var(--fg-2);
+  --faint:         var(--fg-3);
+  --line:          var(--border);
+  --glass:         rgba(10, 12, 60, 0.04);
+  --glass-strong:  rgba(10, 12, 60, 0.07);
   --accent-two:    var(--accent-light);
   --accent-three:  var(--accent-dark);
 }
@@ -65,126 +126,115 @@ html, body, #root {
 body {
   background: var(--bg);
   color: var(--fg);
-  font-family: 'DM Mono', ui-monospace, monospace;
-  font-weight: 300;
-  font-size: 13px;
-  line-height: 1.7;
+  font-family: 'Outfit', ui-sans-serif, system-ui, sans-serif;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 1.6;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   overflow-x: hidden;
 }
 
-/* ── Textura de ruído ──────────────────────────────────────── */
+/* ── Blobs radiais de fundo (inspirado no projeto de referência) */
 body::before {
   content: '';
   position: fixed;
   inset: 0;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
-  opacity: 0.35;
+  background-image:
+    radial-gradient(circle closest-side at 15% 85%,
+      rgba(99, 166, 252, 0.16) 0%,
+      rgba(99, 166, 252, 0)    60%),
+    radial-gradient(circle closest-side at 85% 15%,
+      rgba(196, 79, 224, 0.16) 0%,
+      rgba(196, 79, 224, 0)    60%);
   pointer-events: none;
   z-index: 0;
 }
 
-/* ── Orb lime ──────────────────────────────────────────────── */
+/* ── Grain overlay sutil ────────────────────────────────────── */
 body::after {
   content: '';
   position: fixed;
-  width: 800px;
-  height: 800px;
-  border-radius: 50%;
-  background: radial-gradient(circle at center, var(--orb-color, rgba(200, 240, 74, 0.1)) 0%, transparent 70%);
-  top: -300px;
-  right: -200px;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+  opacity: 0.2;
   pointer-events: none;
   z-index: 0;
-  animation: orbPulse 10s ease-in-out infinite;
 }
 
-@keyframes orbPulse {
-  0%, 100% { transform: scale(1);    opacity: 0.6; }
-  50%       { transform: scale(1.15); opacity: 1;   }
-}
-
-/* ── Modo Claro ────────────────────────────────────────────── */
-[data-theme="light"] {
-  --bg:            #f5f4ee;
-  --surface:       #eceae2;
-  --surface-2:     #e2e0d6;
-  --surface-3:     #d8d5ca;
-
-  --border:        rgba(10, 10, 18, 0.08);
-  --border-md:     rgba(10, 10, 18, 0.14);
-  --border-strong: rgba(10, 10, 18, 0.24);
-
-  --accent:        #5a9400;
-  --accent-dark:   #4a7a00;
-  --accent-light:  #6aab00;
-  --accent-glow:   rgba(90, 148, 0, 0.18);
-  --accent-muted:  rgba(90, 148, 0, 0.08);
-
-  --success:       #22863a;
-  --success-muted: rgba(34, 134, 58, 0.1);
-  --danger:        #d73a49;
-  --danger-muted:  rgba(215, 58, 73, 0.1);
-  --warning:       #b08800;
-
-  --fg:            #0a0a12;
-  --fg-2:          rgba(10, 10, 18, 0.55);
-  --fg-3:          rgba(10, 10, 18, 0.3);
-
-  --orb-color:     rgba(90, 148, 0, 0.07);
-
-  /* aliases v3 */
-  --bg-soft:       var(--surface);
-  --bg-hover:      var(--surface-2);
-  --ink:           var(--fg);
-  --muted:         var(--fg-2);
-  --faint:         var(--fg-3);
-  --line:          var(--border);
-  --glass:         rgba(10, 10, 18, 0.04);
-  --glass-strong:  rgba(10, 10, 18, 0.07);
-  --accent-two:    var(--accent-light);
-  --accent-three:  var(--accent-dark);
-}
-
-/* ── Conteúdo sobre os overlays ────────────────────────────── */
+/* ── Conteúdo acima dos overlays ────────────────────────────── */
 #root {
   position: relative;
   z-index: 1;
 }
 
-/* ── Fonte display (Syne) ───────────────────────────────────── */
-.font-display {
-  font-family: 'Syne', sans-serif;
-}
-
-/* ── Classes utilitárias de tema ────────────────────────────── */
-.theme-bg            { background: var(--bg); }
-.theme-surface       { background: var(--surface); }
-.theme-text          { color: var(--fg); }
-.theme-text-muted    { color: var(--fg-2); }
-.theme-text-faint    { color: var(--fg-3); }
-.theme-text-accent   { color: var(--accent); }
-.theme-text-accent2  { color: var(--accent-light); }
-.theme-border        { border-color: var(--border); }
-.theme-glass         { background: rgba(240, 237, 230, 0.04); }
-.theme-glass-strong  { background: rgba(240, 237, 230, 0.08); }
-.theme-accent        { background: var(--accent); }
-
-/* ── Card Nova ──────────────────────────────────────────────── */
+/* ── Card base ──────────────────────────────────────────────── */
 .glass-card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  transition: border-color 200ms ease;
+  background: rgba(255, 255, 255, 0.04);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  transition: border-color 200ms ease, background 200ms ease;
 }
 
 .glass-card:hover {
-  border-color: var(--border-md);
+  background: rgba(255, 255, 255, 0.07);
+  border-color: rgba(255, 255, 255, 0.18);
 }
 
 /* ── Card com destaque lateral ──────────────────────────────── */
 .card-accent {
   border-left: 2px solid var(--accent) !important;
+}
+
+/* ── Borda animada conic-gradient (referência direta) ───────── */
+.glow-border {
+  position: relative;
+  isolation: isolate;
+}
+
+.glow-border::before {
+  content: "";
+  z-index: -1;
+  border-radius: inherit;
+  border: 2px solid transparent;
+  position: absolute;
+  inset: 0;
+  background-clip: padding-box, border-box;
+  background-image:
+    linear-gradient(var(--surface) 0px, var(--surface) 0px),
+    conic-gradient(
+      from var(--glow-r, 0deg),
+      var(--accent),
+      var(--bg),
+      var(--accent-2),
+      var(--bg),
+      var(--accent)
+    );
+  background-origin: padding-box, border-box;
+  mix-blend-mode: screen;
+  animation: glowSpin 8s infinite linear;
+  opacity: 0.75;
+  filter: blur(0.5px);
+}
+
+@keyframes glowSpin {
+  100% { --glow-r: 360deg; }
+}
+
+/* ── Gradiente de texto ─────────────────────────────────────── */
+.gradient-text {
+  background-image: linear-gradient(160deg, var(--accent-light) 0%, #fff 60%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+}
+
+/* ── Deep shadow card (estilo do .cta da referência) ────────── */
+.deep-card {
+  box-shadow:
+    0 0 3rem 1rem rgba(0, 0, 0, 0.5),
+    inset 0 0 1px 0 rgba(255, 255, 255, 0.2);
 }
 
 /* ── Skeleton shimmer ───────────────────────────────────────── */
@@ -203,3 +253,27 @@ body::after {
   background-size: 800px 100%;
   animation: shimmer 1.6s infinite;
 }
+
+/* ── Fonte display ───────────────────────────────────────────── */
+.font-display {
+  font-family: 'Outfit', sans-serif;
+}
+
+/* ── Classes utilitárias de tema ─────────────────────────────── */
+.theme-bg            { background: var(--bg); }
+.theme-surface       { background: var(--surface); }
+.theme-text          { color: var(--fg); }
+.theme-text-muted    { color: var(--fg-2); }
+.theme-text-faint    { color: var(--fg-3); }
+.theme-text-accent   { color: var(--accent); }
+.theme-text-accent2  { color: var(--accent-2); }
+.theme-border        { border-color: var(--border); }
+.theme-glass         { background: rgba(255, 255, 255, 0.04); }
+.theme-glass-strong  { background: rgba(255, 255, 255, 0.08); }
+.theme-accent        { background: var(--accent); }
+
+/* ── Scrollbar discreta ─────────────────────────────────────── */
+::-webkit-scrollbar        { width: 4px; }
+::-webkit-scrollbar-track  { background: transparent; }
+::-webkit-scrollbar-thumb  { background: var(--border-md); border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: var(--border-strong); }

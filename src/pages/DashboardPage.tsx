@@ -1,10 +1,9 @@
 import { useState, useEffect } from 'react'
-import { LogOut, ChevronRight } from 'lucide-react'
+import { LogOut, ChevronRight, Dumbbell, BarChart2, Scale, User, Star } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { motion } from 'motion/react'
 import { useAuth } from '../context/AuthContext'
 import { Avatar } from '../components/ui/Avatar'
-import { Button } from '../components/ui/Button'
 import { ThemeSwitcher } from '../components/ui/ThemeSwitcher'
 import { getWorkoutHistory } from '../services/history.service'
 import { getUserWeights } from '../services/measurements.service'
@@ -14,9 +13,118 @@ const DIFFICULTY_EMOJI: Record<string, string> = {
   easy: '😊', medium: '💪', hard: '🔥', terrible: '💀',
 }
 
+// ─── Saudação por horário ──────────────────────────────────────────────────────
+function getGreeting(): string {
+  const h = new Date().getHours()
+  if (h < 12) return 'Bom dia'
+  if (h < 18) return 'Boa tarde'
+  return 'Boa noite'
+}
+
+// ─── Card de navegação ─────────────────────────────────────────────────────────
+interface NavCardProps {
+  to: string
+  icon: React.ReactNode
+  iconBg: string
+  title: string
+  subtitle: string
+  accentColor?: string
+  delay?: number
+}
+
+function NavCard({ to, icon, iconBg, title, subtitle, accentColor = 'rgba(108,142,247,0.3)', delay = 0 }: NavCardProps) {
+  const [hovered, setHovered] = useState(false)
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 16 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5, delay, ease: [0.22, 1, 0.36, 1] }}
+    >
+      <Link
+        to={to}
+        style={{ textDecoration: 'none', display: 'block' }}
+        onMouseEnter={() => setHovered(true)}
+        onMouseLeave={() => setHovered(false)}
+      >
+        <div style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: 14,
+          padding: '16px 18px',
+          background: hovered ? 'rgba(255,255,255,0.08)' : 'rgba(255,255,255,0.05)',
+          backdropFilter: 'blur(20px)',
+          WebkitBackdropFilter: 'blur(20px)',
+          borderRadius: 20,
+          border: hovered
+            ? `1px solid ${accentColor}`
+            : '1px solid rgba(255,255,255,0.1)',
+          boxShadow: hovered
+            ? `0 8px 32px rgba(0,0,0,0.3), 0 0 0 1px ${accentColor}`
+            : '0 8px 32px rgba(0,0,0,0.3)',
+          transition: 'background 0.2s, border-color 0.2s, box-shadow 0.2s',
+          cursor: 'pointer',
+        }}>
+          {/* Ícone */}
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: 44,
+            height: 44,
+            borderRadius: 12,
+            background: iconBg,
+            flexShrink: 0,
+            transition: 'transform 0.2s',
+            transform: hovered ? 'scale(1.08)' : 'scale(1)',
+          }}>
+            {icon}
+          </div>
+
+          {/* Texto */}
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <div style={{
+              fontFamily: "'Outfit', sans-serif",
+              fontSize: 15,
+              fontWeight: 700,
+              color: 'var(--fg)',
+              letterSpacing: '-0.01em',
+              lineHeight: 1.2,
+            }}>
+              {title}
+            </div>
+            <div style={{
+              fontFamily: "'JetBrains Mono', monospace",
+              fontSize: 10,
+              color: 'var(--fg-3)',
+              letterSpacing: '0.04em',
+              fontStyle: 'italic',
+              marginTop: 3,
+            }}>
+              {subtitle}
+            </div>
+          </div>
+
+          <ChevronRight
+            size={16}
+            style={{
+              color: hovered ? 'var(--accent-light)' : 'var(--fg-3)',
+              transition: 'color 0.2s, transform 0.2s',
+              transform: hovered ? 'translateX(3px)' : 'translateX(0)',
+              flexShrink: 0,
+            }}
+          />
+        </div>
+      </Link>
+    </motion.div>
+  )
+}
+
+// ─── Página Principal ──────────────────────────────────────────────────────────
 export function DashboardPage() {
   const { profile, isAdmin, signOut } = useAuth()
   const [lastSession, setLastSession] = useState<WorkoutLog | null | undefined>(undefined)
+  const [workoutCount, setWorkoutCount] = useState<number | null>(null)
   const [lastWeight, setLastWeight] = useState<UserWeight | null | undefined>(undefined)
 
   const nameParts = (profile?.full_name ?? 'Atleta').split(' ')
@@ -26,8 +134,11 @@ export function DashboardPage() {
   useEffect(() => {
     if (!profile?.id || isAdmin) return
     getWorkoutHistory(profile.id)
-      .then((data) => setLastSession(data[0] ?? null))
-      .catch(() => setLastSession(null))
+      .then((data) => {
+        setLastSession(data[0] ?? null)
+        setWorkoutCount(data.length)
+      })
+      .catch(() => { setLastSession(null); setWorkoutCount(0) })
     getUserWeights(profile.id)
       .then((data) => setLastWeight(data[0] ?? null))
       .catch(() => setLastWeight(null))
@@ -44,42 +155,39 @@ export function DashboardPage() {
   }
 
   return (
-    <div className="min-h-screen" style={{ background: 'var(--bg)' }}>
+    <div style={{ minHeight: '100vh', background: 'var(--bg)' }}>
 
-      {/* Grid lines decorativo */}
-      <div
-        className="fixed inset-0 pointer-events-none z-0"
-        style={{ display: 'grid', gridTemplateColumns: 'repeat(12, 1fr)' }}
-      >
-        {Array.from({ length: 12 }).map((_, i) => (
-          <span key={i} style={{ borderRight: '1px solid var(--border)' }} />
-        ))}
-      </div>
-
-      {/* ── Header ──────────────────────────────────── */}
+      {/* ── Header ──────────────────────────────────────── */}
       <header
-        className="sticky top-0 z-20"
         style={{
-          padding: '14px 16px',
-          background: 'rgba(5,5,10,0.7)',
-          borderBottom: '1px solid var(--border)',
-          backdropFilter: 'blur(12px)',
+          position: 'sticky',
+          top: 0,
+          zIndex: 20,
+          padding: '12px 20px',
+          background: 'rgba(6,7,26,0.85)',
+          backdropFilter: 'blur(24px)',
+          WebkitBackdropFilter: 'blur(24px)',
+          borderBottom: '1px solid rgba(108,142,247,0.15)',
         }}
       >
-        <div className="max-w-2xl mx-auto flex items-center justify-between">
+        <div style={{ maxWidth: 640, margin: '0 auto', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          {/* Logo */}
           <div>
             <div style={{
-              fontFamily: "'Syne', sans-serif",
-              fontSize: 12,
+              fontFamily: "'Outfit', sans-serif",
+              fontSize: 13,
               fontWeight: 800,
-              letterSpacing: '0.22em',
+              letterSpacing: '0.2em',
               textTransform: 'uppercase',
-              color: 'var(--accent)',
+              backgroundImage: 'linear-gradient(160deg, #8ba8fb 0%, #ffffff 60%)',
+              backgroundClip: 'text',
+              WebkitBackgroundClip: 'text',
+              color: 'transparent',
             }}>
               MUSCLE TRAINING
             </div>
             <div style={{
-              fontFamily: "'DM Mono', monospace",
+              fontFamily: "'JetBrains Mono', monospace",
               fontSize: 9,
               fontStyle: 'italic',
               color: 'var(--fg-3)',
@@ -90,17 +198,41 @@ export function DashboardPage() {
             </div>
           </div>
 
-          <div className="flex items-center gap-2">
+          {/* Ações */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
             <ThemeSwitcher />
-            <Button
-              variant="ghost"
-              size="sm"
+
+            <button
               onClick={handleLogout}
-              style={{ fontSize: 10, padding: '0 10px', height: 28 }}
+              title="Sair"
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 5,
+                padding: '6px 12px',
+                background: 'rgba(255,255,255,0.06)',
+                border: '1px solid rgba(255,255,255,0.1)',
+                borderRadius: 10,
+                color: 'var(--fg-2)',
+                fontFamily: "'Outfit', sans-serif",
+                fontSize: 12,
+                fontWeight: 600,
+                cursor: 'pointer',
+                transition: 'background 0.2s, color 0.2s',
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.background = 'rgba(248,113,113,0.1)'
+                e.currentTarget.style.color = 'var(--danger)'
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.background = 'rgba(255,255,255,0.06)'
+                e.currentTarget.style.color = 'var(--fg-2)'
+              }}
             >
-              <LogOut size={12} />
+              <LogOut size={13} />
               Sair
-            </Button>
+            </button>
+
             {profile?.full_name && (
               <Avatar name={profile.full_name} size="sm" />
             )}
@@ -108,73 +240,108 @@ export function DashboardPage() {
         </div>
       </header>
 
-      {/* ── Conteúdo ─────────────────────────────────── */}
-      <main className="max-w-2xl mx-auto px-4 py-6 relative z-10">
+      {/* ── Conteúdo ─────────────────────────────────────── */}
+      <main style={{ maxWidth: 640, margin: '0 auto', padding: '24px 16px', position: 'relative', zIndex: 1 }}>
 
-        {/* Hero */}
+        {/* ── Hero / Saudação ───────────────────────────── */}
         <motion.div
-          initial={{ opacity: 0, y: 16 }}
+          initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+          transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
           style={{
-            background: 'var(--surface)',
-            border: '1px solid var(--border)',
-            borderLeft: '2px solid var(--accent)',
-            padding: '16px',
-            marginBottom: 2,
             position: 'relative',
+            background: 'rgba(255,255,255,0.05)',
+            backdropFilter: 'blur(20px)',
+            WebkitBackdropFilter: 'blur(20px)',
+            borderRadius: 20,
+            border: '1px solid rgba(255,255,255,0.1)',
+            boxShadow: '0 8px 32px rgba(0,0,0,0.3)',
+            padding: '24px 22px',
+            marginBottom: 12,
             overflow: 'hidden',
           }}
         >
-          {/* Hatch pattern */}
+          {/* Hatch decorativo */}
           <div style={{
             position: 'absolute', inset: 0,
-            backgroundImage: 'repeating-linear-gradient(-45deg, transparent, transparent 16px, rgba(200,240,74,0.025) 16px, rgba(200,240,74,0.025) 17px)',
+            backgroundImage: 'repeating-linear-gradient(-45deg, transparent, transparent 18px, rgba(108,142,247,0.02) 18px, rgba(108,142,247,0.02) 19px)',
+            pointerEvents: 'none',
+            borderRadius: 20,
+          }} />
+
+          {/* Blob de destaque no canto */}
+          <div style={{
+            position: 'absolute',
+            top: -40, right: -40,
+            width: 160, height: 160,
+            borderRadius: '50%',
+            background: 'radial-gradient(circle, rgba(196,79,224,0.12) 0%, transparent 70%)',
             pointerEvents: 'none',
           }} />
 
-          <div className="relative flex items-start justify-between gap-3">
+          <div style={{ position: 'relative', display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 12 }}>
             <div>
+              {/* Saudação */}
               <div style={{
-                fontFamily: "'DM Mono', monospace",
-                fontSize: 9,
-                letterSpacing: '0.2em',
+                fontFamily: "'JetBrains Mono', monospace",
+                fontSize: 10,
+                letterSpacing: '0.18em',
                 textTransform: 'uppercase',
                 color: 'var(--accent)',
-                marginBottom: 4,
+                marginBottom: 6,
               }}>
-                // bom dia
+                // {getGreeting()}
               </div>
-              <div style={{
-                fontFamily: "'Syne', sans-serif",
-                fontSize: 26,
+
+              {/* Nome com gradient */}
+              <h1 style={{
+                fontFamily: "'Outfit', sans-serif",
+                fontSize: 30,
                 fontWeight: 800,
-                letterSpacing: '-0.01em',
-                color: 'var(--fg)',
+                letterSpacing: '-0.02em',
                 lineHeight: 1,
+                margin: '0 0 12px',
               }}>
-                {firstName}{' '}
+                <span style={{
+                  backgroundImage: 'linear-gradient(160deg, #8ba8fb 0%, #ffffff 60%)',
+                  backgroundClip: 'text',
+                  WebkitBackgroundClip: 'text',
+                  color: 'transparent',
+                }}>
+                  {firstName}
+                </span>
                 {lastName && (
-                  <em style={{ fontStyle: 'italic', color: 'var(--accent)' }}>
-                    {lastName}
-                  </em>
+                  <span style={{ color: 'var(--fg-2)', fontStyle: 'italic' }}> {lastName}</span>
                 )}
-              </div>
+              </h1>
+
+              {/* Badge role */}
               <div style={{
                 display: 'inline-flex',
                 alignItems: 'center',
-                gap: 5,
-                marginTop: 10,
-                fontFamily: "'DM Mono', monospace",
-                fontSize: 9,
-                letterSpacing: '0.1em',
-                textTransform: 'uppercase',
-                color: 'var(--accent-light)',
-                border: '1px solid rgba(200,240,74,0.25)',
-                padding: '3px 8px',
-                background: 'var(--accent-muted)',
+                gap: 6,
+                padding: '5px 12px',
+                borderRadius: '50rem',
+                background: isAdmin
+                  ? 'rgba(196,79,224,0.1)'
+                  : 'rgba(108,142,247,0.1)',
+                border: isAdmin
+                  ? '1px solid rgba(196,79,224,0.3)'
+                  : '1px solid rgba(108,142,247,0.3)',
               }}>
-                {isAdmin ? '⭐ Personal Trainer' : '💪 Em treino'}
+                {isAdmin
+                  ? <Star size={11} color="var(--accent-2)" />
+                  : <Dumbbell size={11} color="var(--accent)" />
+                }
+                <span style={{
+                  fontFamily: "'JetBrains Mono', monospace",
+                  fontSize: 10,
+                  letterSpacing: '0.08em',
+                  color: isAdmin ? 'var(--accent-2)' : 'var(--accent-light)',
+                  textTransform: 'uppercase',
+                }}>
+                  {isAdmin ? 'Personal Trainer' : 'Em treino'}
+                </span>
               </div>
             </div>
 
@@ -184,37 +351,44 @@ export function DashboardPage() {
           </div>
         </motion.div>
 
-        {/* Stats grid */}
+        {/* ── Stats grid ───────────────────────────────── */}
         <motion.div
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.06, ease: [0.22, 1, 0.36, 1] }}
+          transition={{ duration: 0.5, delay: 0.08, ease: [0.22, 1, 0.36, 1] }}
           style={{
             display: 'grid',
             gridTemplateColumns: 'repeat(3, 1fr)',
-            gap: 1,
-            background: 'var(--border)',
+            gap: 8,
             marginBottom: 12,
           }}
         >
           {[
-            { label: 'Treinos',  value: '—',   accent: true },
-            { label: 'kg atual', value: profile?.weight        ? String(profile.weight)        : '—' },
-            { label: 'kg alvo',  value: profile?.target_weight ? String(profile.target_weight) : '—' },
+            { label: 'Treinos',  value: workoutCount === null ? '…' : String(workoutCount), glow: 'rgba(108,142,247,0.2)', border: 'rgba(108,142,247,0.25)' },
+            { label: 'Peso kg',  value: profile?.weight        ? String(profile.weight)        : '—', glow: 'rgba(196,79,224,0.15)', border: 'rgba(196,79,224,0.2)' },
+            { label: 'Alvo kg',  value: profile?.target_weight ? String(profile.target_weight) : '—', glow: 'rgba(74,222,128,0.12)', border: 'rgba(74,222,128,0.2)' },
           ].map((stat) => (
             <div
               key={stat.label}
               style={{
-                background: 'var(--surface)',
-                padding: '12px 10px',
+                background: 'rgba(255,255,255,0.04)',
+                backdropFilter: 'blur(16px)',
+                WebkitBackdropFilter: 'blur(16px)',
+                borderRadius: 16,
+                border: `1px solid ${stat.border}`,
+                boxShadow: `0 4px 16px ${stat.glow}`,
+                padding: '14px 10px',
                 textAlign: 'center',
               }}
             >
               <span style={{
-                fontFamily: "'Syne', sans-serif",
-                fontSize: 26,
+                fontFamily: "'Outfit', sans-serif",
+                fontSize: 28,
                 fontWeight: 800,
-                color: stat.accent ? 'var(--accent)' : 'var(--fg)',
+                backgroundImage: 'linear-gradient(160deg, #8ba8fb 0%, #fff 70%)',
+                backgroundClip: 'text',
+                WebkitBackgroundClip: 'text',
+                color: 'transparent',
                 display: 'block',
                 lineHeight: 1,
                 letterSpacing: '-0.02em',
@@ -222,12 +396,12 @@ export function DashboardPage() {
                 {stat.value}
               </span>
               <div style={{
-                fontFamily: "'DM Mono', monospace",
+                fontFamily: "'JetBrains Mono', monospace",
                 fontSize: 8,
-                letterSpacing: '0.1em',
+                letterSpacing: '0.12em',
                 textTransform: 'uppercase',
                 color: 'var(--fg-3)',
-                marginTop: 4,
+                marginTop: 5,
               }}>
                 {stat.label}
               </div>
@@ -235,315 +409,171 @@ export function DashboardPage() {
           ))}
         </motion.div>
 
-        {/* Card — próximas fases */}
-        <motion.div
-          initial={{ opacity: 0, y: 16 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.12, ease: [0.22, 1, 0.36, 1] }}
-          style={{
-            background: 'var(--surface)',
-            border: '1px solid rgba(200,240,74,0.25)',
-            boxShadow: '0 0 0 1px rgba(200,240,74,0.06), 0 4px 32px rgba(200,240,74,0.08)',
-            padding: '20px',
-            marginBottom: 8,
-          }}
-        >
+        {/* ── Seção: Navegação principal ─────────────── */}
+        <div style={{ marginBottom: 12 }}>
           <div style={{
-            fontFamily: "'DM Mono', monospace",
+            fontFamily: "'JetBrains Mono', monospace",
             fontSize: 9,
-            letterSpacing: '0.2em',
+            letterSpacing: '0.18em',
             textTransform: 'uppercase',
-            color: 'var(--accent)',
-            marginBottom: 12,
+            color: 'var(--fg-3)',
+            marginBottom: 10,
+            paddingLeft: 2,
           }}>
-            // status das fases
+            // acesso rápido
           </div>
 
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
-            {[
-              { label: 'Auth',       done: true  },
-              { label: 'Perfil',     done: true  },
-              { label: 'Design v2',  done: true  },
-              { label: 'Fichas',     done: true  },
-              { label: 'Treino',     done: false },
-              { label: 'Histórico',  done: false },
-            ].map((phase) => (
-              <span
-                key={phase.label}
-                style={{
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: 5,
-                  padding: '3px 9px',
-                  border: '1px solid',
-                  borderColor: phase.done ? 'rgba(200,240,74,0.3)' : 'var(--border-md)',
-                  background: phase.done ? 'var(--accent-muted)' : 'transparent',
-                  color: phase.done ? 'var(--accent-light)' : 'var(--fg-3)',
-                  fontFamily: "'DM Mono', monospace",
-                  fontSize: 10,
-                  letterSpacing: '0.1em',
-                  textTransform: 'uppercase',
-                }}
-              >
-                {phase.done ? '✓' : '○'} {phase.label}
-              </span>
-            ))}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+            <NavCard
+              to={isAdmin ? '/admin/workouts' : '/workouts'}
+              icon={<Dumbbell size={20} color="var(--accent-light)" />}
+              iconBg="rgba(108,142,247,0.12)"
+              title={isAdmin ? 'Biblioteca de Fichas' : 'Minhas Fichas'}
+              subtitle={isAdmin ? '// criar e gerenciar fichas de treino' : '// ver fichas e treino de hoje'}
+              accentColor="rgba(108,142,247,0.4)"
+              delay={0.12}
+            />
+
+            <NavCard
+              to="/perfil"
+              icon={<User size={20} color="var(--accent-2)" />}
+              iconBg="rgba(196,79,224,0.1)"
+              title="Meu Perfil"
+              subtitle="// ver e editar dados pessoais"
+              accentColor="rgba(196,79,224,0.35)"
+              delay={0.18}
+            />
           </div>
-        </motion.div>
+        </div>
 
-        {/* Links de navegação */}
-        <motion.div
-          initial={{ opacity: 0, y: 16 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.18, ease: [0.22, 1, 0.36, 1] }}
-          style={{ display: 'flex', flexDirection: 'column', gap: 1 }}
-        >
-          {/* Fichas de Treino */}
-          <Link
-            to={isAdmin ? '/admin/workouts' : '/workouts'}
-            className="flex items-center justify-between group"
-            style={{
-              background: 'var(--surface)',
-              border: '1px solid var(--border)',
-              borderLeft: '2px solid var(--accent)',
-              padding: '12px 14px',
-              transition: 'border-color 0.15s, background 0.15s',
-              textDecoration: 'none',
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.background = 'rgba(200,240,74,0.04)'
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.background = 'var(--surface)'
-            }}
-          >
-            <div>
-              <div style={{
-                fontFamily: "'Syne', sans-serif",
-                fontSize: 12,
-                fontWeight: 700,
-                color: 'var(--fg)',
-                letterSpacing: '0.03em',
-              }}>
-                {isAdmin ? 'Biblioteca de Fichas' : 'Minhas Fichas'}
-              </div>
-              <div style={{
-                fontFamily: "'DM Mono', monospace",
-                fontSize: 9,
-                color: 'var(--accent)',
-                letterSpacing: '0.04em',
-                marginTop: 1,
-                fontStyle: 'italic',
-                opacity: 0.7,
-              }}>
-                // {isAdmin ? 'criar e gerenciar fichas de treino' : 'ver fichas e treino de hoje'}
-              </div>
-            </div>
-            <ChevronRight
-              size={14}
-              className="transition-transform group-hover:translate-x-1"
-              style={{ color: 'var(--accent)', opacity: 0.6 }}
-            />
-          </Link>
-
-          {/* Meu Perfil */}
-          <Link
-            to="/perfil"
-            className="flex items-center justify-between group"
-            style={{
-              background: 'var(--surface)',
-              border: '1px solid var(--border)',
-              borderLeft: '2px solid var(--surface-3)',
-              padding: '12px 14px',
-              transition: 'border-color 0.15s',
-              textDecoration: 'none',
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.borderLeftColor = 'var(--accent)'
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.borderLeftColor = 'var(--surface-3)'
-            }}
-          >
-            <div>
-              <div style={{
-                fontFamily: "'Syne', sans-serif",
-                fontSize: 12,
-                fontWeight: 700,
-                color: 'var(--fg)',
-                letterSpacing: '0.03em',
-              }}>
-                Meu Perfil
-              </div>
-              <div style={{
-                fontFamily: "'DM Mono', monospace",
-                fontSize: 9,
-                color: 'var(--fg-3)',
-                letterSpacing: '0.04em',
-                marginTop: 1,
-                fontStyle: 'italic',
-              }}>
-                // ver e editar dados pessoais
-              </div>
-            </div>
-            <ChevronRight
-              size={14}
-              className="transition-transform group-hover:translate-x-1"
-              style={{ color: 'var(--fg-3)' }}
-            />
-          </Link>
-        </motion.div>
-
-        {/* ── Cards de Histórico/Progresso/Medidas (apenas aluno) ── */}
+        {/* ── Acompanhamento (apenas aluno) ──────────── */}
         {!isAdmin && (
           <motion.div
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.24, ease: [0.22, 1, 0.36, 1] }}
-            style={{ display: 'flex', flexDirection: 'column', gap: 1, marginTop: 12 }}
           >
-            {/* Label */}
             <div style={{
-              fontFamily: "'DM Mono', monospace", fontSize: 9,
-              color: 'var(--fg-3)', letterSpacing: '0.15em',
-              textTransform: 'uppercase', marginBottom: 6, marginTop: 4,
+              fontFamily: "'JetBrains Mono', monospace",
+              fontSize: 9,
+              letterSpacing: '0.18em',
+              textTransform: 'uppercase',
+              color: 'var(--fg-3)',
+              marginBottom: 10,
+              marginTop: 4,
+              paddingLeft: 2,
             }}>
               // acompanhamento
             </div>
 
-            {/* Card: Último treino */}
-            <Link
-              to="/historico"
-              style={{
-                display: 'block',
-                background: 'var(--surface)',
-                border: '1px solid var(--border)',
-                borderLeft: '2px solid var(--surface-3)',
-                padding: '12px 14px',
-                textDecoration: 'none',
-                transition: 'border-left-color 0.15s, background 0.15s',
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.borderLeftColor = 'var(--accent)'
-                e.currentTarget.style.background = 'rgba(200,240,74,0.03)'
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.borderLeftColor = 'var(--surface-3)'
-                e.currentTarget.style.background = 'var(--surface)'
-              }}
-            >
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <div>
-                  <div style={{
-                    fontFamily: "'Syne', sans-serif", fontSize: 12,
-                    fontWeight: 700, color: 'var(--fg)', letterSpacing: '0.03em',
-                  }}>
-                    Histórico de Treinos
-                  </div>
-                  <div style={{
-                    fontFamily: "'DM Mono', monospace", fontSize: 9,
-                    color: lastSession ? 'var(--accent)' : 'var(--fg-3)',
-                    letterSpacing: '0.04em', marginTop: 2, fontStyle: 'italic', opacity: 0.8,
-                  }}>
-                    {lastSession === undefined
-                      ? '// carregando...'
-                      : lastSession === null
-                        ? '// nenhum treino registrado ainda'
-                        : `// último: ${formatDate(lastSession.started_at)} ${lastSession.difficulty ? DIFFICULTY_EMOJI[lastSession.difficulty] : ''} ${lastSession.duration_minutes ? `— ${lastSession.duration_minutes}min` : ''}`
-                    }
-                  </div>
-                </div>
-                <ChevronRight size={14} style={{ color: 'var(--fg-3)', opacity: 0.5, flexShrink: 0 }} />
-              </div>
-            </Link>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
 
-            {/* Card: Progresso */}
-            <Link
-              to="/progresso"
-              style={{
-                display: 'block',
-                background: 'var(--surface)',
-                border: '1px solid var(--border)',
-                borderLeft: '2px solid var(--surface-3)',
-                padding: '12px 14px',
-                textDecoration: 'none',
-                transition: 'border-left-color 0.15s, background 0.15s',
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.borderLeftColor = 'var(--accent)'
-                e.currentTarget.style.background = 'rgba(200,240,74,0.03)'
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.borderLeftColor = 'var(--surface-3)'
-                e.currentTarget.style.background = 'var(--surface)'
-              }}
-            >
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <div>
-                  <div style={{
-                    fontFamily: "'Syne', sans-serif", fontSize: 12,
-                    fontWeight: 700, color: 'var(--fg)', letterSpacing: '0.03em',
-                  }}>
-                    Gráficos de Progresso
-                  </div>
-                  <div style={{
-                    fontFamily: "'DM Mono', monospace", fontSize: 9,
-                    color: 'var(--fg-3)', letterSpacing: '0.04em',
-                    marginTop: 2, fontStyle: 'italic', opacity: 0.7,
-                  }}>
-                    // evolução de carga e frequência semanal
-                  </div>
-                </div>
-                <ChevronRight size={14} style={{ color: 'var(--fg-3)', opacity: 0.5, flexShrink: 0 }} />
-              </div>
-            </Link>
+              {/* Histórico de Treinos */}
+              <NavCard
+                to="/historico"
+                icon={<BarChart2 size={20} color="var(--accent-light)" />}
+                iconBg="rgba(108,142,247,0.1)"
+                title="Histórico de Treinos"
+                subtitle={
+                  lastSession === undefined
+                    ? '// carregando...'
+                    : lastSession === null
+                      ? '// nenhum treino registrado ainda'
+                      : `// último: ${formatDate(lastSession.started_at)} ${lastSession.difficulty ? DIFFICULTY_EMOJI[lastSession.difficulty] : ''} ${lastSession.duration_minutes ? `— ${lastSession.duration_minutes}min` : ''}`
+                }
+                accentColor="rgba(108,142,247,0.35)"
+                delay={0.26}
+              />
 
-            {/* Card: Peso & Medidas */}
-            <Link
-              to="/medidas"
-              style={{
-                display: 'block',
-                background: 'var(--surface)',
-                border: '1px solid var(--border)',
-                borderLeft: '2px solid var(--surface-3)',
-                padding: '12px 14px',
-                textDecoration: 'none',
-                transition: 'border-left-color 0.15s, background 0.15s',
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.borderLeftColor = 'var(--accent)'
-                e.currentTarget.style.background = 'rgba(200,240,74,0.03)'
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.borderLeftColor = 'var(--surface-3)'
-                e.currentTarget.style.background = 'var(--surface)'
-              }}
-            >
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <div>
-                  <div style={{
-                    fontFamily: "'Syne', sans-serif", fontSize: 12,
-                    fontWeight: 700, color: 'var(--fg)', letterSpacing: '0.03em',
-                  }}>
-                    Peso & Medidas
-                  </div>
-                  <div style={{
-                    fontFamily: "'DM Mono', monospace", fontSize: 9,
-                    color: lastWeight ? 'var(--accent)' : 'var(--fg-3)',
-                    letterSpacing: '0.04em', marginTop: 2, fontStyle: 'italic', opacity: 0.8,
-                  }}>
-                    {lastWeight === undefined
-                      ? '// carregando...'
-                      : lastWeight === null
-                        ? '// registre seu peso para acompanhar'
-                        : `// atual: ${Number(lastWeight.weight_kg).toFixed(1)} kg`
-                    }
-                  </div>
-                </div>
-                <ChevronRight size={14} style={{ color: 'var(--fg-3)', opacity: 0.5, flexShrink: 0 }} />
-              </div>
-            </Link>
+              {/* Gráficos de Progresso */}
+              <NavCard
+                to="/progresso"
+                icon={<BarChart2 size={20} color="var(--accent-2)" />}
+                iconBg="rgba(196,79,224,0.1)"
+                title="Gráficos de Progresso"
+                subtitle="// evolução de carga e frequência semanal"
+                accentColor="rgba(196,79,224,0.3)"
+                delay={0.3}
+              />
 
+              {/* Peso & Medidas */}
+              <NavCard
+                to="/medidas"
+                icon={<Scale size={20} color="var(--success)" />}
+                iconBg="rgba(74,222,128,0.1)"
+                title="Peso & Medidas"
+                subtitle={
+                  lastWeight === undefined
+                    ? '// carregando...'
+                    : lastWeight === null
+                      ? '// registre seu peso para acompanhar'
+                      : `// atual: ${Number(lastWeight.weight_kg).toFixed(1)} kg`
+                }
+                accentColor="rgba(74,222,128,0.3)"
+                delay={0.34}
+              />
+            </div>
+          </motion.div>
+        )}
+
+        {/* ── Status das fases (apenas admin) ─────────── */}
+        {isAdmin && (
+          <motion.div
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.24, ease: [0.22, 1, 0.36, 1] }}
+            style={{
+              background: 'rgba(255,255,255,0.04)',
+              backdropFilter: 'blur(20px)',
+              WebkitBackdropFilter: 'blur(20px)',
+              borderRadius: 20,
+              border: '1px solid rgba(108,142,247,0.2)',
+              padding: '20px',
+              marginTop: 4,
+            }}
+          >
+            <div style={{
+              fontFamily: "'JetBrains Mono', monospace",
+              fontSize: 9,
+              letterSpacing: '0.18em',
+              textTransform: 'uppercase',
+              color: 'var(--accent)',
+              marginBottom: 14,
+            }}>
+              // status das fases
+            </div>
+
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+              {[
+                { label: 'Auth',       done: true  },
+                { label: 'Perfil',     done: true  },
+                { label: 'Design v3',  done: true  },
+                { label: 'Fichas',     done: true  },
+                { label: 'Treino',     done: false },
+                { label: 'Histórico',  done: false },
+              ].map((phase) => (
+                <span
+                  key={phase.label}
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: 5,
+                    padding: '4px 10px',
+                    borderRadius: '50rem',
+                    border: '1px solid',
+                    borderColor: phase.done ? 'rgba(108,142,247,0.35)' : 'rgba(255,255,255,0.08)',
+                    background: phase.done ? 'rgba(108,142,247,0.1)' : 'transparent',
+                    color: phase.done ? 'var(--accent-light)' : 'var(--fg-3)',
+                    fontFamily: "'JetBrains Mono', monospace",
+                    fontSize: 10,
+                    letterSpacing: '0.08em',
+                    textTransform: 'uppercase',
+                  }}
+                >
+                  {phase.done ? '✓' : '○'} {phase.label}
+                </span>
+              ))}
+            </div>
           </motion.div>
         )}
 

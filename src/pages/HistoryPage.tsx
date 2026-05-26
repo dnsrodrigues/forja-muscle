@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+﻿import { useState, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { motion } from 'motion/react'
 import { ArrowLeft, RefreshCw } from 'lucide-react'
@@ -60,7 +60,7 @@ export function HistoryPage() {
       {/* Header */}
       <header className="sticky top-0 z-20" style={{
         padding: '14px 16px',
-        background: 'rgba(5,5,10,0.7)',
+        background: 'rgba(6, 7, 26,0.7)',
         borderBottom: '1px solid var(--border)',
         backdropFilter: 'blur(12px)',
       }}>
@@ -72,14 +72,14 @@ export function HistoryPage() {
           </Link>
           <div>
             <div style={{
-              fontFamily: "'DM Mono', monospace", fontSize: 9,
+              fontFamily: "'JetBrains Mono', monospace", fontSize: 9,
               color: 'var(--fg-3)', letterSpacing: '0.15em',
               textTransform: 'uppercase', marginBottom: 1,
             }}>
               // histórico
             </div>
             <div style={{
-              fontFamily: "'Syne', sans-serif", fontWeight: 800,
+              fontFamily: "'Outfit', sans-serif", fontWeight: 800,
               fontSize: 16, color: 'var(--fg)',
             }}>
               Treinos Realizados
@@ -110,7 +110,7 @@ export function HistoryPage() {
               padding: '12px 16px', marginBottom: 16,
             }}>
               <div style={{
-                fontFamily: "'DM Mono', monospace", fontSize: 11,
+                fontFamily: "'JetBrains Mono', monospace", fontSize: 11,
                 color: 'var(--danger)', marginBottom: 6,
               }}>
                 ⚠ {error}
@@ -121,7 +121,7 @@ export function HistoryPage() {
                   display: 'flex', alignItems: 'center', gap: 5,
                   background: 'transparent', border: '1px solid var(--border-md)',
                   borderRadius: 4, padding: '5px 12px', color: 'var(--fg-2)',
-                  fontFamily: "'DM Mono', monospace", fontSize: 10,
+                  fontFamily: "'JetBrains Mono', monospace", fontSize: 10,
                   letterSpacing: '0.1em', cursor: 'pointer', textTransform: 'uppercase',
                 }}
               >
@@ -138,13 +138,13 @@ export function HistoryPage() {
             }}>
               <div style={{ fontSize: 36, marginBottom: 12 }}>🏋️</div>
               <div style={{
-                fontFamily: "'Syne', sans-serif", fontWeight: 800,
+                fontFamily: "'Outfit', sans-serif", fontWeight: 800,
                 fontSize: 15, color: 'var(--fg)', marginBottom: 8,
               }}>
                 Nenhum treino registrado ainda
               </div>
               <div style={{
-                fontFamily: "'DM Mono', monospace", fontSize: 10,
+                fontFamily: "'JetBrains Mono', monospace", fontSize: 10,
                 color: 'var(--fg-3)', fontStyle: 'italic', marginBottom: 20,
               }}>
                 // complete uma sessão para ver o histórico
@@ -155,7 +155,7 @@ export function HistoryPage() {
                   display: 'inline-flex', alignItems: 'center', gap: 6,
                   background: 'var(--accent)', border: 'none', borderRadius: 4,
                   padding: '9px 18px', color: 'var(--bg)',
-                  fontFamily: "'Syne', sans-serif", fontWeight: 800,
+                  fontFamily: "'Outfit', sans-serif", fontWeight: 800,
                   fontSize: 10, letterSpacing: '0.15em', textTransform: 'uppercase', cursor: 'pointer',
                 }}
               >
@@ -172,7 +172,7 @@ export function HistoryPage() {
               transition={{ duration: 0.3 }}
             >
               <div style={{
-                fontFamily: "'DM Mono', monospace", fontSize: 9,
+                fontFamily: "'JetBrains Mono', monospace", fontSize: 9,
                 color: 'var(--fg-3)', letterSpacing: '0.15em',
                 textTransform: 'uppercase', marginBottom: 10,
               }}>
@@ -205,7 +205,7 @@ export function HistoryPage() {
                         }}
                         onMouseEnter={(e) => {
                           e.currentTarget.style.borderLeftColor = 'var(--accent)'
-                          e.currentTarget.style.background = 'rgba(200,240,74,0.03)'
+                          e.currentTarget.style.background = 'rgba(108, 142, 247,0.03)'
                         }}
                         onMouseLeave={(e) => {
                           e.currentTarget.style.borderLeftColor = 'var(--border-md)'
@@ -216,7 +216,7 @@ export function HistoryPage() {
                           <div style={{ minWidth: 0, flex: 1 }}>
                             {/* Nome da ficha */}
                             <div style={{
-                              fontFamily: "'Syne', sans-serif", fontWeight: 800,
+                              fontFamily: "'Outfit', sans-serif", fontWeight: 800,
                               fontSize: 13, color: 'var(--fg)',
                               overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
                               marginBottom: 4,
@@ -229,14 +229,14 @@ export function HistoryPage() {
                               display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap',
                             }}>
                               <span style={{
-                                fontFamily: "'DM Mono', monospace", fontSize: 9,
+                                fontFamily: "'JetBrains Mono', monospace", fontSize: 9,
                                 color: 'var(--fg-3)',
                               }}>
                                 {formatDate(session.started_at)}
                               </span>
                               {session.duration_minutes && (
                                 <span style={{
-                                  fontFamily: "'DM Mono', monospace", fontSize: 9,
+                                  fontFamily: "'JetBrains Mono', monospace", fontSize: 9,
                                   color: 'var(--accent)', opacity: 0.8,
                                 }}>
                                   {session.duration_minutes} min

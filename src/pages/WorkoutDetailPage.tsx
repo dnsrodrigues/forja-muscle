@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+﻿import { useState, useEffect } from 'react'
 import { useParams, Link, useNavigate } from 'react-router-dom'
 import { motion } from 'motion/react'
 import { ArrowLeft, RefreshCw, Play } from 'lucide-react'
@@ -50,7 +50,7 @@ export function WorkoutDetailPage() {
         className="sticky top-0 z-20"
         style={{
           padding: '14px 16px',
-          background: 'rgba(5,5,10,0.7)',
+          background: 'rgba(6, 7, 26,0.7)',
           borderBottom: '1px solid var(--border)',
           backdropFilter: 'blur(12px)',
         }}
@@ -68,7 +68,7 @@ export function WorkoutDetailPage() {
             ) : (
               <>
                 <div style={{
-                  fontFamily: "'DM Mono', monospace",
+                  fontFamily: "'JetBrains Mono', monospace",
                   fontSize: 9,
                   color: 'var(--fg-3)',
                   letterSpacing: '0.15em',
@@ -78,7 +78,7 @@ export function WorkoutDetailPage() {
                   {daysLabel || '// ficha de treino'}
                 </div>
                 <div style={{
-                  fontFamily: "'Syne', sans-serif",
+                  fontFamily: "'Outfit', sans-serif",
                   fontWeight: 800,
                   fontSize: 16,
                   color: 'var(--fg)',
@@ -116,7 +116,7 @@ export function WorkoutDetailPage() {
               borderRadius: '0 4px 4px 0',
               padding: '12px 16px',
             }}>
-              <div style={{ fontFamily: "'DM Mono', monospace", fontSize: 11, color: 'var(--danger)', marginBottom: 6 }}>
+              <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 11, color: 'var(--danger)', marginBottom: 6 }}>
                 ⚠ {error}
               </div>
               <button
@@ -128,7 +128,7 @@ export function WorkoutDetailPage() {
                   borderRadius: 4,
                   padding: '5px 12px',
                   color: 'var(--fg-2)',
-                  fontFamily: "'DM Mono', monospace",
+                  fontFamily: "'JetBrains Mono', monospace",
                   fontSize: 10,
                   letterSpacing: '0.1em',
                   cursor: 'pointer',
@@ -160,7 +160,7 @@ export function WorkoutDetailPage() {
                   border: 'none',
                   borderRadius: 8,
                   padding: '14px',
-                  fontFamily: "'Syne', sans-serif",
+                  fontFamily: "'Outfit', sans-serif",
                   fontWeight: 800,
                   fontSize: 13,
                   color: '#05050a',
@@ -172,7 +172,7 @@ export function WorkoutDetailPage() {
                 onMouseEnter={(e) => (e.currentTarget.style.opacity = '0.88')}
                 onMouseLeave={(e) => (e.currentTarget.style.opacity = '1')}
               >
-                <Play size={15} fill="#05050a" strokeWidth={0} />
+                <Play size={15} fill="var(--bg)" strokeWidth={0} />
                 Iniciar Treino
               </button>
             </motion.div>
@@ -188,7 +188,7 @@ export function WorkoutDetailPage() {
               {/* Descrição (se tiver) */}
               {workout.description && (
                 <div style={{
-                  fontFamily: "'DM Mono', monospace",
+                  fontFamily: "'JetBrains Mono', monospace",
                   fontSize: 11,
                   color: 'var(--fg-3)',
                   fontStyle: 'italic',
@@ -202,7 +202,7 @@ export function WorkoutDetailPage() {
 
               {/* Contador */}
               <div style={{
-                fontFamily: "'DM Mono', monospace",
+                fontFamily: "'JetBrains Mono', monospace",
                 fontSize: 9,
                 color: 'var(--fg-3)',
                 letterSpacing: '0.15em',
@@ -219,7 +219,7 @@ export function WorkoutDetailPage() {
                   borderRadius: 4,
                   padding: '24px',
                   textAlign: 'center',
-                  fontFamily: "'DM Mono', monospace",
+                  fontFamily: "'JetBrains Mono', monospace",
                   fontSize: 10,
                   color: 'var(--fg-3)',
                   fontStyle: 'italic',

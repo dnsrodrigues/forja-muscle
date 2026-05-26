@@ -25,6 +25,16 @@ const WORKOUT_WITH_EXERCISES = `
 // Aluno — fichas do próprio usuário
 // ─────────────────────────────────────────────
 
+/** Ordena os exercícios de uma ficha por order_index (helper interno) */
+function sortExercises(workout: Workout): Workout {
+  if (workout?.exercises) {
+    workout.exercises = [...workout.exercises].sort(
+      (a, b) => a.order_index - b.order_index
+    )
+  }
+  return workout
+}
+
 /** Retorna todas as fichas ativas do aluno, com seus exercícios */
 export async function getMyWorkouts(
   userId: string
@@ -38,7 +48,7 @@ export async function getMyWorkouts(
     .order('created_at', { ascending: true })
 
   if (error) throw new Error(error.message)
-  return (data ?? []) as Workout[]
+  return ((data ?? []) as Workout[]).map(sortExercises)
 }
 
 /** Retorna uma ficha específica com todos os exercícios */
@@ -55,7 +65,7 @@ export async function getWorkoutById(
     if (error.code === 'PGRST116') return null // not found
     throw new Error(error.message)
   }
-  return data as Workout
+  return sortExercises(data as Workout)
 }
 
 // ─────────────────────────────────────────────

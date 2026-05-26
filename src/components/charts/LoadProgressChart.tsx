@@ -1,4 +1,4 @@
-import {
+﻿import {
   ResponsiveContainer,
   LineChart,
   Line,
@@ -31,7 +31,7 @@ function CustomTooltip({ active, payload, label }: {
       border: '1px solid var(--border-md)',
       borderLeft: '2px solid var(--accent)',
       padding: '8px 12px',
-      fontFamily: "'DM Mono', monospace",
+      fontFamily: "'JetBrains Mono', monospace",
     }}>
       <div style={{ fontSize: 9, color: 'var(--fg-3)', letterSpacing: '0.1em', marginBottom: 2 }}>
         {label ? formatDate(label) : ''}
@@ -58,7 +58,7 @@ export function LoadProgressChart({ data, exerciseName: _ }: Props) {
           dataKey="date"
           tickFormatter={formatDate}
           tick={{
-            fontFamily: "'DM Mono', monospace",
+            fontFamily: "'JetBrains Mono', monospace",
             fontSize: 8,
             fill: 'rgba(240,237,230,0.35)',
             letterSpacing: '0.06em',
@@ -69,7 +69,7 @@ export function LoadProgressChart({ data, exerciseName: _ }: Props) {
         />
         <YAxis
           tick={{
-            fontFamily: "'DM Mono', monospace",
+            fontFamily: "'JetBrains Mono', monospace",
             fontSize: 8,
             fill: 'rgba(240,237,230,0.35)',
           }}
@@ -82,10 +82,10 @@ export function LoadProgressChart({ data, exerciseName: _ }: Props) {
         <Line
           type="monotone"
           dataKey="maxLoad"
-          stroke="#c8f04a"
+          stroke="#6c8ef7"
           strokeWidth={2}
-          dot={{ fill: '#c8f04a', r: 3, strokeWidth: 0 }}
-          activeDot={{ fill: '#c8f04a', r: 5, strokeWidth: 0 }}
+          dot={{ fill: '#6c8ef7', r: 3, strokeWidth: 0 }}
+          activeDot={{ fill: '#6c8ef7', r: 5, strokeWidth: 0 }}
         />
       </LineChart>
     </ResponsiveContainer>

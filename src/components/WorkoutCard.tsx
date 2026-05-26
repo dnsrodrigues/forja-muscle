@@ -1,4 +1,4 @@
-import { useState } from 'react'
+﻿import { useState } from 'react'
 import { ChevronRight, Edit2, UserPlus, Trash2, AlertTriangle } from 'lucide-react'
 import type { Workout } from '../types'
 import { WEEK_DAY_SHORT } from '../types'
@@ -68,7 +68,7 @@ export function WorkoutCard({
             right: 12,
             background: 'var(--accent)',
             color: 'var(--bg)',
-            fontFamily: "'DM Mono', monospace",
+            fontFamily: "'JetBrains Mono', monospace",
             fontSize: 8,
             fontWeight: 400,
             letterSpacing: '0.15em',
@@ -83,7 +83,7 @@ export function WorkoutCard({
       {/* Nome */}
       <div
         style={{
-          fontFamily: "'Syne', sans-serif",
+          fontFamily: "'Outfit', sans-serif",
           fontWeight: 800,
           fontSize: 15,
           color: 'var(--fg)',
@@ -98,7 +98,7 @@ export function WorkoutCard({
       {/* Metadados */}
       <div
         style={{
-          fontFamily: "'DM Mono', monospace",
+          fontFamily: "'JetBrains Mono', monospace",
           fontSize: 10,
           color: 'var(--fg-3)',
           display: 'flex',
@@ -140,7 +140,7 @@ export function WorkoutCard({
             }}>
               <AlertTriangle size={12} style={{ color: 'var(--danger)', flexShrink: 0 }} />
               <span style={{
-                fontFamily: "'DM Mono', monospace", fontSize: 9,
+                fontFamily: "'JetBrains Mono', monospace", fontSize: 9,
                 color: 'var(--danger)', flex: 1, letterSpacing: '0.06em',
               }}>
                 {deleteLabel === 'Excluir' ? 'Excluir esta ficha?' : 'Desvincular esta ficha do aluno?'}
@@ -150,7 +150,7 @@ export function WorkoutCard({
                 style={{
                   background: 'transparent', border: '1px solid var(--border-md)',
                   borderRadius: 3, padding: '3px 8px', color: 'var(--fg-3)',
-                  fontFamily: "'DM Mono', monospace", fontSize: 8,
+                  fontFamily: "'JetBrains Mono', monospace", fontSize: 8,
                   letterSpacing: '0.08em', textTransform: 'uppercase', cursor: 'pointer',
                 }}
               >
@@ -161,7 +161,7 @@ export function WorkoutCard({
                 style={{
                   background: 'var(--danger)', border: 'none',
                   borderRadius: 3, padding: '3px 8px', color: '#fff',
-                  fontFamily: "'DM Mono', monospace", fontSize: 8,
+                  fontFamily: "'JetBrains Mono', monospace", fontSize: 8,
                   letterSpacing: '0.08em', textTransform: 'uppercase', cursor: 'pointer',
                 }}
               >
@@ -179,7 +179,7 @@ export function WorkoutCard({
                     border: '1px solid var(--border-md)',
                     borderRadius: 4, padding: '4px 10px',
                     color: 'var(--fg-2)',
-                    fontFamily: "'DM Mono', monospace", fontSize: 9,
+                    fontFamily: "'JetBrains Mono', monospace", fontSize: 9,
                     letterSpacing: '0.1em', cursor: 'pointer', textTransform: 'uppercase',
                   }}
                 >
@@ -193,10 +193,10 @@ export function WorkoutCard({
                   style={{
                     display: 'flex', alignItems: 'center', gap: 4,
                     background: 'transparent',
-                    border: '1px solid rgba(200,240,74,0.3)',
+                    border: '1px solid rgba(108, 142, 247,0.3)',
                     borderRadius: 4, padding: '4px 10px',
                     color: 'var(--accent)',
-                    fontFamily: "'DM Mono', monospace", fontSize: 9,
+                    fontFamily: "'JetBrains Mono', monospace", fontSize: 9,
                     letterSpacing: '0.1em', cursor: 'pointer', textTransform: 'uppercase',
                   }}
                 >
@@ -213,7 +213,7 @@ export function WorkoutCard({
                     border: '1px solid rgba(239,68,68,0.3)',
                     borderRadius: 4, padding: '4px 10px',
                     color: 'var(--danger)',
-                    fontFamily: "'DM Mono', monospace", fontSize: 9,
+                    fontFamily: "'JetBrains Mono', monospace", fontSize: 9,
                     letterSpacing: '0.1em', cursor: 'pointer', textTransform: 'uppercase',
                     marginLeft: 'auto',
                   }}

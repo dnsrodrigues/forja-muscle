@@ -179,3 +179,86 @@ export async function getWeeklyFrequency(userId: string): Promise<WeekFrequency[
 
   return weeks
 }
+
+// ─────────────────────────────────────────────
+// Pré-preenchimento de sessão
+// ─────────────────────────────────────────────
+
+export interface LastSetRecord {
+  reps: number
+  loadKg: number | null
+}
+
+/**
+ * Para cada exercício + número de série, retorna os valores registrados
+ * na sessão mais recente. Usado para pré-preencher os inputs durante o treino.
+ *
+ * Retorna: { [exerciseLibraryId]: { [setNumber]: { reps, loadKg } } }
+ */
+export async function getLastSetData(
+  userId: string,
+  exerciseIds: string[],
+): Promise<Record<string, Record<number, LastSetRecord>>> {
+  if (exerciseIds.length === 0) return {}
+
+  // 1. Últimas 60 sessões concluídas do aluno (mais recentes primeiro)
+  const { data: logs, error: logsErr } = await supabase
+    .from('workout_logs')
+    .select('id, started_at')
+    .eq('user_id', userId)
+    .not('finished_at', 'is', null)
+    .order('started_at', { ascending: false })
+    .limit(60)
+
+  if (logsErr) throw new Error(logsErr.message)
+  if (!logs || logs.length === 0) return {}
+
+  const logIds = (logs as { id: string; started_at: string }[]).map(l => l.id)
+  const logDateMap: Record<string, string> = Object.fromEntries(
+    (logs as { id: string; started_at: string }[]).map(l => [l.id, l.started_at])
+  )
+
+  // 2. exercise_logs dessas sessões para os exercícios desta ficha
+  const { data: sets, error: setsErr } = await supabase
+    .from('exercise_logs')
+    .select('exercise_id, set_number, reps_completed, load_kg, workout_log_id')
+    .in('workout_log_id', logIds)
+    .in('exercise_id', exerciseIds)
+
+  if (setsErr) throw new Error(setsErr.message)
+  if (!sets || sets.length === 0) return {}
+
+  // 3. Para cada exercise_id + set_number, mantém apenas o mais recente
+  type BestEntry = { reps: number; loadKg: number | null; date: string }
+  const best: Record<string, Record<number, BestEntry>> = {}
+
+  for (const row of sets as {
+    exercise_id: string
+    set_number: number
+    reps_completed: number
+    load_kg: number | null
+    workout_log_id: string
+  }[]) {
+    const date = logDateMap[row.workout_log_id] ?? ''
+    const existing = best[row.exercise_id]?.[row.set_number]
+    if (!existing || date > existing.date) {
+      if (!best[row.exercise_id]) best[row.exercise_id] = {}
+      best[row.exercise_id][row.set_number] = {
+        reps: row.reps_completed,
+        loadKg: row.load_kg,
+        date,
+      }
+    }
+  }
+
+  // 4. Remove o campo 'date' do resultado final
+  const result: Record<string, Record<number, LastSetRecord>> = {}
+  for (const [exId, setMap] of Object.entries(best)) {
+    result[exId] = {}
+    for (const [setNum, entry] of Object.entries(setMap)) {
+      result[exId][Number(setNum)] = { reps: entry.reps, loadKg: entry.loadKg }
+    }
+  }
+
+  return result
+}

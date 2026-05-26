@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+﻿import { useState, useEffect } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { motion } from 'motion/react'
 import { ArrowLeft, RefreshCw } from 'lucide-react'
@@ -73,7 +73,7 @@ export function WorkoutsPage() {
         className="sticky top-0 z-20"
         style={{
           padding: '14px 16px',
-          background: 'rgba(5,5,10,0.7)',
+          background: 'rgba(6, 7, 26,0.7)',
           borderBottom: '1px solid var(--border)',
           backdropFilter: 'blur(12px)',
         }}
@@ -87,7 +87,7 @@ export function WorkoutsPage() {
           </Link>
           <div>
             <div style={{
-              fontFamily: "'DM Mono', monospace",
+              fontFamily: "'JetBrains Mono', monospace",
               fontSize: 9,
               color: 'var(--fg-3)',
               letterSpacing: '0.15em',
@@ -97,7 +97,7 @@ export function WorkoutsPage() {
               // {todayLabel}
             </div>
             <div style={{
-              fontFamily: "'Syne', sans-serif",
+              fontFamily: "'Outfit', sans-serif",
               fontWeight: 800,
               fontSize: 16,
               color: 'var(--fg)',
@@ -135,7 +135,7 @@ export function WorkoutsPage() {
               padding: '12px 16px',
               marginBottom: 16,
             }}>
-              <div style={{ fontFamily: "'DM Mono', monospace", fontSize: 11, color: 'var(--danger)', marginBottom: 6 }}>
+              <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 11, color: 'var(--danger)', marginBottom: 6 }}>
                 ⚠ {error}
               </div>
               <button
@@ -147,7 +147,7 @@ export function WorkoutsPage() {
                   borderRadius: 4,
                   padding: '5px 12px',
                   color: 'var(--fg-2)',
-                  fontFamily: "'DM Mono', monospace",
+                  fontFamily: "'JetBrains Mono', monospace",
                   fontSize: 10,
                   letterSpacing: '0.1em',
                   cursor: 'pointer',
@@ -168,10 +168,10 @@ export function WorkoutsPage() {
               textAlign: 'center',
             }}>
               <div style={{ fontSize: 28, marginBottom: 10 }}>📋</div>
-              <div style={{ fontFamily: "'Syne', sans-serif", fontWeight: 800, fontSize: 14, color: 'var(--fg)', marginBottom: 4 }}>
+              <div style={{ fontFamily: "'Outfit', sans-serif", fontWeight: 800, fontSize: 14, color: 'var(--fg)', marginBottom: 4 }}>
                 Nenhuma ficha ainda
               </div>
-              <div style={{ fontFamily: "'DM Mono', monospace", fontSize: 10, color: 'var(--fg-3)', fontStyle: 'italic' }}>
+              <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 10, color: 'var(--fg-3)', fontStyle: 'italic' }}>
                 // seu personal ainda não criou fichas para você
               </div>
             </div>
@@ -186,7 +186,7 @@ export function WorkoutsPage() {
               style={{ marginBottom: 20 }}
             >
               <div style={{
-                fontFamily: "'DM Mono', monospace",
+                fontFamily: "'JetBrains Mono', monospace",
                 fontSize: 9,
                 color: 'var(--accent)',
                 letterSpacing: '0.15em',
@@ -204,11 +204,11 @@ export function WorkoutsPage() {
                   borderRadius: 4,
                   padding: '18px 16px',
                   cursor: 'pointer',
-                  boxShadow: '0 0 24px rgba(200,240,74,0.06)',
+                  boxShadow: '0 0 24px rgba(108, 142, 247,0.06)',
                 }}
               >
                 <div style={{
-                  fontFamily: "'Syne', sans-serif",
+                  fontFamily: "'Outfit', sans-serif",
                   fontWeight: 800,
                   fontSize: 18,
                   color: 'var(--fg)',
@@ -217,7 +217,7 @@ export function WorkoutsPage() {
                   {todayWorkout.name}
                 </div>
                 <div style={{
-                  fontFamily: "'DM Mono', monospace",
+                  fontFamily: "'JetBrains Mono', monospace",
                   fontSize: 10,
                   color: 'var(--fg-3)',
                   marginBottom: 14,
@@ -227,7 +227,7 @@ export function WorkoutsPage() {
                 <div style={{
                   background: 'var(--accent)',
                   color: 'var(--bg)',
-                  fontFamily: "'Syne', sans-serif",
+                  fontFamily: "'Outfit', sans-serif",
                   fontWeight: 800,
                   fontSize: 11,
                   letterSpacing: '0.15em',
@@ -251,7 +251,7 @@ export function WorkoutsPage() {
             >
               {todayWorkout && (
                 <div style={{
-                  fontFamily: "'DM Mono', monospace",
+                  fontFamily: "'JetBrains Mono', monospace",
                   fontSize: 9,
                   color: 'var(--fg-3)',
                   letterSpacing: '0.15em',

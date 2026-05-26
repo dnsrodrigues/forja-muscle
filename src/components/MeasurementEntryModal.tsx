@@ -1,4 +1,4 @@
-import { useState } from 'react'
+﻿import { useState } from 'react'
 import { motion, AnimatePresence } from 'motion/react'
 import type { BodyMeasurement } from '../types'
 
@@ -75,7 +75,7 @@ export function MeasurementEntryModal({ isOpen, onClose, onSaved, onSave }: Prop
             exit={{ opacity: 0 }}
             style={{
               position: 'fixed', inset: 0,
-              background: 'rgba(5,5,10,0.85)',
+              background: 'rgba(6, 7, 26,0.85)',
               backdropFilter: 'blur(8px)',
               zIndex: 50,
             }}
@@ -106,20 +106,20 @@ export function MeasurementEntryModal({ isOpen, onClose, onSaved, onSave }: Prop
             }} />
 
             <div style={{
-              fontFamily: "'DM Mono', monospace",
+              fontFamily: "'JetBrains Mono', monospace",
               fontSize: 9, color: 'var(--accent)',
               letterSpacing: '0.15em', textTransform: 'uppercase', marginBottom: 4,
             }}>
               // nova medição
             </div>
             <div style={{
-              fontFamily: "'Syne', sans-serif", fontWeight: 800,
+              fontFamily: "'Outfit', sans-serif", fontWeight: 800,
               fontSize: 20, color: 'var(--fg)', letterSpacing: '-0.02em', marginBottom: 6,
             }}>
               Medidas Corporais
             </div>
             <div style={{
-              fontFamily: "'DM Mono', monospace", fontSize: 10,
+              fontFamily: "'JetBrains Mono', monospace", fontSize: 10,
               color: 'var(--fg-3)', fontStyle: 'italic', marginBottom: 20,
             }}>
               // preencha apenas os campos que mediu
@@ -135,7 +135,7 @@ export function MeasurementEntryModal({ isOpen, onClose, onSaved, onSave }: Prop
               {FIELDS.map((f) => (
                 <div key={f.key}>
                   <div style={{
-                    fontFamily: "'DM Mono', monospace", fontSize: 8,
+                    fontFamily: "'JetBrains Mono', monospace", fontSize: 8,
                     color: 'var(--fg-3)', letterSpacing: '0.12em',
                     textTransform: 'uppercase', marginBottom: 4,
                   }}>
@@ -156,7 +156,7 @@ export function MeasurementEntryModal({ isOpen, onClose, onSaved, onSave }: Prop
                       border: '1px solid var(--border-md)',
                       borderRadius: 6,
                       padding: '10px 12px',
-                      fontFamily: "'DM Mono', monospace",
+                      fontFamily: "'JetBrains Mono', monospace",
                       fontSize: 13,
                       color: 'var(--fg)',
                       outline: 'none',
@@ -172,7 +172,7 @@ export function MeasurementEntryModal({ isOpen, onClose, onSaved, onSave }: Prop
             {/* Data */}
             <div style={{ marginBottom: 24 }}>
               <div style={{
-                fontFamily: "'DM Mono', monospace", fontSize: 9,
+                fontFamily: "'JetBrains Mono', monospace", fontSize: 9,
                 color: 'var(--fg-3)', letterSpacing: '0.15em',
                 textTransform: 'uppercase', marginBottom: 6,
               }}>
@@ -189,7 +189,7 @@ export function MeasurementEntryModal({ isOpen, onClose, onSaved, onSave }: Prop
                   border: '1px solid var(--border-md)',
                   borderRadius: 6,
                   padding: '10px 14px',
-                  fontFamily: "'DM Mono', monospace",
+                  fontFamily: "'JetBrains Mono', monospace",
                   fontSize: 12,
                   color: 'var(--fg)',
                   outline: 'none',
@@ -202,7 +202,7 @@ export function MeasurementEntryModal({ isOpen, onClose, onSaved, onSave }: Prop
 
             {error && (
               <div style={{
-                fontFamily: "'DM Mono', monospace", fontSize: 10,
+                fontFamily: "'JetBrains Mono', monospace", fontSize: 10,
                 color: 'var(--danger)', marginBottom: 12,
               }}>
                 ⚠ {error}
@@ -216,7 +216,7 @@ export function MeasurementEntryModal({ isOpen, onClose, onSaved, onSave }: Prop
                 width: '100%',
                 background: canSave ? 'var(--accent)' : 'var(--surface-3)',
                 border: 'none', borderRadius: 8, padding: '14px',
-                fontFamily: "'Syne', sans-serif", fontWeight: 800,
+                fontFamily: "'Outfit', sans-serif", fontWeight: 800,
                 fontSize: 13, letterSpacing: '0.04em', textTransform: 'uppercase',
                 color: canSave ? '#05050a' : 'var(--fg-3)',
                 cursor: canSave && !saving ? 'pointer' : 'not-allowed',

@@ -7,8 +7,8 @@ MUSCLE TRAINING é um PWA (app web instalável no celular) de gerenciamento de t
 > Documentação completa: [PRD](docs/superpowers/specs/2026-05-22-musctrainig-prd.md) | [Plan.md](Plan.md)  
 > Toda decisão de funcionalidade deve ser validada contra o PRD. Não implementar nada fora do escopo sem confirmar com o usuário.
 
-**Fases concluídas:** 1, 2, 3, 4, 4.5 (Design System), 5 (Fichas de Treino), 6 (Execução de Treino)  
-**Próxima fase:** 7 — Histórico e Progressão
+**Fases concluídas:** 1, 2, 3, 4, 4.5 (Design System), 5 (Fichas de Treino), 6 (Execução de Treino), 7 (Histórico e Progressão)  
+**Próxima fase:** 8 — Nutrição + IA (Gemini)
 
 ---
 
@@ -97,6 +97,11 @@ CLAUDE.md                  — este arquivo
 | `/perfil` | ProfilePage | logado |
 | `/workouts` | WorkoutsPage | logado (aluno vê as suas) |
 | `/workouts/:id` | WorkoutDetailPage | logado |
+| `/workouts/:id/session` | WorkoutSessionPage | logado |
+| `/historico` | HistoryPage | logado |
+| `/historico/:logId` | SessionDetailPage | logado |
+| `/progresso` | ProgressPage | logado |
+| `/medidas` | MeasurementsPage | logado |
 | `/admin/workouts` | WorkoutsAdminPage | admin |
 | `/admin/workouts/new` | WorkoutFormPage | admin |
 | `/admin/workouts/:id/edit` | WorkoutFormPage | admin |
@@ -130,13 +135,14 @@ CLAUDE.md                  — este arquivo
 
 ---
 
-## Design System v2 "Nova"
+## Design System v3 "Aurora"
+
+Inspirado em glassmorphism cósmico: fundo navy profundo + blobs radiais azul/roxo, borda animada conic-gradient.
 
 ### Tipografia
-- **Display/títulos:** `Syne` weight 800 — `fontFamily: "'Syne', sans-serif", fontWeight: 800`
-- **Corpo/mono/labels:** `DM Mono` weight 300/400 — `fontFamily: "'DM Mono', monospace"`
-- Labels de seção: DM Mono, 9px, `letterSpacing: '0.15em'`, uppercase, `color: var(--fg-3)`
-- Comentários de código no UI: `// texto assim` em DM Mono itálico
+- **Display/títulos:** `Outfit` weight 700/800 — `fontFamily: "'Outfit', sans-serif", fontWeight: 800`
+- **Labels/mono:** `JetBrains Mono` weight 400 — `fontFamily: "'JetBrains Mono', monospace"`
+- Labels de seção: JetBrains Mono, 9px, `letterSpacing: '0.15em'`, uppercase, `color: var(--fg-3)`
 
 ### Tema Dark / Light
 - Toggle via `ThemeSwitcher` — armazena em `localStorage` chave `'musc-color-mode'`
@@ -147,20 +153,23 @@ CLAUDE.md                  — este arquivo
 
 | Variável | Dark | Light | Uso |
 |----------|------|-------|-----|
-| `var(--bg)` | `#05050a` | `#f5f4ee` | fundo da página |
-| `var(--surface)` | `#0e0e16` | `#eceae2` | cards, painéis |
-| `var(--accent)` | `#c8f04a` | `#5a9400` | cor primária |
-| `var(--fg)` | `#f0ede6` | `#0a0a12` | texto principal |
-| `var(--fg-2)` | `rgba(240,237,230,0.7)` | — | texto secundário |
-| `var(--fg-3)` | `rgba(240,237,230,0.35)` | — | texto fraco |
-| `var(--border)` | `rgba(255,255,255,0.06)` | — | borda sutil |
-| `var(--border-md)` | `rgba(255,255,255,0.12)` | — | borda normal |
-| `var(--danger)` | `#ef4444` | — | erros |
+| `var(--bg)` | `#06071a` | `#f0f1ff` | fundo da página |
+| `var(--surface)` | `#0c0e28` | `#e6e8ff` | cards, painéis |
+| `var(--accent)` | `#6c8ef7` | `#3d5ee8` | cor primária (azul) |
+| `var(--accent-2)` | `#c44fe0` | `#9a2ec4` | cor secundária (roxo) |
+| `var(--accent-glow)` | `rgba(108,142,247,0.28)` | — | glow do accent |
+| `var(--accent-muted)` | `rgba(108,142,247,0.13)` | — | fundo suave accent |
+| `var(--fg)` | `#eeedf8` | `#0e0f2e` | texto principal |
+| `var(--fg-2)` | `rgba(238,237,248,0.55)` | — | texto secundário |
+| `var(--fg-3)` | `rgba(238,237,248,0.28)` | — | texto fraco |
+| `var(--border)` | `rgba(255,255,255,0.07)` | — | borda sutil |
+| `var(--border-md)` | `rgba(255,255,255,0.13)` | — | borda normal |
+| `var(--danger)` | `#f87171` | — | erros |
 | `var(--success)` | `#4ade80` | — | sucesso |
 
 ### Padrões visuais recorrentes
 ```tsx
-// Card ativo (destaque com borda lime à esquerda)
+// Card ativo (destaque com borda azul à esquerda)
 border: '1px solid var(--border)'
 borderLeft: '2px solid var(--accent)'
 
@@ -168,31 +177,30 @@ borderLeft: '2px solid var(--accent)'
 <div className="skeleton" style={{ height: 64, borderRadius: 4 }} />
 
 // Label de seção
-fontFamily: "'DM Mono', monospace", fontSize: 9,
+fontFamily: "'JetBrains Mono', monospace", fontSize: 9,
 color: 'var(--fg-3)', letterSpacing: '0.15em', textTransform: 'uppercase'
 
-// Grid decorativo de fundo (12 colunas)
-<div className="fixed inset-0 pointer-events-none z-0"
-  style={{ display: 'grid', gridTemplateColumns: 'repeat(12, 1fr)' }}>
-  {Array.from({ length: 12 }).map((_, i) => (
-    <span key={i} style={{ borderRight: '1px solid var(--border)' }} />
-  ))}
-</div>
+// Card glassmorphism (classe CSS)
+<div className="glass-card" style={{ borderRadius: 12, padding: 16 }} />
+
+// Borda animada conic-gradient (classe CSS)
+<div className="glow-border" style={{ borderRadius: 12 }} />
+
+// Texto com gradiente (classe CSS)
+<h1 className="gradient-text">Título</h1>
 ```
+
+### Classes CSS especiais (em `src/index.css`)
+- `.glass-card` — glassmorphism: blur + fundo semi-transparente + borda branca sutil
+- `.glow-border` — borda animada azul/roxo girando (conic-gradient, 8s)
+- `.gradient-text` — texto com gradiente `--accent-light` → `#fff`
+- `.deep-card` — sombra profunda estilo CTA (para modais e cards principais)
 
 ---
 
 ## Tailwind CSS v4
 
 Não existe `tailwind.config.js`. Cores customizadas ficam em `src/index.css` dentro de `@theme {}`.
-
-| Uso | Classe |
-|-----|--------|
-| Cor primária lime | `bg-orange-500` / `text-orange-500` ¹ |
-| Texto sobre lime | `text-[#05050a]` |
-| Bordas sutis | `border-white/10` |
-
-> ¹ `orange-500` foi sobrescrito no `@theme {}` para `#c8f04a`. Use `orange-*` normalmente — já é lime.
 
 ---
 
