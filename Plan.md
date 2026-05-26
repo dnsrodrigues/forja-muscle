@@ -19,7 +19,7 @@
 | 4 | Perfil do usuário | ✅ Completa |
 | 4.5 | Design System v2 "Nova" (Syne + DM Mono + lime #c8f04a + dark/light) | ✅ Completa |
 | 5 | Fichas de treino (CRUD admin + visualização aluno) | ✅ Completa |
-| 6 | Execução de treino (séries, timer) | ⏳ Pendente |
+| 6 | Execução de treino (séries, timer) | ✅ Completa |
 | 7 | Histórico e progressão (gráficos) | ⏳ Pendente |
 | 8 | Nutrição + IA (Gemini) | ⏳ Pendente |
 | 9 | Painel admin (gestão de alunos) | ⏳ Pendente |

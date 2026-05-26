@@ -7,8 +7,8 @@ MUSCLE TRAINING é um PWA (app web instalável no celular) de gerenciamento de t
 > Documentação completa: [PRD](docs/superpowers/specs/2026-05-22-musctrainig-prd.md) | [Plan.md](Plan.md)  
 > Toda decisão de funcionalidade deve ser validada contra o PRD. Não implementar nada fora do escopo sem confirmar com o usuário.
 
-**Fases concluídas:** 1, 2, 3, 4, 4.5 (Design System), 5 (Fichas de Treino)  
-**Próxima fase:** 6 — Execução de Treino
+**Fases concluídas:** 1, 2, 3, 4, 4.5 (Design System), 5 (Fichas de Treino), 6 (Execução de Treino)  
+**Próxima fase:** 7 — Histórico e Progressão
 
 ---
 
