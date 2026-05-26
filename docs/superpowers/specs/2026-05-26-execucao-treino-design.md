@@ -81,6 +81,13 @@ Ao finalizar ou sair: navega de volta para `/workouts`.
 - Atualiza `workout_logs` SET `finished_at = now()`, `difficulty`, `notes`, `duration_minutes`
 - Chamado ao confirmar no `WorkoutFinishModal`
 
+### `deleteWorkoutSession(workoutLogId: string): Promise<void>`
+
+- Apaga todos os `exercise_logs` onde `workout_log_id = workoutLogId`
+- Apaga o `workout_log` onde `id = workoutLogId`
+- Chamado apenas quando o aluno escolhe "Descartar treino" ao sair
+- Exceção explícita à regra de soft delete — o aluno pediu para remover os dados
+
 ---
 
 ## Componentes
@@ -220,9 +227,13 @@ handleTimerTick():  // via setInterval
 [ WorkoutFinishModal — sobrepõe a tela ]
 ```
 
-**Outros exercícios (colapsados):** são informativos — mostram nome, grupo muscular e nº de séries. O aluno **não pode tocar para pular** para eles diretamente; o avanço acontece automaticamente quando todas as séries do exercício atual são concluídas. Isso mantém o fluxo linear e evita séries puladas acidentalmente.
+**Outros exercícios (colapsados):** mostram nome, grupo muscular e nº de séries. O aluno **pode tocar** em qualquer exercício colapsado para ir diretamente a ele — `currentExerciseIdx` é atualizado para o índice do exercício tocado. Isso dá flexibilidade para pular exercícios ou voltar a um anterior. Exercícios com todas as séries concluídas exibem badge "✓ concluído" no card colapsado.
 
-**Botão "← Sair":** exibe um diálogo de confirmação antes de sair ("Tem certeza? O progresso das séries já registradas não se perde, mas o treino ficará incompleto."). Se confirmar, navega para `/workouts`. O `workout_log` fica com `finished_at = null` — tratado como sessão incompleta.
+**Botão "← Sair":** abre um modal com duas opções:
+- **"Descartar treino"** — chama `deleteWorkoutSession(workoutLogId)` (apaga o `workout_log` e todos os `exercise_logs` da sessão) → navega para `/workouts`
+- **"Salvar incompleto"** — mantém o `workout_log` sem `finished_at` e os `exercise_logs` já salvos → navega para `/workouts`
+
+> **Nova função necessária no serviço:** `deleteWorkoutSession(workoutLogId: string): Promise<void>` — apaga fisicamente o `workout_log` (e os `exercise_logs` por cascade no banco, se configurado, ou em duas queries separadas). Esta é a única exceção à regra de soft delete: o aluno explicitamente pediu para descartar.
 
 ---
 
@@ -243,9 +254,12 @@ handleTimerTick():  // via setInterval
 - [ ] Cada série registrada aparece em `exercise_logs` no Supabase imediatamente
 - [ ] Timer inicia automaticamente, pode pausar e pular
 - [ ] Instruções do professor e link de vídeo aparecem ao expandir o toggle
+- [ ] Aluno pode tocar em qualquer exercício colapsado para ir diretamente a ele
+- [ ] Ao tocar "← Sair", modal oferece "Descartar treino" ou "Salvar incompleto"
+- [ ] "Descartar treino" apaga `workout_log` e `exercise_logs` do banco
 - [ ] Modal de finalização salva dificuldade e observações em `workout_logs`
 - [ ] Após finalizar, `workout_log` tem `finished_at`, `duration_minutes` e `difficulty` preenchidos
-- [ ] Navega de volta para `/workouts` após salvar
+- [ ] Navega de volta para `/workouts` após salvar ou descartar
 
 ---
 
