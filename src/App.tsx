@@ -8,6 +8,7 @@ import { DashboardPage } from './pages/DashboardPage'
 import { ProfilePage } from './pages/ProfilePage'
 import { WorkoutsPage } from './pages/WorkoutsPage'
 import { WorkoutDetailPage } from './pages/WorkoutDetailPage'
+import { WorkoutSessionPage } from './pages/WorkoutSessionPage'
 import { WorkoutsAdminPage } from './pages/admin/WorkoutsAdminPage'
 import { WorkoutFormPage } from './pages/admin/WorkoutFormPage'
 import { NotFoundPage } from './pages/NotFoundPage'
@@ -39,6 +40,9 @@ function App() {
               {/* ── Fase 5 — Fichas de Treino (aluno) ── */}
               <Route path="/workouts" element={<WorkoutsPage />} />
               <Route path="/workouts/:id" element={<WorkoutDetailPage />} />
+
+              {/* ── Fase 6 — Execução de Treino ── */}
+              <Route path="/workouts/:id/session" element={<WorkoutSessionPage />} />
 
               {/* ── Rotas exclusivas do admin ── */}
               <Route element={<AdminRoute />}>

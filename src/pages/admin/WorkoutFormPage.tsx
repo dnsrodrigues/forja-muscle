@@ -8,12 +8,11 @@ import {
   createWorkout,
   updateWorkout,
   addExerciseToWorkout,
-  removeExerciseFromWorkout,
   updateWorkoutExercise,
 } from '../../services/workout.service'
 import { ExerciseRow } from '../../components/ExerciseRow'
 import { ExerciseSelector } from '../../components/ExerciseSelector'
-import type { Workout, WorkoutExercise, Exercise, WeekDay } from '../../types'
+import type { WorkoutExercise, Exercise, WeekDay } from '../../types'
 import { WEEK_DAY_LABELS } from '../../types'
 
 const ALL_WEEK_DAYS: WeekDay[] = [
@@ -41,7 +40,7 @@ export function WorkoutFormPage() {
   const [saving, setSaving] = useState(false)
   const [errors, setErrors] = useState<{ name?: string; exercises?: string }>({})
   const [loadError, setLoadError] = useState<string | null>(null)
-  const [workoutId, setWorkoutId] = useState<string | null>(id ?? null)
+  const [workoutId] = useState<string | null>(id ?? null)
 
   // Carrega ficha existente ao editar
   useEffect(() => {

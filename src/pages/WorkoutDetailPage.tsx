@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
-import { useParams, Link } from 'react-router-dom'
+import { useParams, Link, useNavigate } from 'react-router-dom'
 import { motion } from 'motion/react'
-import { ArrowLeft, RefreshCw } from 'lucide-react'
+import { ArrowLeft, RefreshCw, Play } from 'lucide-react'
 import { getWorkoutById } from '../services/workout.service'
 import { ExerciseRow } from '../components/ExerciseRow'
 import type { Workout } from '../types'
@@ -9,6 +9,7 @@ import { WEEK_DAY_SHORT } from '../types'
 
 export function WorkoutDetailPage() {
   const { id } = useParams<{ id: string }>()
+  const navigate = useNavigate()
   const [workout, setWorkout] = useState<Workout | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -137,6 +138,44 @@ export function WorkoutDetailPage() {
                 <RefreshCw size={10} /> Tentar novamente
               </button>
             </div>
+          )}
+
+          {/* Botão Iniciar Treino */}
+          {!loading && !error && workout && workout.exercises && workout.exercises.length > 0 && (
+            <motion.div
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.3 }}
+              style={{ marginBottom: 16 }}
+            >
+              <button
+                onClick={() => navigate(`/workouts/${id}/session`)}
+                style={{
+                  width: '100%',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: 8,
+                  background: 'var(--accent)',
+                  border: 'none',
+                  borderRadius: 8,
+                  padding: '14px',
+                  fontFamily: "'Syne', sans-serif",
+                  fontWeight: 800,
+                  fontSize: 13,
+                  color: '#05050a',
+                  letterSpacing: '0.04em',
+                  textTransform: 'uppercase',
+                  cursor: 'pointer',
+                  transition: 'opacity 0.15s',
+                }}
+                onMouseEnter={(e) => (e.currentTarget.style.opacity = '0.88')}
+                onMouseLeave={(e) => (e.currentTarget.style.opacity = '1')}
+              >
+                <Play size={15} fill="#05050a" strokeWidth={0} />
+                Iniciar Treino
+              </button>
+            </motion.div>
           )}
 
           {/* Lista de exercícios */}

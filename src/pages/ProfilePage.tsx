@@ -366,11 +366,12 @@ export function ProfilePage() {
                     e.currentTarget.style.borderColor = 'color-mix(in srgb, var(--accent) 60%, white)'
                     e.currentTarget.style.boxShadow = '0 0 0 4px var(--accent-glow)'
                   }}
-                  onBlur={(e) => {
-                    e.currentTarget.style.borderColor = 'var(--line)'
-                    e.currentTarget.style.boxShadow = 'none'
-                  }}
-                  {...register('goal')}
+                  {...register('goal', {
+                    onBlur: (e) => {
+                      e.currentTarget.style.borderColor = 'var(--line)'
+                      e.currentTarget.style.boxShadow = 'none'
+                    },
+                  })}
                 />
                 {errors.goal && (
                   <p className="text-xs text-red-400 flex items-center gap-1">

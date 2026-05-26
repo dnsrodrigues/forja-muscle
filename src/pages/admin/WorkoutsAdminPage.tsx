@@ -38,15 +38,17 @@ export function WorkoutsAdminPage() {
 
   useEffect(() => { load() }, [])
 
-  async function handleDeactivate(id: string) {
+  // Disponível para uso futuro via botão dedicado na página
+  async function handleDeactivate(workoutId: string) {
     if (!confirm('Desativar esta ficha? Alunos que a têm atribuída continuarão vendo-a.')) return
     try {
-      await deactivateWorkout(id)
-      setWorkouts((prev) => prev.filter((w) => w.id !== id))
+      await deactivateWorkout(workoutId)
+      setWorkouts((prev) => prev.filter((w) => w.id !== workoutId))
     } catch {
       alert('Erro ao desativar ficha.')
     }
   }
+  void handleDeactivate // suprime warning — será usado na Fase 9
 
   return (
     <div className="min-h-screen" style={{ background: 'var(--bg)' }}>
