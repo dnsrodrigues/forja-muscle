@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react'
 import { LogOut, ChevronRight } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { motion } from 'motion/react'
@@ -5,18 +6,41 @@ import { useAuth } from '../context/AuthContext'
 import { Avatar } from '../components/ui/Avatar'
 import { Button } from '../components/ui/Button'
 import { ThemeSwitcher } from '../components/ui/ThemeSwitcher'
+import { getWorkoutHistory } from '../services/history.service'
+import { getUserWeights } from '../services/measurements.service'
+import type { WorkoutLog, UserWeight } from '../types'
 
-// Dashboard placeholder — será substituído na Fase 7
+const DIFFICULTY_EMOJI: Record<string, string> = {
+  easy: '😊', medium: '💪', hard: '🔥', terrible: '💀',
+}
 
 export function DashboardPage() {
   const { profile, isAdmin, signOut } = useAuth()
+  const [lastSession, setLastSession] = useState<WorkoutLog | null | undefined>(undefined)
+  const [lastWeight, setLastWeight] = useState<UserWeight | null | undefined>(undefined)
 
   const nameParts = (profile?.full_name ?? 'Atleta').split(' ')
   const firstName = nameParts[0]
   const lastName  = nameParts.slice(1).join(' ')
 
+  useEffect(() => {
+    if (!profile?.id || isAdmin) return
+    getWorkoutHistory(profile.id)
+      .then((data) => setLastSession(data[0] ?? null))
+      .catch(() => setLastSession(null))
+    getUserWeights(profile.id)
+      .then((data) => setLastWeight(data[0] ?? null))
+      .catch(() => setLastWeight(null))
+  }, [profile?.id, isAdmin])
+
   async function handleLogout() {
     await signOut()
+  }
+
+  function formatDate(iso: string) {
+    return new Date(iso).toLocaleDateString('pt-BR', {
+      weekday: 'short', day: '2-digit', month: 'short',
+    })
   }
 
   return (
@@ -369,6 +393,159 @@ export function DashboardPage() {
             />
           </Link>
         </motion.div>
+
+        {/* ── Cards de Histórico/Progresso/Medidas (apenas aluno) ── */}
+        {!isAdmin && (
+          <motion.div
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.24, ease: [0.22, 1, 0.36, 1] }}
+            style={{ display: 'flex', flexDirection: 'column', gap: 1, marginTop: 12 }}
+          >
+            {/* Label */}
+            <div style={{
+              fontFamily: "'DM Mono', monospace", fontSize: 9,
+              color: 'var(--fg-3)', letterSpacing: '0.15em',
+              textTransform: 'uppercase', marginBottom: 6, marginTop: 4,
+            }}>
+              // acompanhamento
+            </div>
+
+            {/* Card: Último treino */}
+            <Link
+              to="/historico"
+              style={{
+                display: 'block',
+                background: 'var(--surface)',
+                border: '1px solid var(--border)',
+                borderLeft: '2px solid var(--surface-3)',
+                padding: '12px 14px',
+                textDecoration: 'none',
+                transition: 'border-left-color 0.15s, background 0.15s',
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.borderLeftColor = 'var(--accent)'
+                e.currentTarget.style.background = 'rgba(200,240,74,0.03)'
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.borderLeftColor = 'var(--surface-3)'
+                e.currentTarget.style.background = 'var(--surface)'
+              }}
+            >
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <div>
+                  <div style={{
+                    fontFamily: "'Syne', sans-serif", fontSize: 12,
+                    fontWeight: 700, color: 'var(--fg)', letterSpacing: '0.03em',
+                  }}>
+                    Histórico de Treinos
+                  </div>
+                  <div style={{
+                    fontFamily: "'DM Mono', monospace", fontSize: 9,
+                    color: lastSession ? 'var(--accent)' : 'var(--fg-3)',
+                    letterSpacing: '0.04em', marginTop: 2, fontStyle: 'italic', opacity: 0.8,
+                  }}>
+                    {lastSession === undefined
+                      ? '// carregando...'
+                      : lastSession === null
+                        ? '// nenhum treino registrado ainda'
+                        : `// último: ${formatDate(lastSession.started_at)} ${lastSession.difficulty ? DIFFICULTY_EMOJI[lastSession.difficulty] : ''} ${lastSession.duration_minutes ? `— ${lastSession.duration_minutes}min` : ''}`
+                    }
+                  </div>
+                </div>
+                <ChevronRight size={14} style={{ color: 'var(--fg-3)', opacity: 0.5, flexShrink: 0 }} />
+              </div>
+            </Link>
+
+            {/* Card: Progresso */}
+            <Link
+              to="/progresso"
+              style={{
+                display: 'block',
+                background: 'var(--surface)',
+                border: '1px solid var(--border)',
+                borderLeft: '2px solid var(--surface-3)',
+                padding: '12px 14px',
+                textDecoration: 'none',
+                transition: 'border-left-color 0.15s, background 0.15s',
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.borderLeftColor = 'var(--accent)'
+                e.currentTarget.style.background = 'rgba(200,240,74,0.03)'
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.borderLeftColor = 'var(--surface-3)'
+                e.currentTarget.style.background = 'var(--surface)'
+              }}
+            >
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <div>
+                  <div style={{
+                    fontFamily: "'Syne', sans-serif", fontSize: 12,
+                    fontWeight: 700, color: 'var(--fg)', letterSpacing: '0.03em',
+                  }}>
+                    Gráficos de Progresso
+                  </div>
+                  <div style={{
+                    fontFamily: "'DM Mono', monospace", fontSize: 9,
+                    color: 'var(--fg-3)', letterSpacing: '0.04em',
+                    marginTop: 2, fontStyle: 'italic', opacity: 0.7,
+                  }}>
+                    // evolução de carga e frequência semanal
+                  </div>
+                </div>
+                <ChevronRight size={14} style={{ color: 'var(--fg-3)', opacity: 0.5, flexShrink: 0 }} />
+              </div>
+            </Link>
+
+            {/* Card: Peso & Medidas */}
+            <Link
+              to="/medidas"
+              style={{
+                display: 'block',
+                background: 'var(--surface)',
+                border: '1px solid var(--border)',
+                borderLeft: '2px solid var(--surface-3)',
+                padding: '12px 14px',
+                textDecoration: 'none',
+                transition: 'border-left-color 0.15s, background 0.15s',
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.borderLeftColor = 'var(--accent)'
+                e.currentTarget.style.background = 'rgba(200,240,74,0.03)'
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.borderLeftColor = 'var(--surface-3)'
+                e.currentTarget.style.background = 'var(--surface)'
+              }}
+            >
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <div>
+                  <div style={{
+                    fontFamily: "'Syne', sans-serif", fontSize: 12,
+                    fontWeight: 700, color: 'var(--fg)', letterSpacing: '0.03em',
+                  }}>
+                    Peso & Medidas
+                  </div>
+                  <div style={{
+                    fontFamily: "'DM Mono', monospace", fontSize: 9,
+                    color: lastWeight ? 'var(--accent)' : 'var(--fg-3)',
+                    letterSpacing: '0.04em', marginTop: 2, fontStyle: 'italic', opacity: 0.8,
+                  }}>
+                    {lastWeight === undefined
+                      ? '// carregando...'
+                      : lastWeight === null
+                        ? '// registre seu peso para acompanhar'
+                        : `// atual: ${Number(lastWeight.weight_kg).toFixed(1)} kg`
+                    }
+                  </div>
+                </div>
+                <ChevronRight size={14} style={{ color: 'var(--fg-3)', opacity: 0.5, flexShrink: 0 }} />
+              </div>
+            </Link>
+
+          </motion.div>
+        )}
 
       </main>
     </div>

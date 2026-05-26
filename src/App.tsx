@@ -9,6 +9,10 @@ import { ProfilePage } from './pages/ProfilePage'
 import { WorkoutsPage } from './pages/WorkoutsPage'
 import { WorkoutDetailPage } from './pages/WorkoutDetailPage'
 import { WorkoutSessionPage } from './pages/WorkoutSessionPage'
+import { HistoryPage } from './pages/HistoryPage'
+import { SessionDetailPage } from './pages/SessionDetailPage'
+import { ProgressPage } from './pages/ProgressPage'
+import { MeasurementsPage } from './pages/MeasurementsPage'
 import { WorkoutsAdminPage } from './pages/admin/WorkoutsAdminPage'
 import { WorkoutFormPage } from './pages/admin/WorkoutFormPage'
 import { NotFoundPage } from './pages/NotFoundPage'
@@ -43,6 +47,12 @@ function App() {
 
               {/* ── Fase 6 — Execução de Treino ── */}
               <Route path="/workouts/:id/session" element={<WorkoutSessionPage />} />
+
+              {/* ── Fase 7 — Histórico & Progressão ── */}
+              <Route path="/historico" element={<HistoryPage />} />
+              <Route path="/historico/:logId" element={<SessionDetailPage />} />
+              <Route path="/progresso" element={<ProgressPage />} />
+              <Route path="/medidas" element={<MeasurementsPage />} />
 
               {/* ── Rotas exclusivas do admin ── */}
               <Route element={<AdminRoute />}>

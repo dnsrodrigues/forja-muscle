@@ -150,6 +150,27 @@ export interface AddExerciseDTO {
   order_index: number
 }
 
+// --- Histórico e Progressão (Fase 7) ---
+
+export interface WorkoutLogDetail extends WorkoutLog {
+  workout?: Workout
+  exercise_logs: ExerciseLogDetail[]
+}
+
+export interface ExerciseLogDetail extends ExerciseLog {
+  exercise: Exercise
+}
+
+export interface LoadPoint {
+  date: string      // 'YYYY-MM-DD'
+  maxLoad: number   // kg máximo naquela sessão
+}
+
+export interface WeekFrequency {
+  week: string      // 'YYYY-MM-DD' (segunda-feira da semana)
+  count: number
+}
+
 // --- Admin — Ficha com dados do aluno ---
 
 export interface StudentSummary {
