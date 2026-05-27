@@ -1,13 +1,14 @@
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { motion } from 'motion/react'
 import { Link } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
-import { updateProfile } from '../services/profile.service'
+import { updateProfile, uploadAvatar } from '../services/profile.service'
 import { Topbar } from '../components/layout/Topbar'
 import { Icon } from '../components/ui/Icon'
+import { AvatarCropModal } from '../components/ui/AvatarCropModal'
 
 // ─── Schema ───────────────────────────────────────────────────────────────────
 
@@ -32,9 +33,44 @@ type ProfileFormData = z.infer<typeof profileSchema>
 // ─── Página ──────────────────────────────────────────────────────────────────
 
 export function ProfilePage() {
-  const { user, profile, isAdmin, signOut } = useAuth()
+  const { user, profile, isAdmin, signOut, refreshProfile } = useAuth()
   const [saveStatus, setSaveStatus] = useState<'idle' | 'success' | 'error'>('idle')
   const [errorMsg, setErrorMsg] = useState('')
+
+  // Avatar / foto de perfil
+  const fileInputRef = useRef<HTMLInputElement>(null)
+  const [cropSrc, setCropSrc] = useState<string | null>(null)
+  const [isUploadingAvatar, setIsUploadingAvatar] = useState(false)
+  const [avatarError, setAvatarError] = useState('')
+
+  function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0]
+    if (!file) return
+    // Cria uma URL temporária da foto para o recortador (não sai do dispositivo ainda)
+    setCropSrc(URL.createObjectURL(file))
+    // Limpa o valor para permitir selecionar o mesmo arquivo novamente
+    e.target.value = ''
+  }
+
+  async function handleCropConfirm(blob: Blob) {
+    if (!user) return
+    setIsUploadingAvatar(true)
+    setAvatarError('')
+    try {
+      await uploadAvatar(user.id, blob)
+      await refreshProfile()
+      setCropSrc(null)
+    } catch (err) {
+      setAvatarError(err instanceof Error ? err.message : 'Erro ao salvar foto')
+    } finally {
+      setIsUploadingAvatar(false)
+    }
+  }
+
+  function handleCropClose() {
+    if (cropSrc) URL.revokeObjectURL(cropSrc)
+    setCropSrc(null)
+  }
 
   const {
     register,
@@ -108,6 +144,16 @@ export function ProfilePage() {
         }
       />
 
+      {/* Modal de recorte — aparece quando o usuário escolhe uma foto */}
+      {cropSrc && (
+        <AvatarCropModal
+          imageSrc={cropSrc}
+          onConfirm={(blob) => void handleCropConfirm(blob)}
+          onClose={handleCropClose}
+          isLoading={isUploadingAvatar}
+        />
+      )}
+
       <div className="content">
         {/* HEADER do perfil */}
         <motion.div
@@ -115,14 +161,45 @@ export function ProfilePage() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4 }}
           className="card"
-          style={{ padding: 0, overflow: 'hidden' }}
+          style={{ padding: 0 }}
         >
-          <div
-            className="ph-img"
-            style={{ height: 180, borderRadius: 0, border: 'none' }}
-          />
           <div className="forja-profile-header">
-            <div className="forja-profile-avatar">{initial}</div>
+            {/* Input de arquivo oculto — abre a galeria/câmera do dispositivo */}
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/*"
+              onChange={handleFileChange}
+              style={{ display: 'none' }}
+              aria-hidden="true"
+            />
+
+            <div
+              className="forja-profile-avatar avatar-btn"
+              onClick={() => fileInputRef.current?.click()}
+              onKeyDown={(e) => e.key === 'Enter' && fileInputRef.current?.click()}
+              role="button"
+              tabIndex={0}
+              aria-label="Alterar foto de perfil"
+              title="Clique para alterar foto de perfil"
+            >
+              {profile?.avatar_url ? (
+                <img
+                  src={profile.avatar_url}
+                  alt={profile.full_name ?? 'Avatar'}
+                  style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: 12 }}
+                />
+              ) : (
+                <span className="avatar-initial">{initial}</span>
+              )}
+              {/* Overlay de câmera exibido no hover */}
+              <span className="avatar-cam-overlay" aria-hidden="true">
+                <CameraIcon />
+                <span style={{ fontSize: 10, fontFamily: 'var(--f-mono)', letterSpacing: '0.1em', marginTop: 4, textTransform: 'uppercase' }}>
+                  Alterar
+                </span>
+              </span>
+            </div>
             <div style={{ flex: 1, paddingBottom: 10, minWidth: 0 }}>
               <h1
                 className="f-display"
@@ -143,6 +220,25 @@ export function ProfilePage() {
             </div>
           </div>
         </motion.div>
+
+        {/* Erro de upload de avatar */}
+        {avatarError && (
+          <motion.div
+            initial={{ opacity: 0, y: -4 }}
+            animate={{ opacity: 1, y: 0 }}
+            style={{
+              padding: '10px 14px',
+              background: 'rgba(255,61,85,0.08)',
+              border: '1px solid rgba(255,61,85,0.25)',
+              borderRadius: 'var(--r-2)',
+              color: 'var(--danger)',
+              fontSize: 12,
+              marginTop: 8,
+            }}
+          >
+            ⚠ {avatarError}
+          </motion.div>
+        )}
 
         {/* DADOS PESSOAIS — formulário */}
         <motion.form
@@ -261,41 +357,19 @@ export function ProfilePage() {
           </div>
         </motion.form>
 
-        {/* Conta */}
-        <motion.div
-          initial={{ opacity: 0, y: 8 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4, delay: 0.16 }}
-          className="card"
-        >
-          <h2 className="card-title">CONTA</h2>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 18, marginTop: 18 }}>
-            <div>
-              <div className="label-sm">Email</div>
-              <div style={{ fontSize: 14, marginTop: 4, color: 'var(--text)' }}>
-                {profile?.email ?? '—'}
-              </div>
-            </div>
-            <div>
-              <div className="label-sm">Tipo de conta</div>
-              <div style={{ fontSize: 14, marginTop: 4, color: 'var(--text)' }}>
-                {isAdmin ? 'Personal Trainer' : 'Aluno'}
-              </div>
-            </div>
-          </div>
-        </motion.div>
       </div>
 
       <style>{`
         .forja-profile-header {
-          padding: 20px 28px 28px;
+          padding: 24px 28px 28px;
           display: flex;
           gap: 24px;
-          align-items: flex-end;
-          margin-top: -70px;
+          align-items: center;
           position: relative;
           flex-wrap: wrap;
         }
+
+        /* Avatar — base */
         .forja-profile-avatar {
           width: 140px;
           height: 140px;
@@ -309,7 +383,51 @@ export function ProfilePage() {
           font-size: 72px;
           color: var(--accent);
           flex-shrink: 0;
+          overflow: hidden;
+          position: relative;
         }
+
+        /* Avatar clicável */
+        .avatar-btn {
+          cursor: pointer;
+          transition: box-shadow 0.2s;
+        }
+        .avatar-btn:hover {
+          box-shadow: 0 0 0 3px var(--accent);
+        }
+        .avatar-btn:focus-visible {
+          box-shadow: 0 0 0 3px var(--accent);
+          outline: none;
+        }
+
+        .avatar-initial {
+          font-family: var(--f-display);
+          font-size: 72px;
+          color: var(--accent);
+          line-height: 1;
+          user-select: none;
+        }
+
+        /* Overlay de câmera — aparece no hover */
+        .avatar-cam-overlay {
+          position: absolute;
+          inset: 0;
+          background: rgba(6,7,26,0.72);
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          color: var(--fg);
+          opacity: 0;
+          transition: opacity 0.2s;
+          border-radius: 12px;
+          gap: 4px;
+        }
+        .avatar-btn:hover .avatar-cam-overlay,
+        .avatar-btn:focus-visible .avatar-cam-overlay {
+          opacity: 1;
+        }
+
         .forja-profile-grid {
           display: grid;
           grid-template-columns: 1fr 1fr;
@@ -317,10 +435,31 @@ export function ProfilePage() {
         }
         @media (max-width: 768px) {
           .forja-profile-grid { grid-template-columns: 1fr; }
-          .forja-profile-avatar { width: 100px; height: 100px; font-size: 48px; }
+          .forja-profile-avatar { width: 100px; height: 100px; }
+          .avatar-initial { font-size: 48px; }
         }
       `}</style>
     </>
+  )
+}
+
+// ─── Ícone de câmera ──────────────────────────────────────────────────────────
+
+function CameraIcon() {
+  return (
+    <svg
+      width={28}
+      height={28}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={1.5}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" />
+      <circle cx="12" cy="13" r="4" />
+    </svg>
   )
 }
 

@@ -14,6 +14,7 @@ interface AuthContextType {
   isAdmin: boolean
   signIn: (email: string, password: string) => Promise<void>
   signOut: () => Promise<void>
+  refreshProfile: () => Promise<void>
 }
 
 // -------------------------------------------------------------------
@@ -85,6 +86,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     if (error) throw error
   }
 
+  // Recarrega o perfil do banco (usado após upload de avatar, por exemplo)
+  async function refreshProfile() {
+    if (user) await fetchProfile(user.id)
+  }
+
   return (
     <AuthContext.Provider
       value={{
@@ -95,6 +101,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         isAdmin: profile?.role === 'admin',
         signIn,
         signOut,
+        refreshProfile,
       }}
     >
       {children}

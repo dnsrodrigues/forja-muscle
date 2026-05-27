@@ -741,6 +741,41 @@ select.input {
   100% { background-position: -200% 0; }
 }
 
+/* ── Slider de zoom do AvatarCropModal ── */
+.avatar-zoom-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 4px;
+  border-radius: 99px;
+  background: var(--bg-2);
+  outline: none;
+  cursor: pointer;
+}
+.avatar-zoom-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 8px rgba(108,142,247,0.5);
+  cursor: grab;
+  transition: transform 0.1s, box-shadow 0.1s;
+}
+.avatar-zoom-slider::-webkit-slider-thumb:active {
+  cursor: grabbing;
+  transform: scale(1.15);
+  box-shadow: 0 0 14px rgba(108,142,247,0.7);
+}
+.avatar-zoom-slider::-moz-range-thumb {
+  width: 18px;
+  height: 18px;
+  border: none;
+  border-radius: 50%;
+  background: var(--accent);
+  cursor: grab;
+}
+
 /* ── Scrollbar (subtle) ── */
 ::-webkit-scrollbar { width: 6px; height: 6px; }
 ::-webkit-scrollbar-thumb { background: var(--bg-3); border-radius: 999px; }
