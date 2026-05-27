@@ -1,6 +1,6 @@
 ﻿import { useState } from 'react'
 import { motion, AnimatePresence } from 'motion/react'
-import { Clock, Dumbbell, Hash } from 'lucide-react'
+import { Icon } from './ui/Icon'
 import type { WorkoutDifficulty } from '../types'
 
 interface WorkoutFinishModalProps {
@@ -115,9 +115,9 @@ export function WorkoutFinishModal({
               marginBottom: 24,
             }}>
               {[
-                { icon: <Clock size={14} />, value: `${Math.round(durationMinutes)}`, label: 'minutos' },
-                { icon: <Dumbbell size={14} />, value: String(totalExercises), label: 'exercícios' },
-                { icon: <Hash size={14} />, value: String(totalSets), label: 'séries' },
+                { icon: <Icon name="timer" size={14} />, value: `${Math.round(durationMinutes)}`, label: 'minutos' },
+                { icon: <Icon name="dumbbell" size={14} />, value: String(totalExercises), label: 'exercícios' },
+                { icon: <Icon name="hash" size={14} />, value: String(totalSets), label: 'séries' },
               ].map(({ icon, value, label }) => (
                 <div key={label} style={{
                   background: 'var(--bg-2)',

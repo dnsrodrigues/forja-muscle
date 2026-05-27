@@ -1,5 +1,5 @@
 ﻿import { useState, useEffect } from 'react'
-import { X, Search, Check } from 'lucide-react'
+import { Icon } from './ui/Icon'
 import { supabase } from '../lib/supabase'
 import { assignTemplateToStudent } from '../services/workout.service'
 import { useAuth } from '../context/AuthContext'
@@ -125,7 +125,7 @@ export function AssignWorkoutModal({
             onClick={onClose}
             style={{ background: 'transparent', border: 'none', color: 'var(--text-faint)', cursor: 'pointer', padding: 4, opacity: 0.5 }}
           >
-            <X size={16} />
+            <Icon name="x" size={16} />
           </button>
         </div>
 
@@ -137,7 +137,7 @@ export function AssignWorkoutModal({
             border: '1px solid var(--border)',
             borderRadius: 4, padding: '7px 10px',
           }}>
-            <Search size={13} style={{ color: 'var(--text-faint)', opacity: 0.5, flexShrink: 0 }} />
+            <Icon name="search" size={13} style={{ color: 'var(--text-faint)', opacity: 0.5, flexShrink: 0 }} />
             <input
               type="text"
               value={search}
@@ -227,7 +227,7 @@ export function AssignWorkoutModal({
                   {isAssigning ? (
                     <span>...</span>
                   ) : isAssigned ? (
-                    <><Check size={10} /> Atribuída</>
+                    <><Icon name="check" size={10} /> Atribuída</>
                   ) : (
                     'Atribuir'
                   )}

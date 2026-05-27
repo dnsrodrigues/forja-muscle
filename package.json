@@ -17,7 +17,6 @@
     "@hookform/resolvers": "^3.10.0",
     "@supabase/supabase-js": "^2.49.0",
     "@types/three": "^0.184.1",
-    "lucide-react": "^0.469.0",
     "motion": "^11.15.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",

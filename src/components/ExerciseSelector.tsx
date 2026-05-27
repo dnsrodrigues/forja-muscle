@@ -1,5 +1,5 @@
 ﻿import { useState, useEffect, useRef } from 'react'
-import { X, Search, Plus, ChevronLeft, Loader2 } from 'lucide-react'
+import { Icon } from './ui/Icon'
 import type { Exercise, MuscleGroup } from '../types'
 import { MUSCLE_GROUP_LABELS } from '../types'
 import { getExercises, createExercise } from '../services/workout.service'
@@ -177,7 +177,7 @@ export function ExerciseSelector({
                 </div>
               </div>
               <button onClick={onClose} style={{ background: 'transparent', border: 'none', color: 'var(--text-faint)', cursor: 'pointer', padding: 4, opacity: 0.5 }}>
-                <X size={16} />
+                <Icon name="x" size={16} />
               </button>
             </div>
 
@@ -189,7 +189,7 @@ export function ExerciseSelector({
                 border: '1px solid var(--border)',
                 borderRadius: 4, padding: '7px 10px', marginBottom: 10,
               }}>
-                <Search size={13} style={{ color: 'var(--text-faint)', opacity: 0.5, flexShrink: 0 }} />
+                <Icon name="search" size={13} style={{ color: 'var(--text-faint)', opacity: 0.5, flexShrink: 0 }} />
                 <input
                   ref={searchRef}
                   type="text"
@@ -203,7 +203,7 @@ export function ExerciseSelector({
                 />
                 {search && (
                   <button onClick={() => setSearch('')} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-faint)', opacity: 0.5 }}>
-                    <X size={12} />
+                    <Icon name="x" size={12} />
                   </button>
                 )}
               </div>
@@ -272,7 +272,7 @@ export function ExerciseSelector({
                     onMouseEnter={(e) => ((e.currentTarget as HTMLButtonElement).style.background = 'rgba(108, 142, 247,0.1)')}
                     onMouseLeave={(e) => ((e.currentTarget as HTMLButtonElement).style.background = 'rgba(108, 142, 247,0.06)')}
                   >
-                    <Plus size={14} />
+                    <Icon name="plus" size={14} />
                     Criar "{search.trim()}" na biblioteca
                   </button>
                 </div>
@@ -328,7 +328,7 @@ export function ExerciseSelector({
                       el.style.color = 'var(--text-faint)'
                     }}
                   >
-                    <Plus size={11} />
+                    <Icon name="plus" size={11} />
                     Criar exercício novo
                   </button>
                 </div>
@@ -352,7 +352,7 @@ export function ExerciseSelector({
                 onClick={() => setView('search')}
                 style={{ background: 'transparent', border: 'none', color: 'var(--text-faint)', cursor: 'pointer', padding: 2, opacity: 0.6, display: 'flex', alignItems: 'center' }}
               >
-                <ChevronLeft size={16} />
+                <Icon name="arrowL" size={16} />
               </button>
               <div style={{ flex: 1 }}>
                 <div style={{ fontFamily: "var(--f-display)", fontWeight: 800, fontSize: 14, color: 'var(--text)' }}>
@@ -363,7 +363,7 @@ export function ExerciseSelector({
                 </div>
               </div>
               <button onClick={onClose} style={{ background: 'transparent', border: 'none', color: 'var(--text-faint)', cursor: 'pointer', padding: 4, opacity: 0.5 }}>
-                <X size={16} />
+                <Icon name="x" size={16} />
               </button>
             </div>
 
@@ -495,17 +495,27 @@ export function ExerciseSelector({
                   cursor: creating ? 'not-allowed' : 'pointer',
                 }}
               >
-                {creating
-                  ? <><Loader2 size={11} style={{ animation: 'spin 1s linear infinite' }} /> Criando...</>
-                  : <><Plus size={11} /> Criar e Adicionar</>
-                }
+                {creating ? (
+                  <>
+                    <span style={{
+                      display: 'inline-block',
+                      width: 11, height: 11,
+                      borderRadius: '50%',
+                      border: '2px solid currentColor',
+                      borderTopColor: 'transparent',
+                      animation: 'forjaSpin 0.7s linear infinite',
+                    }} />
+                    Criando...
+                  </>
+                ) : (
+                  <><Icon name="plus" size={11} /> Criar e Adicionar</>
+                )}
               </button>
             </div>
           </>
         )}
       </div>
 
-      <style>{`@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }`}</style>
     </>
   )
 }

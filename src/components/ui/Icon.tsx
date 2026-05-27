@@ -26,6 +26,7 @@ export type IconName =
   | 'scale'
   | 'trending'
   | 'x'
+  | 'hash'
 
 const PATHS: Record<IconName, ReactNode> = {
   home: <path d="M3 11l9-8 9 8M5 9.5V21h14V9.5" />,
@@ -129,6 +130,7 @@ const PATHS: Record<IconName, ReactNode> = {
     </>
   ),
   x: <path d="M18 6L6 18M6 6l12 12" />,
+  hash: <path d="M9 4l-2 16M17 4l-2 16M4 9h16M3 15h16" />,
 }
 
 interface IconProps extends Omit<SVGProps<SVGSVGElement>, 'name'> {
