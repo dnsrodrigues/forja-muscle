@@ -4,13 +4,14 @@
 
 // --- Usuário ---
 
-export type UserRole = 'admin' | 'user'
+export type UserRole = 'super_admin' | 'trainer' | 'user'
 
 export interface UserProfile {
   id: string
   email: string
   full_name: string
   role: UserRole
+  trainer_id: string | null
   avatar_url?: string
   weight?: number         // peso atual em kg
   height?: number         // altura em cm
