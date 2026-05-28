@@ -16,6 +16,8 @@ import { ProgressPage } from './pages/ProgressPage'
 import { MeasurementsPage } from './pages/MeasurementsPage'
 import { WorkoutsAdminPage } from './pages/admin/WorkoutsAdminPage'
 import { WorkoutFormPage } from './pages/admin/WorkoutFormPage'
+import { TrainersAdminPage } from './pages/admin/TrainersAdminPage'
+import { TrainerFormPage } from './pages/admin/TrainerFormPage'
 import { NotFoundPage } from './pages/NotFoundPage'
 
 function App() {
@@ -45,12 +47,14 @@ function App() {
                 <Route path="/progresso" element={<ProgressPage />} />
                 <Route path="/medidas" element={<MeasurementsPage />} />
 
-                {/* Admin */}
+                {/* Admin / Trainer */}
                 <Route element={<AdminRoute />}>
                   <Route path="/admin" element={<Navigate to="/admin/workouts" replace />} />
                   <Route path="/admin/workouts" element={<WorkoutsAdminPage />} />
                   <Route path="/admin/workouts/new" element={<WorkoutFormPage />} />
                   <Route path="/admin/workouts/:id/edit" element={<WorkoutFormPage />} />
+                  <Route path="/admin/trainers" element={<TrainersAdminPage />} />
+                  <Route path="/admin/trainers/new" element={<TrainerFormPage />} />
                 </Route>
 
               </Route>

@@ -1,12 +1,10 @@
 import { Navigate, Outlet } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
 
-// Rota exclusiva para admin — redireciona alunos para o dashboard deles
+// Permite super_admin e trainer. Segurança real está no RLS do banco.
 export function AdminRoute() {
-  const { isAdmin, loading } = useAuth()
-
+  const { loading, isManager } = useAuth()
   if (loading) return null
-  if (!isAdmin) return <Navigate to="/dashboard" replace />
-
+  if (!isManager) return <Navigate to="/dashboard" replace />
   return <Outlet />
 }
