@@ -504,7 +504,7 @@ export function ProfilePage() {
           flex-direction: column;
           align-items: center;
           justify-content: center;
-          color: var(--fg);
+          color: var(--text);
           opacity: 0;
           transition: opacity 0.2s;
           border-radius: 12px;

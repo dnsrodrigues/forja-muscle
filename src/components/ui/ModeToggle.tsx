@@ -7,7 +7,7 @@ export function ModeToggle() {
     <div style={{
       display: 'flex',
       gap: 4,
-      background: 'var(--surface)',
+      background: 'var(--bg-1)',
       borderRadius: 20,
       padding: 3,
       border: '1px solid var(--border)',
@@ -24,7 +24,7 @@ export function ModeToggle() {
           fontFamily: "'JetBrains Mono', monospace",
           fontWeight: 600,
           background: trainerMode === 'gestao' ? 'var(--accent)' : 'transparent',
-          color: trainerMode === 'gestao' ? '#fff' : 'var(--fg-2)',
+          color: trainerMode === 'gestao' ? '#fff' : 'var(--text-dim)',
           transition: 'all 0.15s',
           whiteSpace: 'nowrap',
         }}
@@ -43,7 +43,7 @@ export function ModeToggle() {
           fontFamily: "'JetBrains Mono', monospace",
           fontWeight: 600,
           background: trainerMode === 'treino' ? 'var(--accent)' : 'transparent',
-          color: trainerMode === 'treino' ? '#fff' : 'var(--fg-2)',
+          color: trainerMode === 'treino' ? '#fff' : 'var(--text-dim)',
           transition: 'all 0.15s',
           whiteSpace: 'nowrap',
         }}

@@ -68,7 +68,7 @@ export function AvatarCropModal({ imageSrc, onConfirm, onClose, isLoading }: Ava
             fontFamily: 'var(--f-mono)',
             fontSize: 9,
             letterSpacing: '0.15em',
-            color: 'var(--fg-3)',
+            color: 'var(--text-faint)',
             textTransform: 'uppercase',
           }}
         >
@@ -127,7 +127,7 @@ export function AvatarCropModal({ imageSrc, onConfirm, onClose, isLoading }: Ava
       <div
         style={{
           padding: '18px 24px 28px',
-          background: 'var(--surface)',
+          background: 'var(--bg-1)',
           borderTop: '1px solid var(--border)',
           flexShrink: 0,
         }}
@@ -166,7 +166,7 @@ export function AvatarCropModal({ imageSrc, onConfirm, onClose, isLoading }: Ava
             marginTop: 12,
             fontFamily: 'var(--f-mono)',
             fontSize: 9,
-            color: 'var(--fg-3)',
+            color: 'var(--text-faint)',
             letterSpacing: '0.12em',
             textAlign: 'center',
             textTransform: 'uppercase',
@@ -199,7 +199,7 @@ function CancelIcon() {
 
 function ZoomOutIcon() {
   return (
-    <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--fg-3)', flexShrink: 0 }}>
+    <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--text-faint)', flexShrink: 0 }}>
       <circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" /><line x1="8" y1="11" x2="14" y2="11" />
     </svg>
   )
@@ -207,7 +207,7 @@ function ZoomOutIcon() {
 
 function ZoomInIcon() {
   return (
-    <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--fg-3)', flexShrink: 0 }}>
+    <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--text-faint)', flexShrink: 0 }}>
       <circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" /><line x1="11" y1="8" x2="11" y2="14" /><line x1="8" y1="11" x2="14" y2="11" />
     </svg>
   )

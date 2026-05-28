@@ -196,7 +196,7 @@ function StudentRow({ student, inactive, onDeactivate, onActivate, onDelete }: S
       <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
         <div style={{
           width: 36, height: 36, borderRadius: 8,
-          background: inactive ? 'var(--surface-2)' : 'var(--accent-muted)',
+          background: inactive ? 'var(--bg-3)' : 'rgba(212,255,58,0.1)',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
           fontFamily: "'Outfit', sans-serif", fontWeight: 800, fontSize: 16,
           color: inactive ? 'var(--text-dim)' : 'var(--accent)',
