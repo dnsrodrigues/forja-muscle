@@ -514,4 +514,19 @@ CREATE POLICY "body_measurements: trainer vê seus alunos" ON body_measurements 
     OR is_super_admin()
   );
 
+-- =============================================
+-- PATCH v4 — Corrige RLS de exercise_library
+-- (a política antiga usava role='admin' que
+--  não existe mais após a migração para
+--  super_admin / trainer / user)
+-- =============================================
+
+-- Remove política antiga (usa role='admin' inexistente)
+DROP POLICY IF EXISTS "exercise_library: admin gerencia" ON exercise_library;
+
+-- Nova política: super_admin e trainer podem gerenciar exercícios
+CREATE POLICY "exercise_library: trainer e admin gerenciam"
+  ON exercise_library FOR ALL
+  USING (is_trainer_or_above())
+  WITH CHECK (is_trainer_or_above());
 
