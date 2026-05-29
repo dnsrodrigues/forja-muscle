@@ -14,7 +14,8 @@ import { Icon } from '../components/ui/Icon'
 import { WorkoutFinishModal } from '../components/WorkoutFinishModal'
 import { useModalA11y } from '../hooks/useModalA11y'
 import { MUSCLE_GROUP_LABELS } from '../types'
-import type { Workout, WorkoutExercise } from '../types'
+import type { Workout, WorkoutExercise, MuscleGroup } from '../types'
+import { MUSCLE_GROUP_IMAGES } from '../lib/muscleImages'
 
 type Layout = 'A' | 'B'
 
@@ -585,7 +586,10 @@ function LayoutA(props: LayoutAProps) {
         {/* Header do exercício */}
         <div className="card" style={{ padding: 0, overflow: 'hidden' }}>
           <div className="forja-treino-exhead">
-            <div className="ph-img forja-treino-thumb" />
+            <MuscleImage
+              group={ex.exercise?.muscle_group}
+              className="forja-treino-thumb"
+            />
             <div className="col flex-1" style={{ padding: '26px 28px' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 12 }}>
                 <div>
@@ -702,7 +706,10 @@ function LayoutA(props: LayoutAProps) {
               {nextExercise.sets} séries · {nextExercise.reps} reps
               {nextExercise.suggested_load ? ` · ${nextExercise.suggested_load}kg` : ''}
             </div>
-            <div className="ph-img" style={{ height: 100, marginTop: 14 }} />
+            <MuscleImage
+              group={nextExercise.exercise?.muscle_group}
+              style={{ height: 100, marginTop: 14, width: '100%' }}
+            />
           </div>
         )}
 
@@ -873,7 +880,10 @@ function LayoutB(props: LayoutBProps) {
                   borderBottom: '1px solid var(--hairline)',
                 }}
               >
-                <div className="ph-img" style={{ width: 48, height: 48, flexShrink: 0 }} />
+                <MuscleImage
+                  group={e.exercise?.muscle_group}
+                  style={{ width: 48, height: 48, flexShrink: 0, borderRadius: 'var(--r-1)' }}
+                />
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <div
                     style={{
@@ -1124,6 +1134,38 @@ function SetRow({
         </button>
       )}
     </div>
+  )
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// MUSCLE IMAGE — imagem do grupo muscular com fallback para placeholder
+// ═══════════════════════════════════════════════════════════════════
+
+function MuscleImage({
+  group,
+  className,
+  style,
+}: {
+  group?: string
+  className?: string
+  style?: React.CSSProperties
+}) {
+  const [err, setErr] = useState(false)
+  const src = group ? MUSCLE_GROUP_IMAGES[group as MuscleGroup] : undefined
+
+  if (!src || err) {
+    return <div className={`ph-img ${className ?? ''}`} style={style} />
+  }
+
+  return (
+    <img
+      src={src}
+      alt=""
+      aria-hidden="true"
+      className={className}
+      style={{ objectFit: 'cover', flexShrink: 0, display: 'block', ...style }}
+      onError={() => setErr(true)}
+    />
   )
 }
 
