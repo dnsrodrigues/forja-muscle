@@ -25,6 +25,7 @@ import {
   updateWorkout,
   addExerciseToWorkout,
   updateWorkoutExercise,
+  updateExercise,
 } from '../../services/workout.service'
 import { ExerciseRow } from '../../components/ExerciseRow'
 import { ExerciseSelector } from '../../components/ExerciseSelector'
@@ -40,11 +41,13 @@ function SortableExerciseItem({
   index,
   onRemove,
   onChange,
+  onExerciseLibraryUpdate,
 }: {
   exercise: WorkoutExercise & { exercise?: Exercise }
   index: number
   onRemove: () => void
   onChange: (updates: Partial<WorkoutExercise>) => void
+  onExerciseLibraryUpdate: (updates: { description?: string; video_url?: string }) => Promise<void>
 }) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
     id: exercise.id,
@@ -95,6 +98,7 @@ function SortableExerciseItem({
           editable
           onRemove={onRemove}
           onChange={onChange}
+          onExerciseLibraryUpdate={onExerciseLibraryUpdate}
         />
       </div>
     </div>
@@ -191,6 +195,26 @@ export function WorkoutFormPage() {
 
   function handleExerciseRemove(index: number) {
     setExercises((prev) => prev.filter((_, i) => i !== index))
+  }
+
+  async function handleExerciseLibraryUpdate(
+    exerciseId: string,
+    updates: { description?: string; video_url?: string }
+  ) {
+    await updateExercise(exerciseId, updates)
+    // Atualiza o objeto local pra refletir o valor salvo
+    setExercises((prev) =>
+      prev.map((ex) =>
+        ex.exercise_id === exerciseId
+          ? {
+              ...ex,
+              exercise: ex.exercise
+                ? { ...ex.exercise, ...updates }
+                : ex.exercise,
+            }
+          : ex
+      )
+    )
   }
 
   function validate(): boolean {
@@ -460,6 +484,9 @@ export function WorkoutFormPage() {
                             index={idx}
                             onRemove={() => handleExerciseRemove(idx)}
                             onChange={(updates) => handleExerciseChange(idx, updates)}
+                            onExerciseLibraryUpdate={(updates) =>
+                              handleExerciseLibraryUpdate(ex.exercise_id, updates)
+                            }
                           />
                         ))}
                       </div>

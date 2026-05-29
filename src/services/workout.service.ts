@@ -370,3 +370,18 @@ export async function createExercise(data: {
   if (error) throw new Error(error.message)
   return created as Exercise
 }
+
+/** Atualiza descrição e/ou link de vídeo de um exercício na biblioteca */
+export async function updateExercise(
+  exerciseId: string,
+  data: { description?: string; video_url?: string }
+): Promise<void> {
+  const updates: { description?: string | null; video_url?: string | null } = {}
+  if (data.description !== undefined) updates.description = data.description.trim() || null
+  if (data.video_url !== undefined) updates.video_url = data.video_url.trim() || null
+  const { error } = await supabase
+    .from('exercise_library')
+    .update(updates)
+    .eq('id', exerciseId)
+  if (error) throw new Error(error.message)
+}

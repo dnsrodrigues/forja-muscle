@@ -1,13 +1,22 @@
+import { useState } from 'react'
 import type { WorkoutExercise } from '../types'
 import { MUSCLE_GROUP_LABELS } from '../types'
 import { Icon } from './ui/Icon'
 
 interface ExerciseRowProps {
-  item: WorkoutExercise & { exercise?: { name: string; muscle_group: string } }
+  item: WorkoutExercise & {
+    exercise?: {
+      name: string
+      muscle_group: string
+      description?: string
+      video_url?: string
+    }
+  }
   index: number
   editable?: boolean
   onRemove?: () => void
   onChange?: (updates: Partial<WorkoutExercise>) => void
+  onExerciseLibraryUpdate?: (updates: { description?: string; video_url?: string }) => Promise<void>
 }
 
 export function ExerciseRow({
@@ -16,7 +25,29 @@ export function ExerciseRow({
   editable = false,
   onRemove,
   onChange,
+  onExerciseLibraryUpdate,
 }: ExerciseRowProps) {
+  const [showLibEdit, setShowLibEdit] = useState(false)
+  const [desc, setDesc] = useState(item.exercise?.description ?? '')
+  const [videoUrl, setVideoUrl] = useState(item.exercise?.video_url ?? '')
+  const [libSaving, setLibSaving] = useState(false)
+  const [libSaved, setLibSaved] = useState(false)
+  const [libError, setLibError] = useState<string | null>(null)
+
+  async function handleLibSave() {
+    if (!onExerciseLibraryUpdate) return
+    setLibSaving(true)
+    setLibError(null)
+    try {
+      await onExerciseLibraryUpdate({ description: desc, video_url: videoUrl })
+      setLibSaved(true)
+      setTimeout(() => setLibSaved(false), 2500)
+    } catch {
+      setLibError('Erro ao salvar')
+    } finally {
+      setLibSaving(false)
+    }
+  }
   const muscleLabel = item.exercise?.muscle_group
     ? MUSCLE_GROUP_LABELS[item.exercise.muscle_group as keyof typeof MUSCLE_GROUP_LABELS] ?? item.exercise.muscle_group
     : ''
@@ -153,6 +184,104 @@ export function ExerciseRow({
                 style={{ width: '100%', textAlign: 'left' }}
               />
             </FormField>
+          </div>
+        )}
+
+        {/* Seção de instruções da biblioteca (desc + vídeo) — só no modo edição */}
+        {editable && onExerciseLibraryUpdate && (
+          <div style={{ marginTop: 12, borderTop: '1px solid var(--hairline)', paddingTop: 10 }}>
+            <button
+              type="button"
+              onClick={() => setShowLibEdit((o) => !o)}
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 5,
+                background: 'transparent',
+                border: 'none',
+                cursor: 'pointer',
+                padding: 0,
+                color: showLibEdit ? 'var(--accent)' : 'var(--text-faint)',
+                fontFamily: "'JetBrains Mono', monospace",
+                fontSize: 9,
+                letterSpacing: '0.15em',
+                textTransform: 'uppercase',
+                transition: 'color 0.15s',
+              }}
+            >
+              <Icon
+                name="chevron"
+                size={12}
+                style={{ transform: showLibEdit ? 'rotate(180deg)' : 'none', transition: 'transform 0.15s' } as React.CSSProperties}
+              />
+              Instruções do exercício
+              {(item.exercise?.description || item.exercise?.video_url) && (
+                <span style={{ width: 5, height: 5, borderRadius: '50%', background: 'var(--accent)', marginLeft: 2 }} />
+              )}
+            </button>
+
+            {showLibEdit && (
+              <div style={{ marginTop: 12, display: 'flex', flexDirection: 'column', gap: 10 }}>
+                <FormField label="Descrição / Instruções" style={{ width: '100%' }}>
+                  <textarea
+                    value={desc}
+                    onChange={(e) => setDesc(e.target.value)}
+                    placeholder="Instruções de execução do exercício..."
+                    rows={2}
+                    style={{
+                      width: '100%',
+                      background: 'rgba(255,255,255,0.03)',
+                      border: '1px solid var(--border)',
+                      borderRadius: 4,
+                      padding: '7px 10px',
+                      color: 'var(--text)',
+                      fontFamily: "'JetBrains Mono', monospace",
+                      fontSize: 11,
+                      outline: 'none',
+                      resize: 'vertical',
+                      fontWeight: 400,
+                    }}
+                    onFocus={(e) => (e.target.style.borderColor = 'var(--accent)')}
+                    onBlur={(e) => (e.target.style.borderColor = 'var(--border)')}
+                  />
+                </FormField>
+
+                <FormField label="Link de Vídeo" style={{ width: '100%' }}>
+                  <input
+                    type="url"
+                    value={videoUrl}
+                    onChange={(e) => setVideoUrl(e.target.value)}
+                    placeholder="https://youtube.com/watch?v=..."
+                    className="set-input"
+                    style={{ width: '100%', textAlign: 'left', fontFamily: "'JetBrains Mono', monospace", fontSize: 11 }}
+                    onFocus={(e) => (e.target.style.borderColor = 'var(--accent)')}
+                    onBlur={(e) => (e.target.style.borderColor = 'var(--border)')}
+                  />
+                </FormField>
+
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: 10 }}>
+                  {libError && (
+                    <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 9, color: 'var(--danger)' }}>
+                      ⚠ {libError}
+                    </span>
+                  )}
+                  {libSaved && (
+                    <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 9, color: 'var(--success)', display: 'flex', alignItems: 'center', gap: 4 }}>
+                      <Icon name="check" size={10} stroke={2.5} /> Salvo
+                    </span>
+                  )}
+                  <button
+                    type="button"
+                    onClick={handleLibSave}
+                    disabled={libSaving}
+                    className="btn ghost"
+                    style={{ fontSize: 9, padding: '5px 12px', letterSpacing: '0.1em' }}
+                  >
+                    {libSaving ? 'Salvando...' : 'Salvar instruções'}
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
         )}
       </div>
