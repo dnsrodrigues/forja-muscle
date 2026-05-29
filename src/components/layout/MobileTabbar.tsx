@@ -13,7 +13,7 @@ const ALUNO_TABS: Tab[] = [
   { to: '/dashboard', label: 'Hoje', icon: 'home' },
   { to: '/workouts', label: 'Treino', icon: 'flame', matches: (p) => p.startsWith('/workouts') },
   { to: '/historico', label: 'Histórico', icon: 'history', matches: (p) => p.startsWith('/historico') },
-  { to: '/progresso', label: 'Progresso', icon: 'chart' },
+  { to: '/nutricao', label: 'Nutrição', icon: 'flash', matches: (p) => p.startsWith('/nutricao') },
   { to: '/perfil', label: 'Perfil', icon: 'user' },
 ]
 

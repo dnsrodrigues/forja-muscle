@@ -45,7 +45,7 @@ function formatTodayHeader(): string {
 // ─── Página ──────────────────────────────────────────────────────────────────
 
 export function DashboardPage() {
-  const { profile, isAdmin, isManager, trainerMode } = useAuth()
+  const { profile, isManager, trainerMode } = useAuth()
   const showAdminView = isManager && trainerMode === 'gestao'
   const navigate = useNavigate()
 

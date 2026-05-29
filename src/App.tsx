@@ -21,6 +21,7 @@ import { TrainersAdminPage } from './pages/admin/TrainersAdminPage'
 import { TrainerFormPage } from './pages/admin/TrainerFormPage'
 import { StudentsAdminPage } from './pages/admin/StudentsAdminPage'
 import { StudentFormPage } from './pages/admin/StudentFormPage'
+import { NutritionPage } from './pages/NutritionPage'
 import { NotFoundPage } from './pages/NotFoundPage'
 
 function PasswordGuard({ children }: { children: React.ReactNode }) {
@@ -60,6 +61,7 @@ function App() {
                 <Route path="/historico/:logId" element={<SessionDetailPage />} />
                 <Route path="/progresso" element={<ProgressPage />} />
                 <Route path="/medidas" element={<MeasurementsPage />} />
+                <Route path="/nutricao" element={<NutritionPage />} />
 
                 {/* Admin / Trainer */}
                 <Route element={<AdminRoute />}>

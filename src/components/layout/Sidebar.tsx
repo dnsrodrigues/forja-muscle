@@ -18,6 +18,7 @@ function alunoLinks(): NavLink[] {
     { to: '/historico', label: 'Histórico', icon: 'history', matches: (p) => p.startsWith('/historico') },
     { to: '/progresso', label: 'Progresso', icon: 'chart' },
     { to: '/medidas', label: 'Medidas', icon: 'scale' },
+    { to: '/nutricao', label: 'Nutrição', icon: 'flash', matches: (p) => p.startsWith('/nutricao') },
   ]
 }
 

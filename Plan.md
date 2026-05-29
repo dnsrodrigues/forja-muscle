@@ -1,7 +1,7 @@
 # MUSCLE TRAINING — Plan.md
 
-**Versão:** 3.1  
-**Atualizado em:** 28 de maio de 2026  
+**Versão:** 3.2  
+**Atualizado em:** 29 de maio de 2026  
 **Status:** Em andamento 🚧
 
 > Este é o documento central de execução do projeto.  
@@ -22,7 +22,7 @@
 | 6 | Execução de treino (séries, timer) | ✅ Completa |
 | 7 | Histórico e progressão (gráficos) | ✅ Completa |
 | 7.5 | Melhorias pré-Fase 8 (métricas reais, ícones FORJA, acessibilidade) | ✅ Completa |
-| 8 | Nutrição + IA (Gemini) | ⏳ Próxima |
+| 8 | Nutrição + IA (Gemini) | ✅ Completa |
 | 9 | Painel admin (gestão de alunos) | ⏳ Pendente |
 | 10 | Polish + PWA | ⏳ Pendente |
 | 11 | Deploy (Vercel) | ⏳ Pendente |
@@ -414,33 +414,28 @@ Cada card mostra estado vazio se sem dados.
 
 ---
 
-### FASE 8 — Nutrição + IA ⏳ ← PRÓXIMA
-**Complexidade:** 🔴 Complexa → iniciar com `/brainstorming`
+### FASE 8 — Nutrição + IA ✅
+**Spec:** [2026-05-29-nutricao-ia-design.md](docs/superpowers/specs/2026-05-29-nutricao-ia-design.md)
 
-**O que entrega:** Diário alimentar com análise automática por Google Gemini.
+**O que foi entregue:**
+- **Diário alimentar** (`/nutricao`): anel de calorias + barras de macros, navegação entre dias, lista de refeições
+- **Análise por IA**: Edge Function `analyze-meal` chama Google Gemini → estima calorias + proteína + carbo + gordura + feedback em texto
+- **Bottom sheet** de registro: chips de tipo → descrição livre → analisar → macros editáveis → salvar
+- **Metas automáticas**: fórmula Harris-Benedict × fator de atividade, ajustada pelo objetivo do perfil (perder/manter/ganhar)
+- **Soft delete**: `is_active = false` ao excluir refeição
+- **Acesso trainer**: `/nutricao?userId=X` — trainer vê o diário do aluno (somente leitura)
+- **Navegação**: item "Nutrição" no menu lateral e na tabbar mobile
+- **Banco**: Patch v5 — coluna `is_active` em `nutrition_logs` + RLS para trainer
+- **Build limpo**: zero erros TypeScript
 
-**Arquivos a criar:**
-```
-src/services/nutrition.service.ts
-src/services/ai.service.ts          — chamada ao Gemini
-src/pages/NutritionPage.tsx
-src/components/MealCard.tsx
-src/components/MealForm.tsx
-```
-
-**Prompt base para o Gemini:**
-```
-Você é um nutricionista especialista em musculação.
-Analise esta refeição e dê um feedback construtivo em português:
-Tipo: {meal_type} | Descrição: {description}
-Seja direto, positivo e prático. Máximo 3 frases.
-```
-
-**Critério de conclusão:** Aluno registra refeição e recebe feedback da IA abaixo do registro.
+**Ação manual necessária (usuário):**
+1. Rodar o SQL do Patch v5 no Supabase SQL Editor
+2. Deploy da Edge Function `analyze-meal` no painel Supabase
+3. Configurar o secret `GEMINI_API_KEY` na função
 
 ---
 
-### FASE 9 — Painel administrativo ⏳
+### FASE 9 — Painel administrativo ⏳ ← PRÓXIMA
 **Complexidade:** 🔴 Complexa → iniciar com `/brainstorming`
 
 **O que entrega:** Dashboard do admin com estatísticas, lista de alunos, criação de aluno, perfil completo do aluno com histórico e fichas.
