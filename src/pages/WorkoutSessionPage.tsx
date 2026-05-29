@@ -776,10 +776,6 @@ function LayoutB(props: LayoutBProps) {
             <h1 className="f-display forja-treino-b-exname">
               {(ex.exercise?.name ?? 'Exercício').toUpperCase()}
             </h1>
-            <ExerciseInstructions
-              description={ex.exercise?.description}
-              videoUrl={ex.exercise?.video_url}
-            />
           </div>
           <div className="forja-treino-b-meta">
             <div>
@@ -833,6 +829,16 @@ function LayoutB(props: LayoutBProps) {
           </div>
         </div>
       </div>
+
+      {/* Instruções — fora do hero para expandir sem sobrepor os stats */}
+      {(ex.exercise?.description || ex.exercise?.video_url) && (
+        <div style={{ borderBottom: '1px solid var(--hairline)', padding: '0 40px' }}>
+          <ExerciseInstructions
+            description={ex.exercise?.description}
+            videoUrl={ex.exercise?.video_url}
+          />
+        </div>
+      )}
 
       {/* MIDDLE — séries + próximos */}
       <div className="forja-treino-b-bottom">
