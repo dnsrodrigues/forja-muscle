@@ -1128,108 +1128,255 @@ function SetRow({
 }
 
 // ═══════════════════════════════════════════════════════════════════
-// EXERCISE INSTRUCTIONS — toggle descrição + link de vídeo
+// EXERCISE INSTRUCTIONS — toggle descrição + modal de vídeo embutido
 // ═══════════════════════════════════════════════════════════════════
+
+/** Converte URL de vídeo para URL de embed (YouTube / Vimeo) */
+function getEmbedUrl(url: string): string {
+  // YouTube: youtube.com/watch?v=ID ou youtu.be/ID
+  const yt = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([^&?\s]+)/)
+  if (yt) return `https://www.youtube.com/embed/${yt[1]}?autoplay=1&rel=0&modestbranding=1`
+  // Vimeo: vimeo.com/ID
+  const vm = url.match(/vimeo\.com\/(\d+)/)
+  if (vm) return `https://player.vimeo.com/video/${vm[1]}?autoplay=1`
+  // URL genérica — exibe diretamente no iframe
+  return url
+}
 
 function ExerciseInstructions({ description, videoUrl }: { description?: string; videoUrl?: string }) {
   const [open, setOpen] = useState(false)
+  const [videoOpen, setVideoOpen] = useState(false)
+
+  // Fecha o modal de vídeo com Escape
+  useEffect(() => {
+    if (!videoOpen) return
+    function onKey(e: KeyboardEvent) {
+      if (e.key === 'Escape') setVideoOpen(false)
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [videoOpen])
 
   if (!description && !videoUrl) return null
 
   return (
-    <div style={{ marginTop: 12 }}>
-      <button
-        onClick={() => setOpen((o) => !o)}
-        aria-expanded={open}
-        style={{
-          display: 'inline-flex',
-          alignItems: 'center',
-          gap: 5,
-          background: 'transparent',
-          border: 'none',
-          cursor: 'pointer',
-          padding: 0,
-          color: open ? 'var(--accent)' : 'var(--text-faint)',
-          fontFamily: "'JetBrains Mono', monospace",
-          fontSize: 9,
-          letterSpacing: '0.15em',
-          textTransform: 'uppercase',
-          transition: 'color 0.15s',
-        }}
-      >
-        <Icon
-          name="chevron"
-          size={12}
-          style={{ transform: open ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s ease' }}
-        />
-        Instruções
-      </button>
+    <>
+      <div style={{ marginTop: 12 }}>
+        <button
+          onClick={() => setOpen((o) => !o)}
+          aria-expanded={open}
+          style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: 5,
+            background: 'transparent',
+            border: 'none',
+            cursor: 'pointer',
+            padding: 0,
+            color: open ? 'var(--accent)' : 'var(--text-faint)',
+            fontFamily: "'JetBrains Mono', monospace",
+            fontSize: 9,
+            letterSpacing: '0.15em',
+            textTransform: 'uppercase',
+            transition: 'color 0.15s',
+          }}
+        >
+          <Icon
+            name="chevron"
+            size={12}
+            style={{ transform: open ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s ease' }}
+          />
+          Instruções
+        </button>
 
-      <AnimatePresence>
-        {open && (
-          <motion.div
-            key="instructions-panel"
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: 'auto', opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.18, ease: 'easeOut' }}
-            style={{ overflow: 'hidden' }}
-          >
-            <div
-              style={{
-                marginTop: 8,
-                padding: '12px 14px',
-                background: 'rgba(255,255,255,0.02)',
-                border: '1px solid var(--border)',
-                borderLeft: '2px solid var(--accent)',
-                borderRadius: '0 4px 4px 0',
-              }}
+        <AnimatePresence>
+          {open && (
+            <motion.div
+              key="instructions-panel"
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: 'auto', opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
+              transition={{ duration: 0.18, ease: 'easeOut' }}
+              style={{ overflow: 'hidden' }}
             >
-              {description && (
-                <p
-                  style={{
-                    margin: 0,
-                    fontFamily: "'JetBrains Mono', monospace",
-                    fontSize: 11,
-                    color: 'var(--text-dim)',
-                    lineHeight: 1.65,
-                  }}
-                >
-                  {description}
-                </p>
-              )}
-              {videoUrl && (
-                <a
-                  href={videoUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
+              <div
+                style={{
+                  marginTop: 8,
+                  padding: '12px 14px',
+                  background: 'rgba(255,255,255,0.02)',
+                  border: '1px solid var(--border)',
+                  borderLeft: '2px solid var(--accent)',
+                  borderRadius: '0 4px 4px 0',
+                }}
+              >
+                {description && (
+                  <p
+                    style={{
+                      margin: 0,
+                      fontFamily: "'JetBrains Mono', monospace",
+                      fontSize: 11,
+                      color: 'var(--text-dim)',
+                      lineHeight: 1.65,
+                    }}
+                  >
+                    {description}
+                  </p>
+                )}
+                {videoUrl && (
+                  <button
+                    onClick={() => setVideoOpen(true)}
+                    style={{
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: 6,
+                      marginTop: description ? 10 : 0,
+                      color: 'var(--accent)',
+                      fontFamily: "'JetBrains Mono', monospace",
+                      fontSize: 9,
+                      letterSpacing: '0.15em',
+                      textTransform: 'uppercase',
+                      background: 'transparent',
+                      padding: '5px 10px',
+                      border: '1px solid var(--accent)',
+                      borderRadius: 3,
+                      cursor: 'pointer',
+                      transition: 'background 0.15s',
+                    }}
+                    onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.background = 'rgba(212,255,58,0.08)' }}
+                    onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.background = 'transparent' }}
+                  >
+                    <Icon name="play" size={10} />
+                    Ver vídeo
+                  </button>
+                )}
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+
+      {/* ── Modal de vídeo ───────────────────────────────────────── */}
+      <AnimatePresence>
+        {videoOpen && videoUrl && (
+          <motion.div
+            key="video-modal-overlay"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            onClick={() => setVideoOpen(false)}
+            role="dialog"
+            aria-modal="true"
+            aria-label="Vídeo do exercício"
+            style={{
+              position: 'fixed',
+              inset: 0,
+              zIndex: 100,
+              background: 'rgba(0,0,0,0.94)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              padding: '20px',
+            }}
+          >
+            <motion.div
+              key="video-modal-content"
+              initial={{ scale: 0.96, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.96, opacity: 0 }}
+              transition={{ duration: 0.18 }}
+              onClick={(e) => e.stopPropagation()}
+              style={{ width: '100%', maxWidth: 900 }}
+            >
+              {/* Cabeçalho do modal */}
+              <div style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                marginBottom: 10,
+              }}>
+                <span style={{
+                  fontFamily: "'JetBrains Mono', monospace",
+                  fontSize: 9,
+                  color: 'var(--text-faint)',
+                  letterSpacing: '0.15em',
+                  textTransform: 'uppercase',
+                }}>
+                  // vídeo do exercício
+                </span>
+                <button
+                  onClick={() => setVideoOpen(false)}
                   style={{
                     display: 'inline-flex',
                     alignItems: 'center',
-                    gap: 6,
-                    marginTop: description ? 10 : 0,
-                    color: 'var(--accent)',
+                    gap: 5,
+                    background: 'transparent',
+                    border: '1px solid var(--border)',
+                    borderRadius: 4,
+                    padding: '5px 12px',
+                    color: 'var(--text-faint)',
+                    cursor: 'pointer',
                     fontFamily: "'JetBrains Mono', monospace",
                     fontSize: 9,
-                    letterSpacing: '0.15em',
+                    letterSpacing: '0.1em',
                     textTransform: 'uppercase',
-                    textDecoration: 'none',
-                    padding: '5px 10px',
-                    border: '1px solid var(--accent)',
-                    borderRadius: 3,
-                    transition: 'background 0.15s',
+                    transition: 'border-color 0.15s, color 0.15s',
                   }}
-                  onMouseEnter={(e) => { (e.currentTarget as HTMLAnchorElement).style.background = 'rgba(212,255,58,0.08)' }}
-                  onMouseLeave={(e) => { (e.currentTarget as HTMLAnchorElement).style.background = 'transparent' }}
+                  onMouseEnter={(e) => {
+                    const el = e.currentTarget as HTMLButtonElement
+                    el.style.borderColor = 'var(--danger)'
+                    el.style.color = 'var(--danger)'
+                  }}
+                  onMouseLeave={(e) => {
+                    const el = e.currentTarget as HTMLButtonElement
+                    el.style.borderColor = 'var(--border)'
+                    el.style.color = 'var(--text-faint)'
+                  }}
                 >
-                  <Icon name="play" size={10} />
-                  Ver vídeo
-                </a>
-              )}
-            </div>
+                  <Icon name="x" size={12} /> Fechar
+                </button>
+              </div>
+
+              {/* Área de vídeo — aspect ratio 16:9 */}
+              <div style={{
+                position: 'relative',
+                paddingBottom: '56.25%',
+                height: 0,
+                borderRadius: 6,
+                overflow: 'hidden',
+                border: '1px solid var(--border)',
+                background: '#000',
+              }}>
+                <iframe
+                  src={getEmbedUrl(videoUrl)}
+                  title="Vídeo do exercício"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                  allowFullScreen
+                  style={{
+                    position: 'absolute',
+                    top: 0, left: 0,
+                    width: '100%', height: '100%',
+                    border: 'none',
+                  }}
+                />
+              </div>
+
+              {/* Dica de fechar */}
+              <div style={{
+                textAlign: 'center',
+                marginTop: 10,
+                fontFamily: "'JetBrains Mono', monospace",
+                fontSize: 9,
+                color: 'var(--text-faint)',
+                opacity: 0.5,
+                letterSpacing: '0.1em',
+              }}>
+                clique fora ou pressione ESC para fechar
+              </div>
+            </motion.div>
           </motion.div>
         )}
       </AnimatePresence>
-    </div>
+    </>
   )
 }
