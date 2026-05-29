@@ -91,9 +91,10 @@ Descrição: ${description}`
     })
   } catch (err) {
     const message = err instanceof Error ? err.message : 'Erro desconhecido'
+    // Sempre retorna 200 para que o cliente consiga ler o body com o erro real
     return new Response(
-      JSON.stringify({ error: message }),
-      { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
+      JSON.stringify({ success: false, error: message }),
+      { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
     )
   }
 })

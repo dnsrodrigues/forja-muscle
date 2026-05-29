@@ -20,10 +20,15 @@ export async function analyzeMeal(
     body: { meal_type: mealType, description },
   })
 
+  // Quando a Edge Function retorna não-2xx, data pode ser null e o erro
+  // real fica inacessível. Por isso a função sempre retorna 200 e sinalizamos
+  // erros via { success: false, error: "..." } no body.
   if (error) throw new Error(error.message)
 
   const result = data as MealAnalysis & { success?: boolean; error?: string }
-  if (result.error) throw new Error(result.error)
+  if (!result || result.success === false) {
+    throw new Error(result?.error ?? 'Erro ao chamar IA')
+  }
 
   return {
     calories: result.calories ?? 0,
