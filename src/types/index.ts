@@ -274,5 +274,23 @@ export interface NutritionLog {
   carbs_g?: number
   fat_g?: number
   ai_feedback?: string
+  is_active: boolean
   logged_at: string
+  created_at: string
+}
+
+export type NewNutritionLog = Omit<NutritionLog, 'id' | 'created_at' | 'is_active'>
+
+export interface DailyTotals {
+  calories: number
+  protein_g: number
+  carbs_g: number
+  fat_g: number
+}
+
+export interface DailyGoals {
+  calories: number
+  protein_g: number
+  carbs_g: number
+  fat_g: number
 }
