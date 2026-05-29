@@ -57,7 +57,11 @@ Descrição: ${description}`
       },
     )
 
-    if (!geminiRes.ok) throw new Error(`Gemini error: ${geminiRes.status}`)
+    if (!geminiRes.ok) {
+      const errBody = await geminiRes.json().catch(() => ({}))
+      const detail = (errBody as any)?.error?.message ?? JSON.stringify(errBody)
+      throw new Error(`Gemini ${geminiRes.status}: ${detail}`)
+    }
 
     const geminiData = await geminiRes.json()
     const rawText: string = geminiData?.candidates?.[0]?.content?.parts?.[0]?.text ?? ''
