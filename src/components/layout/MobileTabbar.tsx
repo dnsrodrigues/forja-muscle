@@ -1,58 +1,51 @@
+import { useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
-import { Icon, type IconName } from '../ui/Icon'
-
-interface Tab {
-  to: string
-  label: string
-  icon: IconName
-  matches?: (path: string) => boolean
-}
-
-const ALUNO_TABS: Tab[] = [
-  { to: '/dashboard', label: 'Hoje', icon: 'home' },
-  { to: '/workouts', label: 'Treino', icon: 'flame', matches: (p) => p.startsWith('/workouts') },
-  { to: '/historico', label: 'Histórico', icon: 'history', matches: (p) => p.startsWith('/historico') },
-  { to: '/nutricao', label: 'Nutrição', icon: 'flash', matches: (p) => p.startsWith('/nutricao') },
-  { to: '/perfil', label: 'Perfil', icon: 'user' },
-]
-
-const ADMIN_TABS: Tab[] = [
-  { to: '/dashboard', label: 'Hoje', icon: 'home' },
-  { to: '/admin/workouts', label: 'Fichas', icon: 'edit', matches: (p) => p.startsWith('/admin/workouts') },
-  { to: '/perfil', label: 'Perfil', icon: 'user' },
-]
+import { Icon } from '../ui/Icon'
+import { MobileMoreSheet } from './MobileMoreSheet'
+import { navDestinations, isNavActive } from '../../lib/navigation'
 
 /**
- * Tabbar fixa no rodapé. Aparece SOMENTE no mobile (≤768px) via CSS;
- * no desktop fica escondida pelo display:none herdado da regra .nav.
+ * Tabbar fixa no rodapé. Aparece SOMENTE no mobile (≤768px) via CSS.
+ * Mostra os destinos principais + botão "Mais" (abre a gaveta).
  */
 export function MobileTabbar() {
-  const { isAdmin } = useAuth()
+  const { isManager, isSuperAdmin, trainerMode } = useAuth()
   const { pathname } = useLocation()
-  const tabs = isAdmin ? ADMIN_TABS : ALUNO_TABS
+  const [moreOpen, setMoreOpen] = useState(false)
 
-  const isActive = (t: Tab) => (t.matches ? t.matches(pathname) : pathname === t.to)
+  const inTrainingMode = isManager && trainerMode === 'treino'
+  const dests = navDestinations({ isManager, isSuperAdmin, inTrainingMode })
+  const primary = dests.filter((d) => d.primary)
+  const secondary = dests.filter((d) => !d.primary)
+
+  // "Mais" fica aceso quando a rota atual é um destino secundário
+  const moreActive = secondary.some((d) => isNavActive(d, pathname))
 
   return (
-    <nav
-      className="mob-tabbar"
-      style={{
-        // só aparece no mobile via media query
-        display: 'none',
-      }}
-      data-mobile-tabbar
-    >
-      {tabs.map((t) => (
-        <Link
-          key={t.to}
-          to={t.to}
-          className={'mob-tab' + (isActive(t) ? ' active' : '')}
+    <>
+      <nav className="mob-tabbar" style={{ display: 'none' }} data-mobile-tabbar>
+        {primary.map((t) => (
+          <Link
+            key={t.to}
+            to={t.to}
+            className={'mob-tab' + (isNavActive(t, pathname) ? ' active' : '')}
+          >
+            <Icon name={t.icon} size={22} />
+            {t.label}
+          </Link>
+        ))}
+        <button
+          type="button"
+          onClick={() => setMoreOpen(true)}
+          className={'mob-tab' + (moreActive ? ' active' : '')}
         >
-          <Icon name={t.icon} size={22} />
-          {t.label}
-        </Link>
-      ))}
-    </nav>
+          <Icon name="more" size={22} />
+          Mais
+        </button>
+      </nav>
+
+      <MobileMoreSheet isOpen={moreOpen} onClose={() => setMoreOpen(false)} />
+    </>
   )
 }
