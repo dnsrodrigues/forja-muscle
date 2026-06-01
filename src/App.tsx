@@ -21,6 +21,7 @@ import { TrainersAdminPage } from './pages/admin/TrainersAdminPage'
 import { TrainerFormPage } from './pages/admin/TrainerFormPage'
 import { StudentsAdminPage } from './pages/admin/StudentsAdminPage'
 import { StudentFormPage } from './pages/admin/StudentFormPage'
+import { StudentDetailPage } from './pages/admin/StudentDetailPage'
 import { ExerciseLibraryPage } from './pages/admin/ExerciseLibraryPage'
 import { NutritionPage } from './pages/NutritionPage'
 import { NotFoundPage } from './pages/NotFoundPage'
@@ -73,6 +74,7 @@ function App() {
                   <Route path="/admin/trainers" element={<TrainersAdminPage />} />
                   <Route path="/admin/trainers/new" element={<TrainerFormPage />} />
                   <Route path="/admin/students" element={<StudentsAdminPage />} />
+                  <Route path="/admin/students/:id" element={<StudentDetailPage />} />
                   <Route path="/admin/students/new" element={<StudentFormPage />} />
                   <Route path="/admin/exercises" element={<ExerciseLibraryPage />} />
                 </Route>

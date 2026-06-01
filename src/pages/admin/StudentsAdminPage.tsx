@@ -143,6 +143,7 @@ export function StudentsAdminPage() {
                   <StudentRow
                     key={student.id}
                     student={student}
+                    onOpen={() => navigate(`/admin/students/${student.id}`)}
                     onDeactivate={() => handleDeactivate(student.id)}
                     onDelete={() => handleDelete(student.id)}
                   />
@@ -160,6 +161,7 @@ export function StudentsAdminPage() {
                     key={student.id}
                     student={student}
                     inactive
+                    onOpen={() => navigate(`/admin/students/${student.id}`)}
                     onActivate={() => handleActivate(student.id)}
                     onDelete={() => handleDelete(student.id)}
                   />
@@ -176,12 +178,13 @@ export function StudentsAdminPage() {
 interface StudentRowProps {
   student: UserProfile
   inactive?: boolean
+  onOpen: () => void
   onDeactivate?: () => void
   onActivate?: () => void
   onDelete: () => void
 }
 
-function StudentRow({ student, inactive, onDeactivate, onActivate, onDelete }: StudentRowProps) {
+function StudentRow({ student, inactive, onOpen, onDeactivate, onActivate, onDelete }: StudentRowProps) {
   return (
     <div
       className="card"
@@ -191,19 +194,26 @@ function StudentRow({ student, inactive, onDeactivate, onActivate, onDelete }: S
         alignItems: 'center',
         justifyContent: 'space-between',
         opacity: inactive ? 0.6 : 1,
+        gap: 12,
       }}
     >
-      <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+      <button
+        onClick={onOpen}
+        style={{
+          display: 'flex', alignItems: 'center', gap: 12, flex: 1, minWidth: 0,
+          background: 'transparent', border: 'none', cursor: 'pointer', textAlign: 'left', color: 'inherit', padding: 0,
+        }}
+      >
         <div style={{
           width: 36, height: 36, borderRadius: 8,
           background: inactive ? 'var(--bg-3)' : 'rgba(212,255,58,0.1)',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
           fontFamily: "'Outfit', sans-serif", fontWeight: 800, fontSize: 16,
-          color: inactive ? 'var(--text-dim)' : 'var(--accent)',
+          color: inactive ? 'var(--text-dim)' : 'var(--accent)', flexShrink: 0,
         }}>
           {student.full_name.charAt(0).toUpperCase()}
         </div>
-        <div>
+        <div style={{ minWidth: 0 }}>
           <div style={{ fontWeight: 600, fontSize: 14, color: inactive ? 'var(--text-dim)' : 'var(--text)' }}>
             {student.full_name}
           </div>
@@ -212,8 +222,8 @@ function StudentRow({ student, inactive, onDeactivate, onActivate, onDelete }: S
             {inactive && <span style={{ marginLeft: 8, color: 'var(--danger)', fontSize: 10, fontFamily: "'JetBrains Mono', monospace" }}>INATIVO</span>}
           </div>
         </div>
-      </div>
-      <div style={{ display: 'flex', gap: 6 }}>
+      </button>
+      <div style={{ display: 'flex', gap: 6, flexShrink: 0 }}>
         {inactive ? (
           <button onClick={onActivate} className="btn ghost" style={{ fontSize: 11, padding: '6px 12px', color: 'var(--accent)' }}>
             Reativar
