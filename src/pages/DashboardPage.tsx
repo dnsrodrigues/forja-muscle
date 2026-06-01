@@ -12,7 +12,8 @@ import {
   getAverageSessionDuration,
 } from '../services/history.service'
 import { getMyWorkouts } from '../services/workout.service'
-import type { Workout, WeekDay, WorkoutLog } from '../types'
+import { getAdminDashboardStats } from '../services/admin.service'
+import type { Workout, WeekDay, WorkoutLog, AdminDashboardStats } from '../types'
 import { WEEK_DAY_SHORT, MUSCLE_GROUP_LABELS } from '../types'
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
@@ -45,7 +46,7 @@ function formatTodayHeader(): string {
 // ─── Página ──────────────────────────────────────────────────────────────────
 
 export function DashboardPage() {
-  const { profile, isManager, trainerMode } = useAuth()
+  const { profile, isManager, isSuperAdmin, trainerMode } = useAuth()
   const showAdminView = isManager && trainerMode === 'gestao'
   const navigate = useNavigate()
 
@@ -56,6 +57,7 @@ export function DashboardPage() {
   const [volumeData, setVolumeData] = useState({ thisWeek: 0, lastWeek: 0 })
   const [avgDuration, setAvgDuration] = useState<number | null>(null)
   const [loading, setLoading] = useState(true)
+  const [adminStats, setAdminStats] = useState<AdminDashboardStats | null>(null)
 
   const firstName = (profile?.full_name ?? 'Atleta').split(' ')[0]
   const todayKey = DAY_MAP[new Date().getDay()]
@@ -81,6 +83,14 @@ export function DashboardPage() {
       })
       .finally(() => setLoading(false))
   }, [profile?.id, showAdminView])
+
+  useEffect(() => {
+    if (!profile?.id || !showAdminView) return
+    setAdminStats(null)
+    getAdminDashboardStats({ isSuperAdmin, trainerId: profile.id })
+      .then(setAdminStats)
+      .catch(() => setAdminStats(null))
+  }, [profile?.id, showAdminView, isSuperAdmin])
 
   const todayWorkout = workouts.find((w) => w.week_days.includes(todayKey))
 
@@ -121,25 +131,99 @@ export function DashboardPage() {
       />
 
       <div className="content">
-        {/* ════════ ADMIN: visão simplificada ════════ */}
+        {/* ════════ ADMIN: painel com números reais ════════ */}
         {showAdminView && (
           <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4 }}
-            className="card card-accent"
-            style={{ padding: 32, minHeight: 200 }}
           >
-            <div className="eyebrow" style={{ color: 'rgba(0,0,0,0.55)' }}>PAINEL DO PERSONAL</div>
-            <h1 className="f-display" style={{ fontSize: 72, lineHeight: 0.9, margin: '8px 0' }}>
-              GERENCIE SUAS FICHAS
-            </h1>
-            <div style={{ fontSize: 15, color: 'rgba(0,0,0,0.7)', marginBottom: 24 }}>
-              Crie templates, atribua a alunos e acompanhe o progresso.
+            {/* Cards de número */}
+            <div className="forja-admin-stats" style={{ marginBottom: 20 }}>
+              <div className="card">
+                <div className="stat-label">ALUNOS</div>
+                <div className="f-display" style={{ fontSize: 48, color: 'var(--accent)' }}>
+                  {adminStats ? adminStats.totalStudents : '…'}
+                </div>
+                <div style={{ fontSize: 12, color: 'var(--text-dim)' }}>
+                  {adminStats ? `${adminStats.activeStudents} ativos` : ' '}
+                </div>
+              </div>
+              <div className="card">
+                <div className="stat-label">TREINOS NA SEMANA</div>
+                <div className="f-display" style={{ fontSize: 48, color: 'var(--text)' }}>
+                  {adminStats ? adminStats.sessionsThisWeek : '…'}
+                </div>
+                <div style={{ fontSize: 12, color: 'var(--text-dim)' }}>últimos 7 dias</div>
+              </div>
+              <div
+                className="card"
+                style={{ borderLeft: adminStats && adminStats.needAttention.length > 0 ? '2px solid var(--warn)' : undefined }}
+              >
+                <div className="stat-label">PRECISAM DE ATENÇÃO</div>
+                <div
+                  className="f-display"
+                  style={{ fontSize: 48, color: adminStats && adminStats.needAttention.length > 0 ? 'var(--warn)' : 'var(--text)' }}
+                >
+                  {adminStats ? adminStats.needAttention.length : '…'}
+                </div>
+                <div style={{ fontSize: 12, color: 'var(--text-dim)' }}>sem ficha ou parados</div>
+              </div>
             </div>
-            <Link to="/admin/workouts" className="btn lg" style={{ background: '#0a0a0a', color: 'var(--accent)', borderColor: '#0a0a0a' }}>
-              Ver fichas <Icon name="arrow" size={14} />
-            </Link>
+
+            {/* Lista: precisam de atenção */}
+            <div className="card" style={{ marginBottom: 20 }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
+                <h2 className="card-title">PRECISAM DE ATENÇÃO</h2>
+                <Link to="/admin/students" className="btn ghost">
+                  Ver alunos <Icon name="arrow" size={14} />
+                </Link>
+              </div>
+              {!adminStats ? (
+                <div className="skeleton" style={{ height: 64, borderRadius: 14 }} />
+              ) : adminStats.needAttention.length === 0 ? (
+                <div style={{ padding: 20, textAlign: 'center', color: 'var(--text-dim)', fontSize: 13 }}>
+                  🎉 Todos os alunos estão em dia!
+                </div>
+              ) : (
+                <div className="col gap-2">
+                  {adminStats.needAttention.map((s) => (
+                    <button
+                      key={s.id}
+                      onClick={() => navigate(`/admin/students/${s.id}`)}
+                      style={{
+                        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                        gap: 12, padding: '12px 14px', textAlign: 'left',
+                        background: 'var(--bg-2)', border: '1px solid var(--hairline)',
+                        borderRadius: 'var(--r-2)', cursor: 'pointer', color: 'var(--text)',
+                      }}
+                    >
+                      <span style={{ fontWeight: 600, fontSize: 14 }}>{s.full_name}</span>
+                      <span
+                        className="chip"
+                        style={{ color: 'var(--warn)', borderColor: 'var(--warn)' }}
+                      >
+                        {s.reason === 'sem-ficha'
+                          ? 'Sem ficha'
+                          : s.daysSinceLastWorkout === null
+                            ? 'Nunca treinou'
+                            : `Parado há ${s.daysSinceLastWorkout} dias`}
+                      </span>
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* Atalhos */}
+            <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
+              <Link to="/admin/students" className="btn">
+                <Icon name="user" size={14} /> Alunos
+              </Link>
+              <Link to="/admin/workouts/new" className="btn primary">
+                <Icon name="plus" size={14} /> Nova ficha
+              </Link>
+            </div>
           </motion.div>
         )}
 
@@ -504,6 +588,14 @@ export function DashboardPage() {
           display: grid;
           grid-template-columns: 1.5fr 1fr;
           gap: 20px;
+        }
+        .forja-admin-stats {
+          display: grid;
+          grid-template-columns: repeat(3, 1fr);
+          gap: 14px;
+        }
+        @media (max-width: 768px) {
+          .forja-admin-stats { grid-template-columns: 1fr; }
         }
         .forja-dash-watermark {
           position: absolute;
