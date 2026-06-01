@@ -345,7 +345,7 @@ export function ProfilePage() {
             <div>
               <div className="label-sm" style={{ marginBottom: 6 }}>Peso atual (kg)</div>
               <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
-                <span style={{ fontFamily: 'var(--f-mono)', fontSize: 20, color: 'var(--accent)', fontWeight: 700 }}>
+                <span style={{ fontFamily: 'var(--f-mono)', fontSize: 20, color: 'var(--text)', fontWeight: 700 }}>
                   {profile?.weight ? `${profile.weight} kg` : '—'}
                 </span>
                 <Link
