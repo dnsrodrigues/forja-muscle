@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="256" height="256" role="img" aria-label="FORJA">
+  <defs>
+    <linearGradient id="tile" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#16181a"></stop>
+      <stop offset="1" stop-color="#070809"></stop>
+    </linearGradient>
+    <linearGradient id="lime" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#e4ff5c"></stop>
+      <stop offset="1" stop-color="#c3f02a"></stop>
+    </linearGradient>
+  </defs>
+
+  
+  <rect x="2" y="2" width="252" height="252" rx="60" fill="url(#tile)"></rect>
+  <rect x="2.75" y="2.75" width="250.5" height="250.5" rx="59.25" fill="none" stroke="#ffffff" stroke-opacity="0.08" stroke-width="1.5"></rect>
+
+  
+  
+  <path d="M72 58 H104 V184 L72 200 Z" fill="#f5f5f3"></path>
+  
+  <path d="M72 58 H192 L176 92 H72 Z" fill="url(#lime)"></path>
+  
+  <path d="M72 116 H160 L146 150 H72 Z" fill="url(#lime)"></path>
+
+  
+  <rect x="170" y="176" width="26" height="26" rx="7" fill="url(#lime)"></rect>
+</svg>
