@@ -59,6 +59,7 @@ export function StudentDetailPage() {
   const [measureOpen, setMeasureOpen] = useState(false)
   const [resetConfirm, setResetConfirm] = useState(false)
   const [toast, setToast] = useState<string | null>(null)
+  const [moreOpen, setMoreOpen] = useState(false)
 
   // carga inicial: perfil + overview
   async function loadCore() {
@@ -160,22 +161,102 @@ export function StudentDetailPage() {
         {!loading && !error && student && (
           <>
             {/* Barra de ações */}
-            <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 18 }}>
+            <div style={{ display: 'flex', gap: 8, alignItems: 'center', marginBottom: 18 }}>
               <button onClick={() => setAssignOpen(true)} className="btn primary">
                 <Icon name="plus" size={14} /> Atribuir ficha
               </button>
               <button onClick={() => setEditOpen(true)} className="btn">
                 <Icon name="edit" size={14} /> Editar dados
               </button>
-              <button onClick={() => setWeightOpen(true)} className="btn">
-                <Icon name="scale" size={14} /> Registrar peso
-              </button>
-              <button onClick={() => setMeasureOpen(true)} className="btn">
-                <Icon name="scale" size={14} /> Medidas
-              </button>
-              <button onClick={() => setResetConfirm(true)} className="btn ghost">
-                <Icon name="settings" size={14} /> Resetar senha
-              </button>
+
+              {/* Menu "Mais" — agrupa ações secundárias */}
+              <div style={{ position: 'relative', marginLeft: 'auto' }}>
+                <button
+                  onClick={() => setMoreOpen((v) => !v)}
+                  className="btn ghost"
+                  style={{ fontWeight: 700, letterSpacing: '0.08em' }}
+                  aria-expanded={moreOpen}
+                  aria-haspopup="true"
+                >
+                  ⋯ Mais
+                </button>
+
+                {/* Backdrop invisível para fechar ao clicar fora */}
+                {moreOpen && (
+                  <div
+                    style={{ position: 'fixed', inset: 0, zIndex: 98 }}
+                    onClick={() => setMoreOpen(false)}
+                  />
+                )}
+
+                {/* Dropdown */}
+                {moreOpen && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -6, scale: 0.97 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    transition={{ duration: 0.15, ease: [0.22, 1, 0.36, 1] }}
+                    style={{
+                      position: 'absolute', top: 'calc(100% + 6px)', right: 0,
+                      zIndex: 99, minWidth: 200,
+                      background: 'var(--bg-1)',
+                      border: '1px solid var(--border)',
+                      borderRadius: 'var(--r-3)',
+                      boxShadow: 'var(--sh-pop)',
+                      overflow: 'hidden',
+                    }}
+                  >
+                    {/* Dados corporais */}
+                    <div style={{ padding: '6px 0' }}>
+                      <div style={{ padding: '4px 14px 6px', fontSize: 10, color: 'var(--text-faint)', letterSpacing: '0.12em', textTransform: 'uppercase', fontFamily: 'var(--f-mono)' }}>
+                        Dados corporais
+                      </div>
+                      {[
+                        { label: 'Registrar peso', icon: 'scale' as const, action: () => { setWeightOpen(true); setMoreOpen(false) } },
+                        { label: 'Medidas corporais', icon: 'scale' as const, action: () => { setMeasureOpen(true); setMoreOpen(false) } },
+                      ].map(({ label, icon, action }) => (
+                        <button
+                          key={label}
+                          onClick={action}
+                          style={{
+                            display: 'flex', alignItems: 'center', gap: 10,
+                            width: '100%', padding: '9px 14px',
+                            background: 'none', border: 'none', cursor: 'pointer',
+                            color: 'var(--text)', fontSize: 13, textAlign: 'left',
+                            transition: 'background 0.12s',
+                          }}
+                          onMouseEnter={(e) => (e.currentTarget.style.background = 'var(--bg-2)')}
+                          onMouseLeave={(e) => (e.currentTarget.style.background = 'none')}
+                        >
+                          <Icon name={icon} size={14} />
+                          {label}
+                        </button>
+                      ))}
+                    </div>
+
+                    {/* Divisor */}
+                    <div style={{ height: 1, background: 'var(--hairline)', margin: '0 14px' }} />
+
+                    {/* Ação sensível */}
+                    <div style={{ padding: '6px 0' }}>
+                      <button
+                        onClick={() => { setResetConfirm(true); setMoreOpen(false) }}
+                        style={{
+                          display: 'flex', alignItems: 'center', gap: 10,
+                          width: '100%', padding: '9px 14px',
+                          background: 'none', border: 'none', cursor: 'pointer',
+                          color: 'var(--danger)', fontSize: 13, textAlign: 'left',
+                          transition: 'background 0.12s',
+                        }}
+                        onMouseEnter={(e) => (e.currentTarget.style.background = 'rgba(255,61,85,0.06)')}
+                        onMouseLeave={(e) => (e.currentTarget.style.background = 'none')}
+                      >
+                        <Icon name="settings" size={14} />
+                        Resetar senha
+                      </button>
+                    </div>
+                  </motion.div>
+                )}
+              </div>
             </div>
 
             {/* Abas */}
