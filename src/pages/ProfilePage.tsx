@@ -165,6 +165,33 @@ export function ProfilePage() {
     ageLabel = ` · ${age} anos`
   }
 
+  // Indicador de IMC (só quando peso E altura estão preenchidos)
+  const weightStatus = (() => {
+    if (!profile?.weight || !profile?.height) return null
+    const bmi = profile.weight / Math.pow(profile.height / 100, 2)
+    const bmiStr = bmi.toFixed(1)
+    if (bmi < 18.5) return {
+      color: '#f9c74f',
+      label: 'Abaixo do peso',
+      tooltip: `IMC ${bmiStr} — Abaixo do peso ideal. Considere aumentar a ingestão calórica com orientação profissional.`,
+    }
+    if (bmi < 25) return {
+      color: 'var(--success)',
+      label: 'Faixa saudável',
+      tooltip: `IMC ${bmiStr} — Peso dentro da faixa saudável recomendada pela OMS. Continue assim!`,
+    }
+    if (bmi < 30) return {
+      color: 'var(--warn)',
+      label: 'Sobrepeso',
+      tooltip: `IMC ${bmiStr} — Sobrepeso. Alimentação equilibrada e treino consistente ajudam a atingir o peso ideal.`,
+    }
+    return {
+      color: 'var(--danger)',
+      label: 'Obesidade',
+      tooltip: `IMC ${bmiStr} — Acima do peso recomendado. Recomenda-se acompanhamento com profissional de saúde.`,
+    }
+  })()
+
   return (
     <>
       <Topbar
@@ -345,9 +372,35 @@ export function ProfilePage() {
             <div>
               <div className="label-sm" style={{ marginBottom: 6 }}>Peso atual (kg)</div>
               <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
-                <span style={{ fontFamily: 'var(--f-mono)', fontSize: 20, color: 'var(--text)', fontWeight: 700 }}>
+                <span
+                  title={weightStatus?.tooltip}
+                  style={{
+                    fontFamily: 'var(--f-mono)',
+                    fontSize: 20,
+                    color: weightStatus ? weightStatus.color : 'var(--text)',
+                    fontWeight: 700,
+                    cursor: weightStatus ? 'help' : 'default',
+                    borderBottom: weightStatus ? `1px dashed ${weightStatus.color}` : 'none',
+                  }}
+                >
                   {profile?.weight ? `${profile.weight} kg` : '—'}
                 </span>
+                {weightStatus && (
+                  <span
+                    title={weightStatus.tooltip}
+                    style={{
+                      fontFamily: 'var(--f-mono)',
+                      fontSize: 9,
+                      color: weightStatus.color,
+                      letterSpacing: '0.1em',
+                      textTransform: 'uppercase',
+                      opacity: 0.85,
+                      cursor: 'help',
+                    }}
+                  >
+                    {weightStatus.label}
+                  </span>
+                )}
                 <Link
                   to="/medidas"
                   style={{
@@ -365,6 +418,11 @@ export function ProfilePage() {
                   Registrar em Medidas →
                 </Link>
               </div>
+              {!profile?.height && profile?.weight && (
+                <div style={{ fontFamily: 'var(--f-mono)', fontSize: 9, color: 'var(--text-faint)', marginTop: 4 }}>
+                  Preencha a altura para ver o indicador de IMC
+                </div>
+              )}
             </div>
 
             <Field label="Altura (cm)" error={errors.height?.message}>
