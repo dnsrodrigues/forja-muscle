@@ -134,14 +134,21 @@ export function NutritionPage() {
         eyebrow="SAÚDE"
         title="NUTRIÇÃO"
         actions={
-          !isViewingOther ? (
+          isViewingOther ? (
+            <Link
+              to={`/admin/students/${searchParams.get('userId')}`}
+              className="btn ghost"
+            >
+              <Icon name="arrowL" size={14} /> Voltar ao perfil
+            </Link>
+          ) : (
             <button
               onClick={() => setSheetOpen(true)}
               className="btn primary forja-nutri-add-top"
             >
               <Icon name="plus" size={14} /> Registrar refeição
             </button>
-          ) : undefined
+          )
         }
       />
 
