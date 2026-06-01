@@ -8,6 +8,7 @@ import {
   getBodyMeasurements,
   addBodyMeasurement,
 } from '../services/measurements.service'
+import { updateProfile } from '../services/profile.service'
 import { WeightChart } from '../components/charts/WeightChart'
 import { WeightEntryModal } from '../components/WeightEntryModal'
 import { MeasurementEntryModal } from '../components/MeasurementEntryModal'
@@ -34,7 +35,7 @@ function formatDate(iso: string): string {
 }
 
 export function MeasurementsPage() {
-  const { profile } = useAuth()
+  const { profile, refreshProfile } = useAuth()
 
   const [weights, setWeights] = useState<UserWeight[]>([])
   const [measurements, setMeasurements] = useState<BodyMeasurement[]>([])
@@ -337,7 +338,13 @@ export function MeasurementsPage() {
         isOpen={showWeightModal}
         lastWeight={lastWeight ? Number(lastWeight.weight_kg) : undefined}
         onClose={() => setShowWeightModal(false)}
-        onSaved={(w) => setWeights((prev) => [w, ...prev])}
+        onSaved={(w) => {
+          setWeights((prev) => [w, ...prev])
+          // Sincroniza profiles.weight para que metas de nutrição (Harris-Benedict)
+          // usem sempre o peso mais recente registrado em /medidas
+          void updateProfile(profile!.id, { weight: Number(w.weight_kg) })
+            .then(() => refreshProfile())
+        }}
         onSave={(kg, at) => addUserWeight(profile!.id, kg, at)}
       />
       <MeasurementEntryModal
