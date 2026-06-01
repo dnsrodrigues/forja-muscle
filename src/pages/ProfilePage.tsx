@@ -5,6 +5,7 @@ import { z } from 'zod'
 import { motion } from 'motion/react'
 import { Link } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
+import { getBmiStatus } from '../lib/bmi'
 import { updateProfile, uploadAvatar } from '../services/profile.service'
 import { supabase } from '../lib/supabase'
 import { Topbar } from '../components/layout/Topbar'
@@ -166,31 +167,7 @@ export function ProfilePage() {
   }
 
   // Indicador de IMC (só quando peso E altura estão preenchidos)
-  const weightStatus = (() => {
-    if (!profile?.weight || !profile?.height) return null
-    const bmi = profile.weight / Math.pow(profile.height / 100, 2)
-    const bmiStr = bmi.toFixed(1)
-    if (bmi < 18.5) return {
-      color: '#f9c74f',
-      label: 'Abaixo do peso',
-      tooltip: `IMC ${bmiStr} — Abaixo do peso ideal. Considere aumentar a ingestão calórica com orientação profissional.`,
-    }
-    if (bmi < 25) return {
-      color: 'var(--success)',
-      label: 'Faixa saudável',
-      tooltip: `IMC ${bmiStr} — Peso dentro da faixa saudável recomendada pela OMS. Continue assim!`,
-    }
-    if (bmi < 30) return {
-      color: 'var(--warn)',
-      label: 'Sobrepeso',
-      tooltip: `IMC ${bmiStr} — Sobrepeso. Alimentação equilibrada e treino consistente ajudam a atingir o peso ideal.`,
-    }
-    return {
-      color: 'var(--danger)',
-      label: 'Obesidade',
-      tooltip: `IMC ${bmiStr} — Acima do peso recomendado. Recomenda-se acompanhamento com profissional de saúde.`,
-    }
-  })()
+  const weightStatus = getBmiStatus(profile?.weight, profile?.height)
 
   return (
     <>
