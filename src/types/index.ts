@@ -294,3 +294,21 @@ export interface DailyGoals {
   carbs_g: number
   fat_g: number
 }
+
+// --- Painel administrativo (Fase 9) ---
+
+export interface AttentionStudent {
+  id: string
+  full_name: string
+  reason: 'sem-ficha' | 'parado'
+  /** dias desde o último treino concluído; null = nunca treinou */
+  daysSinceLastWorkout: number | null
+}
+
+export interface AdminDashboardStats {
+  totalStudents: number
+  activeStudents: number
+  /** sessões concluídas pelos alunos nos últimos 7 dias */
+  sessionsThisWeek: number
+  needAttention: AttentionStudent[]
+}
