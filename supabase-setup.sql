@@ -548,3 +548,54 @@ CREATE POLICY "nutrition_logs: trainer lê seus alunos"
     )
   );
 
+
+-- ============================================================
+-- PATCH v6 — Painel administrativo (Fase 9)
+-- Permite trainer/super_admin: editar dados do aluno, registrar
+-- peso/medidas em nome do aluno, e LER as séries (exercise_logs)
+-- dos seus alunos (necessário para detalhe de sessão e gráfico
+-- de carga no perfil do aluno).
+-- As políticas são PERMISSIVAS (somam-se às já existentes).
+-- ============================================================
+
+-- 1. Trainer/super_admin ATUALIZAM o perfil dos seus alunos.
+DROP POLICY IF EXISTS "profiles: trainer edita seus alunos" ON profiles;
+CREATE POLICY "profiles: trainer edita seus alunos" ON profiles FOR UPDATE
+  USING (
+    is_super_admin()
+    OR (role = 'user' AND trainer_id = auth.uid())
+  )
+  WITH CHECK (
+    is_super_admin()
+    OR (role = 'user' AND trainer_id = auth.uid())
+  );
+
+-- 2. Trainer/super_admin INSEREM peso para seus alunos.
+DROP POLICY IF EXISTS "user_weights: trainer registra p/ aluno" ON user_weights;
+CREATE POLICY "user_weights: trainer registra p/ aluno" ON user_weights FOR INSERT
+  WITH CHECK (
+    user_id = auth.uid()
+    OR is_super_admin()
+    OR user_id IN (SELECT id FROM profiles WHERE trainer_id = auth.uid())
+  );
+
+-- 3. Trainer/super_admin INSEREM medidas para seus alunos.
+DROP POLICY IF EXISTS "body_measurements: trainer registra p/ aluno" ON body_measurements;
+CREATE POLICY "body_measurements: trainer registra p/ aluno" ON body_measurements FOR INSERT
+  WITH CHECK (
+    user_id = auth.uid()
+    OR is_super_admin()
+    OR user_id IN (SELECT id FROM profiles WHERE trainer_id = auth.uid())
+  );
+
+-- 4. Trainer/super_admin LEEM as séries (exercise_logs) dos seus alunos.
+DROP POLICY IF EXISTS "exercise_logs: trainer vê seus alunos" ON exercise_logs;
+CREATE POLICY "exercise_logs: trainer vê seus alunos" ON exercise_logs FOR SELECT
+  USING (
+    EXISTS (
+      SELECT 1 FROM workout_logs wl
+      JOIN profiles p ON p.id = wl.user_id
+      WHERE wl.id = exercise_logs.workout_log_id
+        AND (p.trainer_id = auth.uid() OR is_super_admin())
+    )
+  );
