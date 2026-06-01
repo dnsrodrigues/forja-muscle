@@ -1,53 +1,16 @@
 import { Link, useLocation } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
-import { Icon, type IconName } from '../ui/Icon'
+import { Icon } from '../ui/Icon'
 import { ThemeSwitcher } from '../ui/ThemeSwitcher'
 import { ModeToggle } from '../ui/ModeToggle'
-
-interface NavLink {
-  to: string
-  label: string
-  icon: IconName
-  matches?: (path: string) => boolean
-}
-
-function alunoLinks(): NavLink[] {
-  return [
-    { to: '/dashboard', label: 'Hoje', icon: 'home' },
-    { to: '/workouts', label: 'Treino', icon: 'flame', matches: (p) => p.startsWith('/workouts') },
-    { to: '/historico', label: 'Histórico', icon: 'history', matches: (p) => p.startsWith('/historico') },
-    { to: '/progresso', label: 'Progresso', icon: 'chart' },
-    { to: '/medidas', label: 'Medidas', icon: 'scale' },
-    { to: '/nutricao', label: 'Nutrição', icon: 'flash', matches: (p) => p.startsWith('/nutricao') },
-  ]
-}
-
-function gestaoLinks(isSuperAdmin: boolean): NavLink[] {
-  const links: NavLink[] = [
-    { to: '/dashboard', label: 'Hoje', icon: 'home' },
-    { to: '/admin/workouts', label: 'Fichas', icon: 'edit', matches: (p) => p.startsWith('/admin/workouts') },
-    { to: '/admin/students', label: 'Alunos', icon: 'user', matches: (p) => p.startsWith('/admin/students') },
-  ]
-  if (isSuperAdmin) {
-    links.push({
-      to: '/admin/trainers',
-      label: 'Trainers',
-      icon: 'user',
-      matches: (p) => p.startsWith('/admin/trainers'),
-    })
-  }
-  return links
-}
+import { navDestinations, isNavActive } from '../../lib/navigation'
 
 export function Sidebar() {
   const { profile, isManager, isSuperAdmin, trainerMode, signOut } = useAuth()
   const { pathname } = useLocation()
 
   const inTrainingMode = isManager && trainerMode === 'treino'
-  const links = (!isManager || inTrainingMode) ? alunoLinks() : gestaoLinks(isSuperAdmin)
-
-  const isActive = (link: NavLink) =>
-    link.matches ? link.matches(pathname) : pathname === link.to
+  const dests = navDestinations({ isManager, isSuperAdmin, inTrainingMode })
 
   const initial = (profile?.full_name ?? 'A').charAt(0).toUpperCase()
   const firstName = profile?.full_name?.split(' ')[0] ?? 'Atleta'
@@ -74,25 +37,18 @@ export function Sidebar() {
         {inTrainingMode ? 'Meu Treino' : isManager ? 'Gestão' : 'Treino'}
       </div>
 
-      {links.map((link) => (
+      {dests.map((dest) => (
         <Link
-          key={link.to}
-          to={link.to}
-          className={'nav-item' + (isActive(link) ? ' active' : '')}
+          key={dest.to}
+          to={dest.to}
+          className={'nav-item' + (isNavActive(dest, pathname) ? ' active' : '')}
         >
-          <span className="nav-ico"><Icon name={link.icon} size={18} /></span>
-          {link.label}
+          <span className="nav-ico"><Icon name={dest.icon} size={18} /></span>
+          {dest.label}
         </Link>
       ))}
 
       <div className="nav-section">Conta</div>
-      <Link
-        to="/perfil"
-        className={'nav-item' + (pathname === '/perfil' ? ' active' : '')}
-      >
-        <span className="nav-ico"><Icon name="user" size={18} /></span>
-        Perfil
-      </Link>
       <button
         type="button"
         onClick={() => void signOut()}
