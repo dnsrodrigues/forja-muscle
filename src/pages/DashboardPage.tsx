@@ -215,15 +215,6 @@ export function DashboardPage() {
               )}
             </div>
 
-            {/* Atalhos */}
-            <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
-              <Link to="/admin/students" className="btn">
-                <Icon name="user" size={14} /> Alunos
-              </Link>
-              <Link to="/admin/workouts/new" className="btn primary">
-                <Icon name="plus" size={14} /> Nova ficha
-              </Link>
-            </div>
           </motion.div>
         )}
 
