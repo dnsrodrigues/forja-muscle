@@ -38,19 +38,21 @@ function MacroBar({
   goal?: number
   color: string
 }) {
+  const over = goal != null && goal > 0 && value > goal
   const pct = goal && goal > 0 ? Math.min((value / goal) * 100, 100) : 0
+  const barColor = over ? 'var(--warn)' : color
   return (
     <div style={{ flex: 1, minWidth: 80 }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 4 }}>
-        <span style={{ fontFamily: 'var(--f-mono)', fontSize: 8, color: 'var(--text-faint)', letterSpacing: '0.1em', textTransform: 'uppercase' }}>
+        <span style={{ fontFamily: 'var(--f-mono)', fontSize: 10, color: 'var(--text-faint)', letterSpacing: '0.08em', textTransform: 'uppercase' }}>
           {label}
         </span>
-        <span style={{ fontFamily: 'var(--f-mono)', fontSize: 10, color }}>
+        <span style={{ fontFamily: 'var(--f-mono)', fontSize: 10, color: barColor }}>
           {Math.round(value)}{goal ? `/${goal}g` : 'g'}
         </span>
       </div>
       <div style={{ height: 4, background: 'var(--bg-3)', borderRadius: 99, overflow: 'hidden' }}>
-        <div style={{ width: `${pct}%`, height: '100%', background: color, borderRadius: 99, transition: 'width 0.5s ease' }} />
+        <div style={{ width: `${pct}%`, height: '100%', background: barColor, borderRadius: 99, transition: 'width 0.5s ease' }} />
       </div>
     </div>
   )
@@ -75,7 +77,10 @@ export function NutritionPage() {
 
   // Anel de calorias via conic-gradient
   const calPct = goals ? Math.min((totals.calories / goals.calories) * 100, 100) : 0
-  const calConicGradient = `conic-gradient(var(--accent) ${calPct * 3.6}deg, var(--bg-3) 0deg)`
+  const calOver = goals != null && totals.calories > goals.calories
+  const ringColor = calOver ? 'var(--warn)' : 'var(--accent)'
+  const calConicGradient = `conic-gradient(${ringColor} ${calPct * 3.6}deg, var(--bg-3) 0deg)`
+  const calRemaining = goals ? goals.calories - Math.round(totals.calories) : 0
 
   useEffect(() => {
     if (!targetUserId) return
@@ -125,7 +130,20 @@ export function NutritionPage() {
 
   return (
     <>
-      <Topbar eyebrow="SAÚDE" title="NUTRIÇÃO" />
+      <Topbar
+        eyebrow="SAÚDE"
+        title="NUTRIÇÃO"
+        actions={
+          !isViewingOther ? (
+            <button
+              onClick={() => setSheetOpen(true)}
+              className="btn primary forja-nutri-add-top"
+            >
+              <Icon name="plus" size={14} /> Registrar refeição
+            </button>
+          ) : undefined
+        }
+      />
 
       <div className="content">
         {/* Navegador de dia */}
@@ -133,7 +151,7 @@ export function NutritionPage() {
           <button onClick={goToPrevDay} className="btn ghost" style={{ padding: '6px 10px' }}>
             <Icon name="arrowL" size={16} />
           </button>
-          <span style={{ fontFamily: 'var(--f-display)', fontWeight: 800, fontSize: 16, color: 'var(--text)' }}>
+          <span className="f-display" style={{ fontSize: 20, color: 'var(--text)' }}>
             {formatDisplayDate(selectedDate).toUpperCase()}
           </span>
           <button
@@ -161,11 +179,11 @@ export function NutritionPage() {
                   background: 'var(--bg-1)',
                   display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
                 }}>
-                  <span style={{ fontFamily: 'var(--f-display)', fontWeight: 800, fontSize: 18, color: 'var(--accent)', lineHeight: 1 }}>
+                  <span className="f-display" style={{ fontSize: 26, color: ringColor, lineHeight: 1 }}>
                     {Math.round(totals.calories)}
                   </span>
-                  <span style={{ fontFamily: 'var(--f-mono)', fontSize: 7, color: 'var(--text-faint)', letterSpacing: '0.05em' }}>
-                    {goals ? `/${goals.calories}` : ''} kcal
+                  <span style={{ fontFamily: 'var(--f-mono)', fontSize: 10, color: 'var(--text-faint)', letterSpacing: '0.03em' }}>
+                    {goals ? `de ${goals.calories}` : 'kcal'}
                   </span>
                 </div>
               </div>
@@ -174,8 +192,8 @@ export function NutritionPage() {
             {/* Barras de macros */}
             <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 8, minWidth: 160 }}>
               <MacroBar label="Prot" value={totals.protein_g} goal={goals?.protein_g} color="var(--accent)" />
-              <MacroBar label="Carb" value={totals.carbs_g} goal={goals?.carbs_g} color="#60a5fa" />
-              <MacroBar label="Gord" value={totals.fat_g} goal={goals?.fat_g} color="#f97316" />
+              <MacroBar label="Carb" value={totals.carbs_g} goal={goals?.carbs_g} color="var(--info)" />
+              <MacroBar label="Gord" value={totals.fat_g} goal={goals?.fat_g} color="var(--warn)" />
             </div>
           </div>
 
@@ -191,7 +209,19 @@ export function NutritionPage() {
             </div>
           )}
           {goals && (
-            <div style={{ marginTop: 10, fontFamily: 'var(--f-mono)', fontSize: 9, color: 'var(--text-faint)', fontStyle: 'italic' }}>
+            <div style={{ marginTop: 12, display: 'flex', alignItems: 'center', gap: 8 }}>
+              <span style={{
+                fontFamily: 'var(--f-mono)', fontSize: 11, fontWeight: 700,
+                color: calOver ? 'var(--warn)' : 'var(--accent)',
+              }}>
+                {calOver
+                  ? `Passou ${Math.abs(calRemaining)} kcal da meta`
+                  : `Faltam ${calRemaining} kcal`}
+              </span>
+            </div>
+          )}
+          {goals && (
+            <div style={{ marginTop: 8, fontFamily: 'var(--f-mono)', fontSize: 10, color: 'var(--text-faint)', fontStyle: 'italic' }}>
               * Estimativa. Consulte um nutricionista para um plano personalizado.
             </div>
           )}
@@ -243,9 +273,9 @@ export function NutritionPage() {
         )}
       </div>
 
-      {/* FAB — só para o próprio aluno no dia de hoje */}
-      {!isViewingOther && isToday && (
-        <div style={{ position: 'fixed', bottom: 80, right: 20, zIndex: 10 }}>
+      {/* FAB — celular: registrar refeição no dia selecionado (hoje ou passado) */}
+      {!isViewingOther && (
+        <div className="forja-nutri-fab" style={{ position: 'fixed', bottom: 80, right: 20, zIndex: 10 }}>
           <button
             onClick={() => setSheetOpen(true)}
             className="btn primary"
@@ -261,7 +291,17 @@ export function NutritionPage() {
         onClose={() => setSheetOpen(false)}
         onSaved={handleSaved}
         userId={targetUserId}
+        dateStr={selectedDate}
       />
+
+      <style>{`
+        /* Botão de registrar fica na barra de cima no desktop e flutuante no celular */
+        .forja-nutri-fab { display: none; }
+        @media (max-width: 768px) {
+          .forja-nutri-add-top { display: none !important; }
+          .forja-nutri-fab { display: block; }
+        }
+      `}</style>
     </>
   )
 }

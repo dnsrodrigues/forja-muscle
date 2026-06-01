@@ -10,8 +10,14 @@ export async function getNutritionLogs(
   userId: string,
   date: string,
 ): Promise<NutritionLog[]> {
-  const startOfDay = `${date}T00:00:00.000Z`
-  const endOfDay = `${date}T23:59:59.999Z`
+  // Limites do dia no FUSO LOCAL do usuário (não em UTC).
+  // 'date' chega como data local 'YYYY-MM-DD'. Montamos o início e o fim
+  // do dia no relógio local e convertemos para ISO (UTC) para comparar com
+  // logged_at, que é salvo em UTC. Sem isso, refeições da noite "vazavam"
+  // para o dia seguinte (ex.: 22h no Brasil = 01h UTC do dia seguinte).
+  const [y, m, d] = date.split('-').map(Number)
+  const startOfDay = new Date(y, m - 1, d, 0, 0, 0, 0).toISOString()
+  const endOfDay = new Date(y, m - 1, d, 23, 59, 59, 999).toISOString()
 
   const { data, error } = await supabase
     .from('nutrition_logs')

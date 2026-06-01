@@ -78,7 +78,7 @@ src/
   types/
     index.ts               — todos os tipos TypeScript do projeto
   App.tsx                  — rotas da aplicação
-  index.css                — Tailwind v4 + Design System v2 (vars CSS)
+  index.css                — Tailwind v4 + Design System v4 "FORJA" (vars CSS)
   main.tsx                 — ponto de entrada
 
 supabase-setup.sql         — SQL completo (inclui patches v1, v2, v3)
@@ -135,66 +135,75 @@ CLAUDE.md                  — este arquivo
 
 ---
 
-## Design System v3 "Aurora"
+## Design System v4 "FORJA"
 
-Inspirado em glassmorphism cósmico: fundo navy profundo + blobs radiais azul/roxo, borda animada conic-gradient.
+Inspirado em apps de treino premium (vigor./GASLUR): **preto absoluto**, tipografia condensada em caixa-alta, um acento elétrico (verde-limão) e layout horizontal desktop-first. Toda a definição vive em `src/index.css`.
 
-### Tipografia
-- **Display/títulos:** `Outfit` weight 700/800 — `fontFamily: "'Outfit', sans-serif", fontWeight: 800`
-- **Labels/mono:** `JetBrains Mono` weight 400 — `fontFamily: "'JetBrains Mono', monospace"`
-- Labels de seção: JetBrains Mono, 9px, `letterSpacing: '0.15em'`, uppercase, `color: var(--fg-3)`
+### Tipografia — REGRA CRÍTICA
+- **Títulos/display:** `Bebas Neue` — **só existe no peso 400**. Use SEMPRE a classe `.f-display`. **Nunca** escreva `fontWeight: 700/800` em título: a fonte não tem esses pesos e o navegador inventa um "negrito falso" (faux-bold) que fica borrado e foge do padrão.
+- **Corpo:** `Space Grotesk` (`var(--f-body)`) — textos, parágrafos, botões, inputs.
+- **Números/mono:** `JetBrains Mono` (`var(--f-mono)`) — macros, cargas, horários, rótulos técnicos.
+- **Tamanho mínimo de fonte: 10px.** Nunca usar menor que isso.
 
 ### Tema Dark / Light
-- Toggle via `ThemeSwitcher` — armazena em `localStorage` chave `'musc-color-mode'`
-- Aplicado em `document.documentElement.dataset.theme = 'dark' | 'light'`
-- Usar **sempre variáveis CSS** — nunca hardcode de cor
+- Toggle via `ThemeSwitcher` — aplicado em `document.documentElement.dataset.theme = 'dark' | 'light'`.
+- Usar **sempre variáveis CSS** — nunca cor fixa (hex/rgb) no código.
 
 ### Variáveis CSS (usar estas, não hardcode)
 
-| Variável | Dark | Light | Uso |
-|----------|------|-------|-----|
-| `var(--bg)` | `#06071a` | `#f0f1ff` | fundo da página |
-| `var(--surface)` | `#0c0e28` | `#e6e8ff` | cards, painéis |
-| `var(--accent)` | `#6c8ef7` | `#3d5ee8` | cor primária (azul) |
-| `var(--accent-2)` | `#c44fe0` | `#9a2ec4` | cor secundária (roxo) |
-| `var(--accent-glow)` | `rgba(108,142,247,0.28)` | — | glow do accent |
-| `var(--accent-muted)` | `rgba(108,142,247,0.13)` | — | fundo suave accent |
-| `var(--fg)` | `#eeedf8` | `#0e0f2e` | texto principal |
-| `var(--fg-2)` | `rgba(238,237,248,0.55)` | — | texto secundário |
-| `var(--fg-3)` | `rgba(238,237,248,0.28)` | — | texto fraco |
-| `var(--border)` | `rgba(255,255,255,0.07)` | — | borda sutil |
-| `var(--border-md)` | `rgba(255,255,255,0.13)` | — | borda normal |
-| `var(--danger)` | `#f87171` | — | erros |
-| `var(--success)` | `#4ade80` | — | sucesso |
+| Variável | Valor (dark) | Uso |
+|----------|------|-----|
+| `var(--bg-0)` | `#08090a` | fundo da página |
+| `var(--bg-1)` | `#101113` | card padrão |
+| `var(--bg-2)` | `#181a1c` | hover / nested |
+| `var(--bg-3)` | `#23262a` | input / chip / trilho de barra |
+| `var(--bg-4)` | `#2e3236` | nested mais claro |
+| `var(--hairline)` | `rgba(255,255,255,0.06)` | borda sutil |
+| `var(--border)` | `rgba(255,255,255,0.10)` | borda normal |
+| `var(--border-strong)` | `rgba(255,255,255,0.20)` | borda forte |
+| `var(--text)` | `#f5f5f3` | texto principal |
+| `var(--text-dim)` | `#9a9a96` | texto secundário |
+| `var(--text-faint)` | `#5a5a56` | texto fraco |
+| `var(--accent)` | `#d4ff3a` | cor primária (verde-limão) |
+| `var(--accent-2)` | `#b6e02a` | accent hover |
+| `var(--accent-fg)` | `#0a0a0a` | texto sobre o accent |
+| `var(--danger)` | `#ff3d55` | erros |
+| `var(--warn)` | `#ffb547` | atenção / acima da meta |
+| `var(--success)` | `#6affb9` | sucesso |
+| `var(--info)` | `#6ec6ff` | informação / azul |
+
+> Para gráficos com várias cores (ex.: macros), use a paleta semântica: **proteína = `--accent`, carboidrato = `--info`, gordura = `--warn`**. Nunca inventar hex novo (ex.: `#60a5fa`).
+
+### Raios e sombra (use só estes valores)
+- `--r-1` 4px · `--r-2` 8px · `--r-3` 14px · `--r-4` 22px
+- `--sh-pop` — sombra de cards/modais em destaque
+
+### Classes prontas (em `src/index.css`) — preferir à estilo inline
+- Tipografia: `.f-display` `.f-mono` `.eyebrow` `.label-sm`
+- Botões: `.btn` (+ `.primary` `.ghost` `.danger` `.lg` `.xl`)
+- Cartões: `.card` `.card-flat` `.card-accent` `.card-dark` `.card-title`
+- Etiquetas/seletores: `.chip` (+ `.solid` `.danger` `.success`)
+- Formulário: `.input` (+ `textarea.input`, `select.input`); `.set-input` para campo numérico
+- Números grandes: `.stat-num` `.stat-label` `.stat-unit`
+- Outros: `.bar` (progresso) · `.skeleton` (carregando) · `.topbar` `.content` `.nav` `.mob-tabbar` (estrutura)
 
 ### Padrões visuais recorrentes
 ```tsx
-// Card ativo (destaque com borda azul à esquerda)
-border: '1px solid var(--border)'
-borderLeft: '2px solid var(--accent)'
+// Card com destaque (borda accent à esquerda)
+<div className="card" style={{ borderLeft: '2px solid var(--accent)' }} />
 
-// Skeleton de loading (classe CSS já definida)
-<div className="skeleton" style={{ height: 64, borderRadius: 4 }} />
+// Título de card / seção
+<h2 className="card-title">FREQUÊNCIA</h2>
 
-// Label de seção
-fontFamily: "'JetBrains Mono', monospace", fontSize: 9,
-color: 'var(--fg-3)', letterSpacing: '0.15em', textTransform: 'uppercase'
+// Número grande
+<div className="f-display" style={{ fontSize: 56, color: 'var(--accent)' }}>12</div>
 
-// Card glassmorphism (classe CSS)
-<div className="glass-card" style={{ borderRadius: 12, padding: 16 }} />
+// Skeleton de loading
+<div className="skeleton" style={{ height: 64, borderRadius: 14 }} />
 
-// Borda animada conic-gradient (classe CSS)
-<div className="glow-border" style={{ borderRadius: 12 }} />
-
-// Texto com gradiente (classe CSS)
-<h1 className="gradient-text">Título</h1>
+// Estado de erro
+<div className="card" style={{ borderLeft: '2px solid var(--danger)', background: 'rgba(255,61,85,0.05)' }} />
 ```
-
-### Classes CSS especiais (em `src/index.css`)
-- `.glass-card` — glassmorphism: blur + fundo semi-transparente + borda branca sutil
-- `.glow-border` — borda animada azul/roxo girando (conic-gradient, 8s)
-- `.gradient-text` — texto com gradiente `--accent-light` → `#fff`
-- `.deep-card` — sombra profunda estilo CTA (para modais e cards principais)
 
 ---
 
@@ -234,7 +243,8 @@ Não existe `tailwind.config.js`. Cores customizadas ficam em `src/index.css` de
 ```
 VITE_SUPABASE_URL=https://xfcblbdwaibpzcpwzkow.supabase.co
 VITE_SUPABASE_ANON_KEY=sb_publishable_...
-VITE_GEMINI_API_KEY=...
 ```
 
 O `.env` existe localmente mas **nunca vai para o git**. O `.env.example` é o template commitado.
+
+> **IA (Nutrição):** a chave do Groq **não** é variável de frontend. Ela fica como *secret* `GROQ_API_KEY` na Edge Function `analyze-meal` do Supabase, para nunca ficar exposta no navegador. Obter (grátis, sem cartão) em https://console.groq.com.

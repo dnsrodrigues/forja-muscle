@@ -11,11 +11,13 @@ interface MealBottomSheetProps {
   onClose: () => void
   onSaved: (log: NutritionLog) => void
   userId: string
+  /** Dia selecionado ('YYYY-MM-DD') — a refeição é salva neste dia. */
+  dateStr: string
 }
 
 const MEAL_TYPES = Object.keys(MEAL_TYPE_LABELS) as MealType[]
 
-export function MealBottomSheet({ isOpen, onClose, onSaved, userId }: MealBottomSheetProps) {
+export function MealBottomSheet({ isOpen, onClose, onSaved, userId, dateStr }: MealBottomSheetProps) {
   const [mealType, setMealType] = useState<MealType>('breakfast')
   const [description, setDescription] = useState('')
   const [calories, setCalories] = useState('')
@@ -79,6 +81,12 @@ export function MealBottomSheet({ isOpen, onClose, onSaved, userId }: MealBottom
     if (!analyzed) return
     setSaving(true)
     try {
+      // Salva no dia selecionado (corrige fuso e permite registrar dias passados):
+      // usa a data escolhida com a hora atual do relógio.
+      const [yy, mm, dd] = dateStr.split('-').map(Number)
+      const now = new Date()
+      const loggedAt = new Date(yy, mm - 1, dd, now.getHours(), now.getMinutes(), now.getSeconds())
+
       const log = await addNutritionLog({
         user_id: userId,
         meal_type: mealType,
@@ -88,7 +96,7 @@ export function MealBottomSheet({ isOpen, onClose, onSaved, userId }: MealBottom
         carbs_g: carbsG ? Number(carbsG) : undefined,
         fat_g: fatG ? Number(fatG) : undefined,
         ai_feedback: feedback || undefined,
-        logged_at: new Date().toISOString(),
+        logged_at: loggedAt.toISOString(),
       })
       onSaved(log)
       onClose()
@@ -141,7 +149,7 @@ export function MealBottomSheet({ isOpen, onClose, onSaved, userId }: MealBottom
 
             {/* Header */}
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
-              <div id="bs-title" style={{ fontFamily: 'var(--f-display)', fontWeight: 800, fontSize: 18, color: 'var(--text)' }}>
+              <div id="bs-title" className="f-display" style={{ fontSize: 24, color: 'var(--text)' }}>
                 NOVA REFEIÇÃO
               </div>
               <button
@@ -158,16 +166,10 @@ export function MealBottomSheet({ isOpen, onClose, onSaved, userId }: MealBottom
               {MEAL_TYPES.map((type) => (
                 <button
                   key={type}
+                  type="button"
                   onClick={() => setMealType(type)}
-                  style={{
-                    background: mealType === type ? 'var(--accent)' : 'transparent',
-                    border: `1px solid ${mealType === type ? 'var(--accent)' : 'var(--border)'}`,
-                    color: mealType === type ? 'var(--accent-fg)' : 'var(--text-dim)',
-                    borderRadius: 4, padding: '6px 12px',
-                    fontFamily: 'var(--f-mono)', fontSize: 10,
-                    letterSpacing: '0.05em', cursor: 'pointer',
-                    transition: 'all 0.15s',
-                  }}
+                  className={`chip${mealType === type ? ' solid' : ''}`}
+                  style={{ cursor: 'pointer', transition: 'background 0.15s, color 0.15s' }}
                 >
                   {MEAL_TYPE_LABELS[type]}
                 </button>
@@ -181,18 +183,8 @@ export function MealBottomSheet({ isOpen, onClose, onSaved, userId }: MealBottom
               onChange={(e) => { setDescription(e.target.value); setAnalyzed(false) }}
               placeholder="Ex: 2 ovos mexidos, 1 fatia de pão integral, café preto sem açúcar..."
               rows={3}
-              style={{
-                width: '100%', boxSizing: 'border-box',
-                background: 'rgba(255,255,255,0.03)',
-                border: '1px solid var(--border)',
-                borderRadius: 6, padding: '10px 12px',
-                color: 'var(--text)',
-                fontFamily: 'var(--f-mono)', fontSize: 12,
-                resize: 'vertical', outline: 'none',
-                marginBottom: 12,
-              }}
-              onFocus={(e) => { e.target.style.borderColor = 'var(--accent)' }}
-              onBlur={(e) => { e.target.style.borderColor = 'var(--border)' }}
+              className="input"
+              style={{ marginBottom: 12 }}
             />
 
             {/* Botão analisar */}
@@ -245,7 +237,7 @@ export function MealBottomSheet({ isOpen, onClose, onSaved, userId }: MealBottom
                       border: '1px solid rgba(212,255,58,0.2)',
                       borderRadius: 6, padding: '10px 12px', marginBottom: 12,
                     }}>
-                      <div className="label-sm" style={{ color: 'var(--accent)', marginBottom: 4 }}>✦ Análise Gemini</div>
+                      <div className="label-sm" style={{ color: 'var(--accent)', marginBottom: 4 }}>✦ Análise IA</div>
                       <p style={{ margin: 0, fontSize: 12, color: 'var(--text-dim)', fontStyle: 'italic', lineHeight: 1.5 }}>
                         {feedback}
                       </p>
