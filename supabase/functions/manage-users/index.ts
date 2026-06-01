@@ -108,6 +108,36 @@ Deno.serve(async (req) => {
       return ok({})
     }
 
+    // ── RESETAR SENHA do aluno (super_admin ou trainer dono) ────────
+    if (action === 'reset-password') {
+      const { userId } = body
+      if (!userId) throw new Error('userId é obrigatório')
+
+      // Trainer só pode resetar a senha de seus próprios alunos
+      if (isTrainer) {
+        const { data: target } = await supabaseAdmin
+          .from('profiles')
+          .select('trainer_id, role')
+          .eq('id', userId)
+          .single()
+
+        if (!target || target.trainer_id !== caller.id || target.role !== 'user') {
+          throw new Error('Sem permissão para resetar a senha deste usuário')
+        }
+      }
+
+      const { error: pwError } = await supabaseAdmin.auth.admin.updateUserById(userId, { password: '123456' })
+      if (pwError) throw new Error(`Falha ao resetar senha: ${pwError.message}`)
+
+      const { error: flagError } = await supabaseAdmin
+        .from('profiles')
+        .update({ must_change_password: true })
+        .eq('id', userId)
+      if (flagError) throw new Error(`Falha ao marcar troca de senha: ${flagError.message}`)
+
+      return ok({})
+    }
+
     throw new Error(`Ação desconhecida: ${action}`)
   } catch (err) {
     const message = err instanceof Error ? err.message
