@@ -31,7 +31,7 @@ type PasswordFormData = z.infer<typeof passwordSchema>
 
 const profileSchema = z.object({
   full_name: z.string().min(2, 'Nome deve ter pelo menos 2 caracteres').max(80, 'Nome muito longo'),
-  weight: z.preprocess(toOptionalNumber, z.number().positive('Peso inválido').optional()),
+
   height: z.preprocess(toOptionalNumber, z.number().positive('Altura inválida').optional()),
   birth_date: z.string().optional(),
   gender: z.enum(['male', 'female', 'other', '']).optional(),
@@ -120,7 +120,7 @@ export function ProfilePage() {
     resolver: zodResolver(profileSchema),
     defaultValues: {
       full_name: profile?.full_name ?? '',
-      weight: profile?.weight ?? ('' as unknown as number),
+
       height: profile?.height ?? ('' as unknown as number),
       birth_date: profile?.birth_date ?? '',
       gender: (profile?.gender as ProfileFormData['gender']) ?? '',
@@ -136,7 +136,6 @@ export function ProfilePage() {
     try {
       const cleaned = {
         full_name: data.full_name,
-        weight: data.weight,
         height: data.height,
         birth_date: data.birth_date || undefined,
         gender: data.gender === '' ? undefined : data.gender,
@@ -343,15 +342,30 @@ export function ProfilePage() {
               <input className="input" type="date" {...register('birth_date')} />
             </Field>
 
-            <Field label="Peso atual (kg)" error={errors.weight?.message}>
-              <input
-                className="input"
-                type="number"
-                step={0.1}
-                placeholder="Ex: 82.5"
-                {...register('weight')}
-              />
-            </Field>
+            <div>
+              <div className="label-sm" style={{ marginBottom: 6 }}>Peso atual (kg)</div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
+                <span style={{ fontFamily: 'var(--f-mono)', fontSize: 20, color: 'var(--accent)', fontWeight: 700 }}>
+                  {profile?.weight ? `${profile.weight} kg` : '—'}
+                </span>
+                <Link
+                  to="/medidas"
+                  style={{
+                    fontFamily: 'var(--f-mono)',
+                    fontSize: 10,
+                    color: 'var(--text-faint)',
+                    textDecoration: 'none',
+                    letterSpacing: '0.1em',
+                    textTransform: 'uppercase',
+                    border: '1px solid var(--border)',
+                    borderRadius: 'var(--r-1)',
+                    padding: '3px 8px',
+                  }}
+                >
+                  Registrar em Medidas →
+                </Link>
+              </div>
+            </div>
 
             <Field label="Altura (cm)" error={errors.height?.message}>
               <input
