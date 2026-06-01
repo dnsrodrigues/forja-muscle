@@ -627,13 +627,17 @@ select.input {
   display: flex;
   justify-content: space-around;
   align-items: center;
-  padding: 12px 8px 22px;
+  padding: 12px 8px;
+  padding-bottom: calc(14px + env(safe-area-inset-bottom));
   border-top: 1px solid var(--hairline);
   background: #0a0b0c;
   gap: 0;
-  position: sticky;
+  position: fixed;
+  left: 0;
+  right: 0;
   bottom: 0;
-  z-index: 10;
+  width: 100%;
+  z-index: 40;
 }
 
 [data-theme='light'] .mob-tabbar {
@@ -790,9 +794,11 @@ select.input {
   .nav { display: none; }
   .topbar { padding: 16px 18px; }
   .topbar-title { font-size: 22px; }
-  .content { padding: 18px; padding-bottom: 80px; }
+  .content { padding: 18px; padding-bottom: calc(88px + env(safe-area-inset-bottom)); }
   [data-mobile-tabbar] { display: flex !important; }
   .scr { position: relative; }
+  .topbar { flex-wrap: wrap; row-gap: 10px; }
+  .topbar-left { min-width: 0; flex: 1; }
 }
 
 /* Esconde a tabbar no desktop (já está oculta inline, mas garante via CSS) */
