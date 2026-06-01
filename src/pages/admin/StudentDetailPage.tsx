@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
-import { motion, AnimatePresence } from 'motion/react'
+import { motion } from 'motion/react'
 import { Topbar } from '../../components/layout/Topbar'
 import { Icon } from '../../components/ui/Icon'
 import { Avatar } from '../../components/ui/Avatar'
@@ -196,12 +196,9 @@ export function StudentDetailPage() {
               ))}
             </div>
 
-            {/* ─── Conteúdo das abas (AnimatePresence evita sobreposição) ─── */}
-            <AnimatePresence mode="wait">
-
             {/* ─── Aba: Visão geral ─── */}
             {tab === 'overview' && (
-              <motion.div key="overview" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -4 }} transition={{ duration: 0.2 }} className="col gap-3">
+              <motion.div key="overview" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.2 }} className="col gap-3">
                 <div className="card" style={{ display: 'flex', alignItems: 'center', gap: 16, flexWrap: 'wrap' }}>
                   <Avatar name={student.full_name} src={student.avatar_url} size="lg" />
                   <div style={{ minWidth: 0 }}>
@@ -260,7 +257,7 @@ export function StudentDetailPage() {
 
             {/* ─── Aba: Treinos ─── */}
             {tab === 'workouts' && (
-              <motion.div key="workouts" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -4 }} transition={{ duration: 0.2 }}>
+              <motion.div key="workouts" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.2 }}>
                 {history.length === 0 ? (
                   <div className="card" style={{ textAlign: 'center', padding: '32px 24px', borderStyle: 'dashed', color: 'var(--text-dim)' }}>
                     Nenhum treino registrado ainda.
@@ -295,7 +292,7 @@ export function StudentDetailPage() {
 
             {/* ─── Aba: Evolução ─── */}
             {tab === 'progress' && (
-              <motion.div key="progress" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -4 }} transition={{ duration: 0.2 }} className="col gap-3">
+              <motion.div key="progress" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.2 }} className="col gap-3">
                 <div className="card">
                   <h2 className="card-title" style={{ marginBottom: 12 }}>PESO {lastWeight ? `· ${Number(lastWeight.weight_kg).toFixed(1)} kg` : ''}</h2>
                   {weights.length === 0 ? (
@@ -343,7 +340,7 @@ export function StudentDetailPage() {
 
             {/* ─── Aba: Nutrição ─── */}
             {tab === 'nutrition' && (
-              <motion.div key="nutrition" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -4 }} transition={{ duration: 0.2 }} className="col gap-3">
+              <motion.div key="nutrition" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.2 }} className="col gap-3">
                 <div className="card">
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
                     <h2 className="card-title">HOJE</h2>
@@ -364,8 +361,6 @@ export function StudentDetailPage() {
                 </div>
               </motion.div>
             )}
-
-            </AnimatePresence>
           </>
         )}
       </div>
