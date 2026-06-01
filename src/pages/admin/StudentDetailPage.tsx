@@ -7,10 +7,15 @@ import { Avatar } from '../../components/ui/Avatar'
 import { WeightChart } from '../../components/charts/WeightChart'
 import { LoadProgressChart } from '../../components/charts/LoadProgressChart'
 import { AssignToStudentModal } from '../../components/admin/AssignToStudentModal'
+import { WeightEntryModal } from '../../components/WeightEntryModal'
+import { MeasurementEntryModal } from '../../components/MeasurementEntryModal'
+import { StudentEditModal } from '../../components/admin/StudentEditModal'
+import { ConfirmModal } from '../../components/ui/ConfirmModal'
 import { getProfile } from '../../services/profile.service'
 import { getStudentWorkouts, deactivateWorkout } from '../../services/workout.service'
 import { getWorkoutHistory, getCurrentStreak, getExercisesTrainedByUser, getLoadProgression } from '../../services/history.service'
-import { getUserWeights, getBodyMeasurements } from '../../services/measurements.service'
+import { getUserWeights, getBodyMeasurements, addUserWeight, addBodyMeasurement } from '../../services/measurements.service'
+import { resetStudentPassword } from '../../services/trainer.service'
 import { getNutritionLogs, computeDailyTotals } from '../../services/nutrition.service'
 import { getBmiStatus } from '../../lib/bmi'
 import { DIFFICULTY_LABELS } from '../../types'
@@ -119,10 +124,17 @@ export function StudentDetailPage() {
   const lastMeasurement = measurements[0]
   const nutritionTotals = computeDailyTotals(nutritionLogs)
 
-  // placeholder para ações da Task 8 — evita variáveis não usadas
-  void editOpen; void weightOpen; void measureOpen; void resetConfirm; void toast
-  void setEditOpen; void setWeightOpen; void setMeasureOpen; void setResetConfirm; void setToast
-  void navigate
+  async function handleResetPassword() {
+    if (!student) return
+    setResetConfirm(false)
+    try {
+      await resetStudentPassword(student.id)
+      setToast('Senha resetada para 123456. O aluno troca no próximo login.')
+    } catch (err) {
+      setToast(err instanceof Error ? err.message : 'Erro ao resetar senha')
+    }
+    setTimeout(() => setToast(null), 4000)
+  }
 
   return (
     <>
@@ -153,7 +165,18 @@ export function StudentDetailPage() {
               <button onClick={() => setAssignOpen(true)} className="btn primary">
                 <Icon name="plus" size={14} /> Atribuir ficha
               </button>
-              {/* Editar / Peso·Medidas / Resetar senha: adicionados na Task 8 */}
+              <button onClick={() => setEditOpen(true)} className="btn">
+                <Icon name="edit" size={14} /> Editar dados
+              </button>
+              <button onClick={() => setWeightOpen(true)} className="btn">
+                <Icon name="scale" size={14} /> Registrar peso
+              </button>
+              <button onClick={() => setMeasureOpen(true)} className="btn">
+                <Icon name="scale" size={14} /> Medidas
+              </button>
+              <button onClick={() => setResetConfirm(true)} className="btn ghost">
+                <Icon name="settings" size={14} /> Resetar senha
+              </button>
             </div>
 
             {/* Abas */}
@@ -351,6 +374,61 @@ export function StudentDetailPage() {
           onClose={() => setAssignOpen(false)}
           onAssigned={() => { void loadCore() }}
         />
+      )}
+
+      {student && (
+        <StudentEditModal
+          student={student}
+          isOpen={editOpen}
+          onClose={() => setEditOpen(false)}
+          onSaved={(updated) => setStudent(updated)}
+        />
+      )}
+
+      {student && (
+        <WeightEntryModal
+          isOpen={weightOpen}
+          lastWeight={student.weight}
+          onClose={() => setWeightOpen(false)}
+          onSaved={(w) => {
+            setWeights((prev) => [w, ...prev])
+            setStudent((prev) => prev ? { ...prev, weight: Number(w.weight_kg) } : prev)
+          }}
+          onSave={(kg, at) => addUserWeight(student.id, kg, at)}
+        />
+      )}
+
+      {student && (
+        <MeasurementEntryModal
+          isOpen={measureOpen}
+          onClose={() => setMeasureOpen(false)}
+          onSaved={(m) => setMeasurements((prev) => [m, ...prev])}
+          onSave={(data) => addBodyMeasurement(student.id, data)}
+        />
+      )}
+
+      {resetConfirm && (
+        <ConfirmModal
+          title="Resetar senha do aluno"
+          message="A senha será trocada para 123456 e o aluno precisará criar uma nova no próximo login. Confirmar?"
+          confirmLabel="Resetar senha"
+          danger
+          onConfirm={handleResetPassword}
+          onCancel={() => setResetConfirm(false)}
+        />
+      )}
+
+      {toast && (
+        <div
+          style={{
+            position: 'fixed', bottom: 24, left: '50%', transform: 'translateX(-50%)',
+            zIndex: 2000, background: 'var(--bg-2)', border: '1px solid var(--border)',
+            borderLeft: '2px solid var(--accent)', borderRadius: 'var(--r-2)',
+            padding: '12px 18px', fontSize: 13, color: 'var(--text)', maxWidth: 'calc(100vw - 32px)',
+          }}
+        >
+          {toast}
+        </div>
       )}
     </>
   )

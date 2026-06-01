@@ -63,3 +63,21 @@ export async function deactivateStudent(studentId: string): Promise<void> {
     .eq('id', studentId)
   if (error) throw error
 }
+
+/**
+ * Reseta a senha do aluno para a temporária padrão (123456) e força a troca
+ * no próximo login. A operação ocorre na Edge Function manage-users (service role).
+ */
+export async function resetStudentPassword(studentId: string): Promise<void> {
+  const { data, error } = await supabase.functions.invoke('manage-users', {
+    body: { action: 'reset-password', userId: studentId },
+  })
+  if (error) {
+    let msg = error.message
+    try {
+      const body = typeof data === 'object' && data !== null ? data as { error?: string } : await error.context?.json()
+      if (body?.error) msg = body.error
+    } catch { /* usa msg padrão */ }
+    throw new Error(msg)
+  }
+}
