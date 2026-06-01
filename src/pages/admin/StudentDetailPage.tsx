@@ -179,7 +179,7 @@ export function StudentDetailPage() {
             </div>
 
             {/* Abas */}
-            <div style={{ display: 'flex', gap: 4, borderBottom: '1px solid var(--hairline)', marginBottom: 20, overflowX: 'auto' }}>
+            <div style={{ display: 'flex', gap: 4, borderBottom: '1px solid var(--hairline)', marginBottom: 20, overflowX: 'auto', overflowY: 'hidden', flexShrink: 0 }}>
               {TABS.map((t) => (
                 <button
                   key={t.key}
