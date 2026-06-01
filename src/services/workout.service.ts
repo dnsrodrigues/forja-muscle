@@ -371,12 +371,14 @@ export async function createExercise(data: {
   return created as Exercise
 }
 
-/** Atualiza descrição e/ou link de vídeo de um exercício na biblioteca */
+/** Atualiza um exercício da biblioteca (nome, grupo, descrição e/ou vídeo) */
 export async function updateExercise(
   exerciseId: string,
-  data: { description?: string; video_url?: string }
+  data: { name?: string; muscle_group?: string; description?: string; video_url?: string }
 ): Promise<void> {
-  const updates: { description?: string | null; video_url?: string | null } = {}
+  const updates: Record<string, unknown> = {}
+  if (data.name !== undefined) updates.name = data.name.trim()
+  if (data.muscle_group !== undefined) updates.muscle_group = data.muscle_group
   if (data.description !== undefined) updates.description = data.description.trim() || null
   if (data.video_url !== undefined) updates.video_url = data.video_url.trim() || null
   const { error } = await supabase

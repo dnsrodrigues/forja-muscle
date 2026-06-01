@@ -35,6 +35,7 @@ function gestao(isSuperAdmin: boolean): NavDest[] {
   if (isSuperAdmin) {
     list.push({ to: '/admin/trainers', label: 'Trainers', icon: 'trophy', primary: true, matches: (p) => p.startsWith('/admin/trainers') })
   }
+  list.push({ to: '/admin/exercises', label: 'Exercícios', icon: 'dumbbell', matches: (p) => p.startsWith('/admin/exercises') })
   list.push({ to: '/perfil', label: 'Perfil', icon: 'user' })
   return list
 }
