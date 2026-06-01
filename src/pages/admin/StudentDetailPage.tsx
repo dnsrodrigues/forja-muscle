@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { useParams, useNavigate, Link } from 'react-router-dom'
+import { useParams, Link } from 'react-router-dom'
 import { motion } from 'motion/react'
 import { Topbar } from '../../components/layout/Topbar'
 import { Icon } from '../../components/ui/Icon'
@@ -36,7 +36,6 @@ function formatDate(iso: string): string {
 
 export function StudentDetailPage() {
   const { id } = useParams<{ id: string }>()
-  const navigate = useNavigate()
   const [student, setStudent] = useState<UserProfile | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)

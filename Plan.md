@@ -23,7 +23,7 @@
 | 7 | Histórico e progressão (gráficos) | ✅ Completa |
 | 7.5 | Melhorias pré-Fase 8 (métricas reais, ícones FORJA, acessibilidade) | ✅ Completa |
 | 8 | Nutrição + IA (Groq/Llama) | ✅ Completa |
-| 9 | Painel admin (gestão de alunos) | ⏳ Pendente |
+| 9 | Painel admin (gestão de alunos) | ✅ Completa |
 | 10 | Polish + PWA | ⏳ Pendente |
 | 11 | Deploy (Vercel) | ⏳ Pendente |
 
