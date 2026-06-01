@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -18,9 +18,44 @@ const loginSchema = z.object({
 
 type LoginForm = z.infer<typeof loginSchema>
 
+// ─── Hook: anima um número de 0 até o target ─────────────────────────────────
+
+function useCountUp(target: number, duration = 1400): number {
+  const [value, setValue] = useState(0)
+  const raf = useRef<number | null>(null)
+
+  useEffect(() => {
+    const start = performance.now()
+    function tick(now: number) {
+      const elapsed = now - start
+      const progress = Math.min(elapsed / duration, 1)
+      // easing: ease-out cubic
+      const eased = 1 - Math.pow(1 - progress, 3)
+      setValue(Math.round(target * eased))
+      if (progress < 1) raf.current = requestAnimationFrame(tick)
+    }
+    raf.current = requestAnimationFrame(tick)
+    return () => { if (raf.current) cancelAnimationFrame(raf.current) }
+  }, [target, duration])
+
+  return value
+}
+
 // ─── Página ───────────────────────────────────────────────────────────────────
 
 export function LoginPage() {
+  // Números aleatórios gerados uma vez por visita
+  const [targets] = useState(() => ({
+    treinos: Math.floor(Math.random() * 120) + 210,   // 210–329
+    volume:  Math.floor(Math.random() * 800) + 900,   // 900–1699 (em kg, exibido como kt)
+  }))
+  const treinos = useCountUp(targets.treinos, 1400)
+  const volumeRaw = useCountUp(targets.volume, 1600)
+  // Formata volume: abaixo de 1000 mostra "NNN kg", acima mostra "N,Nkt"
+  const volumeLabel = volumeRaw >= 1000
+    ? `${Math.floor(volumeRaw / 100) / 10}`.replace('.', ',') + 'kt'
+    : `${volumeRaw}`
+
   const { signIn } = useAuth()
   const navigate = useNavigate()
   const [errorMessage, setErrorMessage] = useState('')
@@ -98,7 +133,7 @@ export function LoginPage() {
           <div style={{ display: 'flex', gap: 22, marginTop: 32 }}>
             <div>
               <div className="f-display" style={{ fontSize: 38, color: 'var(--accent)' }}>
-                284
+                {treinos}
               </div>
               <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.6)', letterSpacing: '0.1em' }}>
                 TREINOS REGISTRADOS HOJE
@@ -106,7 +141,7 @@ export function LoginPage() {
             </div>
             <div>
               <div className="f-display" style={{ fontSize: 38, color: '#f5f5f3' }}>
-                1,2kt
+                {volumeLabel}
               </div>
               <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.6)', letterSpacing: '0.1em' }}>
                 VOLUME MOVIMENTADO
