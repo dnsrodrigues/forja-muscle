@@ -130,7 +130,7 @@ export function LoginPage() {
             FORJADO PELO <span style={{ color: 'var(--accent)' }}>ESFORÇO</span> DIÁRIO.
           </h1>
 
-          <div style={{ display: 'flex', gap: 22, marginTop: 32 }}>
+          <div className="forja-login-stats" style={{ display: 'flex', gap: 22, marginTop: 32 }}>
             <div>
               <div className="f-display" style={{ fontSize: 38, color: 'var(--accent)' }}>
                 {treinos}
@@ -325,12 +325,15 @@ export function LoginPage() {
         @media (max-width: 768px) {
           .forja-login { flex-direction: column; }
           .forja-login-art {
-            min-height: 280px;
-            padding: 28px;
+            min-height: auto;
+            padding: 32px 28px 28px;
+            justify-content: flex-start;
+            gap: 20px;
           }
-          .forja-login-headline { font-size: 48px; }
-          .forja-login-bg-text { font-size: 220px; }
+          .forja-login-headline { font-size: 44px; }
+          .forja-login-bg-text { font-size: 180px; bottom: -20px; }
           .forja-login-form { padding: 32px 24px; min-height: auto; }
+          .forja-login-stats { display: none; }
         }
       `}</style>
     </div>

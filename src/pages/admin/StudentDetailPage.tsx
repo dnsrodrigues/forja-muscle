@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
+import { useToast } from '../../context/ToastContext'
 import { motion } from 'motion/react'
 import { Topbar } from '../../components/layout/Topbar'
 import { Icon } from '../../components/ui/Icon'
@@ -36,6 +37,7 @@ function formatDate(iso: string): string {
 
 export function StudentDetailPage() {
   const { id } = useParams<{ id: string }>()
+  const { showToast } = useToast()
   const [student, setStudent] = useState<UserProfile | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -58,7 +60,6 @@ export function StudentDetailPage() {
   const [weightOpen, setWeightOpen] = useState(false)
   const [measureOpen, setMeasureOpen] = useState(false)
   const [resetConfirm, setResetConfirm] = useState(false)
-  const [toast, setToast] = useState<string | null>(null)
   const [moreOpen, setMoreOpen] = useState(false)
 
   // carga inicial: perfil + overview
@@ -129,11 +130,10 @@ export function StudentDetailPage() {
     setResetConfirm(false)
     try {
       await resetStudentPassword(student.id)
-      setToast('Senha resetada para 123456. O aluno troca no próximo login.')
+      showToast('Senha resetada para 123456. O aluno troca no próximo login.', 'success')
     } catch (err) {
-      setToast(err instanceof Error ? err.message : 'Erro ao resetar senha')
+      showToast(err instanceof Error ? err.message : 'Erro ao resetar senha', 'error')
     }
-    setTimeout(() => setToast(null), 4000)
   }
 
   return (
@@ -498,18 +498,6 @@ export function StudentDetailPage() {
         />
       )}
 
-      {toast && (
-        <div
-          style={{
-            position: 'fixed', bottom: 24, left: '50%', transform: 'translateX(-50%)',
-            zIndex: 2000, background: 'var(--bg-2)', border: '1px solid var(--border)',
-            borderLeft: '2px solid var(--accent)', borderRadius: 'var(--r-2)',
-            padding: '12px 18px', fontSize: 13, color: 'var(--text)', maxWidth: 'calc(100vw - 32px)',
-          }}
-        >
-          {toast}
-        </div>
-      )}
     </>
   )
 }

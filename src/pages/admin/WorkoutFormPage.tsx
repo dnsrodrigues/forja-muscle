@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { useParams, useSearchParams, useNavigate } from 'react-router-dom'
 import { motion } from 'motion/react'
 import { useAuth } from '../../context/AuthContext'
+import { useToast } from '../../context/ToastContext'
 import {
   DndContext,
   closestCenter,
@@ -116,6 +117,7 @@ export function WorkoutFormPage() {
   const [searchParams] = useSearchParams()
   const navigate = useNavigate()
   const { profile } = useAuth()
+  const { showToast } = useToast()
 
   const isEditing = Boolean(id)
   const presetUserId = searchParams.get('userId')
@@ -284,7 +286,7 @@ export function WorkoutFormPage() {
 
       navigate('/admin/workouts')
     } catch (err) {
-      alert(err instanceof Error ? err.message : 'Erro ao salvar ficha')
+      showToast(err instanceof Error ? err.message : 'Erro ao salvar ficha', 'error')
     } finally {
       setSaving(false)
     }
