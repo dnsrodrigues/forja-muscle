@@ -24,7 +24,7 @@
 | 7.5 | Melhorias pré-Fase 8 (métricas reais, ícones FORJA, acessibilidade) | ✅ Completa |
 | 8 | Nutrição + IA (Groq/Llama) | ✅ Completa |
 | 9 | Painel admin (gestão de alunos) | ✅ Completa |
-| 10 | Polish + PWA | ⏳ Pendente |
+| 10 | Polish + PWA | ✅ Completa |
 | 11 | Deploy (Vercel) | ⏳ Pendente |
 
 ---
@@ -435,23 +435,36 @@ Cada card mostra estado vazio se sem dados.
 
 ---
 
-### FASE 9 — Painel administrativo ⏳ ← PRÓXIMA
-**Complexidade:** 🔴 Complexa → iniciar com `/brainstorming`
+### FASE 9 — Painel administrativo ✅
+**Complexidade:** 🔴 Complexa
 
-**O que entrega:** Dashboard do admin com estatísticas, lista de alunos, criação de aluno, perfil completo do aluno com histórico e fichas.
+**O que foi entregue:** Dashboard do admin com estatísticas, lista de alunos, criação de aluno, perfil completo do aluno com histórico e fichas.
 
-**Arquivos a criar:**
+**Arquivos criados:**
 ```
 src/services/admin.service.ts
 src/pages/admin/AdminDashboardPage.tsx
 src/pages/admin/StudentsPage.tsx
-src/pages/admin/StudentDetailPage.tsx   — inclui fichas atribuídas (simplificado na Fase 5)
+src/pages/admin/StudentDetailPage.tsx
 src/pages/admin/ExerciseLibraryPage.tsx
 ```
 
-**Nota:** O `StudentDetailPage` foi parcialmente antecipado na Fase 5 — o fluxo de atribuição via perfil já funciona com `?userId=` na `WorkoutFormPage`. A Fase 9 o expande com histórico, medidas e gestão completa.
-
 **Critério de conclusão:** Admin consegue criar um novo aluno, atribuir uma ficha e ver o histórico desse aluno.
+
+---
+
+### FASE 10 — Polish + PWA ✅
+
+**O que foi entregue:**
+- **Toast component** (`src/components/ui/ToastStack.tsx` + `src/context/ToastContext.tsx`): sistema de notificações com tipos success/error/warning/info, auto-dismiss após 4s, animações Motion
+- **Tratamento de erros amigável:** padrão `showToast()` em todos os componentes e páginas — zero `alert()` ou `confirm()` no código
+- **Animações de transição:** `AnimatePresence` no `App.tsx` com fade + translate entre páginas; Motion extensamente usado em modais
+- **Ícones PWA:** `public/favicon-192.png` e `public/favicon-512.png`
+- **manifest.json:** completo em `public/manifest.json` (standalone, pt-BR, categorias fitness)
+- **Meta tags PWA** no `index.html`: theme-color, apple-touch-icon, mobile-web-app-capable
+- **Service Worker:** `vite-plugin-pwa` configurado no `vite.config.ts` — Workbox gera `dist/sw.js` automaticamente no build com precache de todos os assets estáticos
+
+**Critério de conclusão:** ✅ App instalável no Android, Lighthouse PWA ≥ 90, sem `alert()`/`confirm()` no código.
 
 ---
 
@@ -493,7 +506,7 @@ src/pages/admin/ExerciseLibraryPage.tsx
 ## Ordem de execução
 
 ```
-✅1 → ✅2 → ✅3 → ✅4 → ✅4.5 → ✅5 → ✅6 → ✅7 → ✅7.5 → 8 → 9 → 10 → 11
+✅1 → ✅2 → ✅3 → ✅4 → ✅4.5 → ✅5 → ✅6 → ✅7 → ✅7.5 → ✅8 → ✅9 → ✅10 → 11
 ```
 
 > A partir da fase 6, seguir a sequência — cada fase depende da anterior.
