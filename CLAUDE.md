@@ -7,8 +7,8 @@ MUSCLE TRAINING é um PWA (app web instalável no celular) de gerenciamento de t
 > Documentação completa: [PRD](docs/superpowers/specs/2026-05-22-musctrainig-prd.md) | [Plan.md](Plan.md)  
 > Toda decisão de funcionalidade deve ser validada contra o PRD. Não implementar nada fora do escopo sem confirmar com o usuário.
 
-**Fases concluídas:** 1, 2, 3, 4, 4.5 (Design System), 5 (Fichas de Treino), 6 (Execução de Treino), 7 (Histórico e Progressão), 8 (Nutrição + IA com Groq/Llama), 9 (Painel Administrativo), 10 (Polish + PWA)  
-**Próxima fase:** 11 — Deploy (Vercel)
+**Fases concluídas:** 1, 2, 3, 4, 4.5 (Design System), 5 (Fichas de Treino), 6 (Execução de Treino), 7 (Histórico e Progressão), 8 (Nutrição + IA com Groq/Llama), 9 (Painel Administrativo), 10 (Polish + PWA), 11 (Deploy Vercel)  
+**Status:** ✅ Projeto completo e em produção — **https://forjamuscle.vercel.app**
 
 ---
 
@@ -44,46 +44,93 @@ MUSCLE TRAINING é um PWA (app web instalável no celular) de gerenciamento de t
 ```
 src/
   components/
-    layout/
-      ProtectedRoute.tsx   — bloqueia rota se não estiver logado
-      AdminRoute.tsx       — bloqueia rota se não for admin
-    ui/
-      Button.tsx           — botão com variantes primary/secondary/ghost
-      Input.tsx            — campo de formulário com label e erro
-      Avatar.tsx           — avatar quadrado com fallback nas iniciais
-      ThemeSwitcher.tsx    — toggle dark/light mode
-    WorkoutCard.tsx        — card de ficha (aluno + admin, badge HOJE)
-    ExerciseRow.tsx        — linha de exercício (leitura + edição)
-    ExerciseSelector.tsx   — modal de busca + criação de exercício novo
-    AssignWorkoutModal.tsx — atribuir template a aluno(s)
-  context/
-    AuthContext.tsx        — profile, isAdmin, signOut, loading
-    ThemeContext.tsx       — mode ('dark'|'light'), toggleMode
-  hooks/                   — hooks customizados (ainda vazios)
-  lib/
-    supabase.ts            — cliente Supabase
-  pages/
-    LoginPage.tsx          — tela de login
-    DashboardPage.tsx      — dashboard principal (aluno e admin)
-    ProfilePage.tsx        — perfil do usuário (edição)
-    WorkoutsPage.tsx       — aluno: fichas + destaque do dia
-    WorkoutDetailPage.tsx  — aluno: detalhe de uma ficha
-    NotFoundPage.tsx       — página 404
     admin/
-      WorkoutsAdminPage.tsx  — biblioteca de fichas (templates)
-      WorkoutFormPage.tsx    — criar / editar ficha
+      AssignToStudentModal.tsx — atribuir template a aluno específico
+      ExerciseFormModal.tsx    — criar/editar exercício da biblioteca
+      StudentEditModal.tsx     — editar dados do aluno (nome, objetivo, altura, peso alvo)
+    charts/
+      LoadProgressChart.tsx    — gráfico de progressão de carga (Recharts)
+      WeightChart.tsx          — gráfico de evolução de peso (Recharts)
+    layout/
+      AdminRoute.tsx           — bloqueia rota se não for admin/trainer
+      AppShell.tsx             — shell com sidebar + topbar + conteúdo
+      ProtectedRoute.tsx       — bloqueia rota se não estiver logado
+      Topbar.tsx               — barra superior com eyebrow, título e actions
+    ui/
+      Avatar.tsx               — avatar quadrado com fallback nas iniciais
+      AvatarCropModal.tsx      — recorte circular de foto de perfil
+      ConfirmModal.tsx         — modal de confirmação genérico
+      ForcePasswordModal.tsx   — força troca de senha no primeiro login
+      Icon.tsx                 — ícones SVG do sistema FORJA
+      ThemeSwitcher.tsx        — toggle dark/light + seletor de cor accent
+      ToastStack.tsx           — stack de notificações toast (Fase 10)
+    AssignWorkoutModal.tsx     — atribuir template a aluno(s) (template-centric)
+    ExerciseRow.tsx            — linha de exercício (leitura + edição)
+    ExerciseSelector.tsx       — modal de busca + criação de exercício
+    MealBottomSheet.tsx        — bottom sheet para registrar refeição
+    MealCard.tsx               — card de refeição no diário alimentar
+    MeasurementEntryModal.tsx  — registrar medidas corporais
+    ShaderBackdrop.tsx         — fundo WebGL animado na tela de login
+    WeightEntryModal.tsx       — registrar peso corporal
+    WorkoutCard.tsx            — card de ficha (badge HOJE, ações)
+  context/
+    AuthContext.tsx            — profile, isManager, isSuperAdmin, trainerMode, signOut
+    ThemeContext.tsx           — mode ('dark'|'light'), accent, toggleMode
+    ToastContext.tsx           — showToast(), sistema global de toasts
+  hooks/
+    useModalA11y.ts            — foco e teclado para modais (acessibilidade)
+  lib/
+    bmi.ts                     — getBmiStatus(weight, height) → cor/rótulo/tooltip IMC
+    navigation.ts              — navDestinations() — links da sidebar por papel
+    nutritionGoals.ts          — calculateDailyGoals(profile) — metas calóricas
+    supabase.ts                — cliente Supabase
+  pages/
+    DashboardPage.tsx          — dashboard (aluno: hoje + stats | admin: painel)
+    HistoryPage.tsx            — histórico de sessões do aluno
+    LoginPage.tsx              — tela de login com shader e números animados
+    MeasurementsPage.tsx       — peso + medidas corporais com gráficos
+    NotFoundPage.tsx           — página 404
+    NutritionPage.tsx          — diário alimentar + IA Groq/Llama
+    ProfilePage.tsx            — perfil do usuário (edição + foto)
+    ProgressPage.tsx           — progresso: PRs, volume, gráfico de carga
+    SessionDetailPage.tsx      — detalhe de uma sessão de treino
+    WorkoutDetailPage.tsx      — detalhe de uma ficha (aluno)
+    WorkoutsPage.tsx           — fichas do aluno + destaque do dia
+    WorkoutSessionPage.tsx     — execução de treino ativo (séries, timer)
+    admin/
+      ExerciseLibraryPage.tsx  — biblioteca de exercícios (listar, filtrar, criar, editar)
+      StudentDetailPage.tsx    — perfil completo do aluno (abas + ações)
+      StudentFormPage.tsx      — criar novo aluno
+      StudentsAdminPage.tsx    — lista de alunos (ativos + inativos)
+      TrainerFormPage.tsx      — criar novo trainer
+      TrainersAdminPage.tsx    — lista de trainers
+      WorkoutFormPage.tsx      — criar / editar ficha
+      WorkoutsAdminPage.tsx    — biblioteca de templates do admin
   services/
-    profile.service.ts     — getProfile, updateProfile
-    workout.service.ts     — fichas, exercícios, atribuição, catálogo
+    admin.service.ts           — getAdminDashboardStats() — números do painel
+    history.service.ts         — histórico, streak, progressão de carga, PRs
+    measurements.service.ts    — peso corporal e medidas
+    nutrition.service.ts       — diário alimentar, totais diários
+    profile.service.ts         — getProfile, updateProfile, uploadAvatar
+    trainer.service.ts         — alunos, trainers, resetStudentPassword
+    workout.service.ts         — fichas, exercícios, atribuição, catálogo
   types/
-    index.ts               — todos os tipos TypeScript do projeto
-  App.tsx                  — rotas da aplicação
-  index.css                — Tailwind v4 + Design System v4 "FORJA" (vars CSS)
-  main.tsx                 — ponto de entrada
+    index.ts                   — todos os tipos TypeScript do projeto
+  App.tsx                      — rotas com AnimatedRoutes + ToastProvider
+  index.css                    — Tailwind v4 + Design System v4 "FORJA" (vars CSS)
+  main.tsx                     — ponto de entrada
 
-supabase-setup.sql         — SQL completo (inclui patches v1, v2, v3)
-Plan.md                    — roteiro de fases
-CLAUDE.md                  — este arquivo
+supabase-setup.sql             — SQL completo (patches v1–v6)
+supabase/functions/
+  analyze-meal/index.ts        — Edge Function: IA nutricional (Groq/Llama)
+  manage-users/index.ts        — Edge Function: criar/excluir/resetar usuários
+vercel.json                    — configuração de deploy (SPA redirect)
+vite.config.ts                 — Vite + vite-plugin-pwa (service worker)
+public/
+  manifest.json                — PWA manifest (nome, ícones, cores)
+  favicon.svg / favicon.ico / favicon-192.png / favicon-512.png
+Plan.md                        — roteiro de fases
+CLAUDE.md                      — este arquivo
 ```
 
 ---
@@ -95,17 +142,22 @@ CLAUDE.md                  — este arquivo
 | `/login` | LoginPage | público |
 | `/dashboard` | DashboardPage | logado |
 | `/perfil` | ProfilePage | logado |
-| `/workouts` | WorkoutsPage | logado (aluno vê as suas) |
+| `/workouts` | WorkoutsPage | logado |
 | `/workouts/:id` | WorkoutDetailPage | logado |
 | `/workouts/:id/session` | WorkoutSessionPage | logado |
 | `/historico` | HistoryPage | logado |
 | `/historico/:logId` | SessionDetailPage | logado |
 | `/progresso` | ProgressPage | logado |
 | `/medidas` | MeasurementsPage | logado |
+| `/nutricao` | NutritionPage | logado |
 | `/admin/workouts` | WorkoutsAdminPage | admin |
 | `/admin/workouts/new` | WorkoutFormPage | admin |
 | `/admin/workouts/:id/edit` | WorkoutFormPage | admin |
+| `/admin/students` | StudentsAdminPage | admin |
+| `/admin/students/new` | StudentFormPage | admin |
 | `/admin/students/:id` | StudentDetailPage | admin |
+| `/admin/trainers` | TrainersAdminPage | admin |
+| `/admin/trainers/new` | TrainerFormPage | admin |
 | `/admin/exercises` | ExerciseLibraryPage | admin |
 
 ---
@@ -250,3 +302,25 @@ VITE_SUPABASE_ANON_KEY=sb_publishable_...
 O `.env` existe localmente mas **nunca vai para o git**. O `.env.example` é o template commitado.
 
 > **IA (Nutrição):** a chave do Groq **não** é variável de frontend. Ela fica como *secret* `GROQ_API_KEY` na Edge Function `analyze-meal` do Supabase, para nunca ficar exposta no navegador. Obter (grátis, sem cartão) em https://console.groq.com.
+
+---
+
+## Deploy
+
+**Produção:** https://forjamuscle.vercel.app  
+**Plataforma:** Vercel (deploy automático a cada push na branch `main`)  
+**Repositório:** https://github.com/dnsrodrigues/musctrainig  
+
+### Como funciona o deploy
+1. Qualquer `git push origin main` dispara o build automático no Vercel
+2. O Vercel roda `npm run build` (TypeScript + Vite)
+3. A pasta `dist/` é publicada como site estático
+4. O `vercel.json` redireciona todas as rotas para `index.html` (necessário para SPA)
+
+### Variáveis de ambiente no Vercel
+As mesmas do `.env` local precisam estar configuradas no painel do Vercel:
+- `VITE_SUPABASE_URL`
+- `VITE_SUPABASE_ANON_KEY`
+
+### PWA
+O app é instalável no celular via `vite-plugin-pwa`. O `manifest.json` está em `public/` com ícones 192px e 512px.

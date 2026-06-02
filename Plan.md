@@ -1,8 +1,8 @@
 # MUSCLE TRAINING — Plan.md
 
-**Versão:** 3.2  
-**Atualizado em:** 29 de maio de 2026  
-**Status:** Em andamento 🚧
+**Versão:** 4.0  
+**Atualizado em:** 02 de junho de 2026  
+**Status:** ✅ Projeto completo — em produção
 
 > Este é o documento central de execução do projeto.  
 > Referências: [PRD](docs/superpowers/specs/2026-05-22-musctrainig-prd.md) | [CLAUDE.md](CLAUDE.md)
@@ -25,7 +25,7 @@
 | 8 | Nutrição + IA (Groq/Llama) | ✅ Completa |
 | 9 | Painel admin (gestão de alunos) | ✅ Completa |
 | 10 | Polish + PWA | ✅ Completa |
-| 11 | Deploy (Vercel) | ⏳ Pendente |
+| 11 | Deploy (Vercel) | ✅ Completa |
 
 ---
 
