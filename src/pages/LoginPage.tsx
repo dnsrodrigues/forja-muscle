@@ -121,16 +121,18 @@ export function LoginPage() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-          style={{ position: 'relative', maxWidth: '24ch' }}
+          className="forja-login-copy"
+          style={{ position: 'relative' }}
         >
           <div className="eyebrow" style={{ color: 'var(--accent)', marginBottom: 14 }}>
             SEU TREINO. SEU CONTROLE.
           </div>
+          <div className="forja-login-headrow">
           <h1 className="f-display forja-login-headline">
             FORJADO PELO <span style={{ color: 'var(--accent)' }}>ESFORÇO</span> DIÁRIO.
           </h1>
 
-          <div className="forja-login-stats" style={{ display: 'flex', gap: 22, marginTop: 32 }}>
+          <div className="forja-login-stats">
             <div>
               <div className="f-display" style={{ fontSize: 38, color: 'var(--accent)' }}>
                 {treinos}
@@ -147,6 +149,7 @@ export function LoginPage() {
                 VOLUME MOVIMENTADO
               </div>
             </div>
+          </div>
           </div>
         </motion.div>
       </div>
@@ -311,6 +314,12 @@ export function LoginPage() {
           margin: 0;
           color: #f5f5f3;
         }
+        .forja-login-copy { max-width: 24ch; }
+        .forja-login-stats {
+          display: flex;
+          gap: 22px;
+          margin-top: 32px;
+        }
         .forja-login-form {
           flex: 1;
           display: flex;
@@ -330,10 +339,29 @@ export function LoginPage() {
             justify-content: flex-start;
             gap: 20px;
           }
-          .forja-login-headline { font-size: 44px; }
+          .forja-login-copy { max-width: none; }
+          .forja-login-headrow {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+          }
+          .forja-login-headline { font-size: 38px; flex: 1; min-width: 0; }
           .forja-login-bg-text { font-size: 180px; bottom: -20px; }
           .forja-login-form { padding: 32px 24px; min-height: auto; }
-          .forja-login-stats { display: none; }
+          .forja-login-stats {
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 0;
+            flex-shrink: 0;
+            text-align: right;
+            max-width: 110px;
+            word-break: break-word;
+          }
+          .forja-login-stats .f-display { font-size: 26px; }
+          .forja-login-stats > div > div:last-child {
+            white-space: normal;
+            font-size: 9px !important;
+          }
         }
       `}</style>
     </div>

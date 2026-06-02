@@ -144,6 +144,7 @@ export function ProfilePage() {
         target_weight: data.target_weight,
       }
       await updateProfile(user.id, cleaned)
+      await refreshProfile()
       setSaveStatus('success')
       reset(data, { keepValues: true })
       setTimeout(() => setSaveStatus('idle'), 3000)
