@@ -26,6 +26,7 @@ import {
   updateWorkout,
   addExerciseToWorkout,
   updateWorkoutExercise,
+  removeExerciseFromWorkout,
   updateExercise,
 } from '../../services/workout.service'
 import { ExerciseRow } from '../../components/ExerciseRow'
@@ -141,6 +142,9 @@ export function WorkoutFormPage() {
   const [weekDays, setWeekDays] = useState<WeekDay[]>([])
   const [isTemplate, setIsTemplate] = useState(true)
   const [exercises, setExercises] = useState<(WorkoutExercise & { exercise?: Exercise })[]>([])
+  // IDs dos exercícios que já existiam no banco quando a ficha foi carregada.
+  // Serve para descobrir quais foram removidos na hora de salvar.
+  const [originalExerciseIds, setOriginalExerciseIds] = useState<string[]>([])
   const [selectorOpen, setSelectorOpen] = useState(false)
 
   const [loading, setLoading] = useState(isEditing)
@@ -157,7 +161,9 @@ export function WorkoutFormPage() {
         setName(data.name)
         setWeekDays(data.week_days)
         setIsTemplate(data.is_template)
-        setExercises((data.exercises as any[]) ?? [])
+        const loaded = (data.exercises as any[]) ?? []
+        setExercises(loaded)
+        setOriginalExerciseIds(loaded.map((ex) => ex.id))
       })
       .catch((err) => setLoadError(err.message))
       .finally(() => setLoading(false))
@@ -260,6 +266,15 @@ export function WorkoutFormPage() {
           week_days: weekDays,
           is_template: isTemplate,
         })
+
+        // Apaga do banco os exercícios que foram removidos da tela:
+        // estavam na lista original mas não estão mais na lista atual.
+        const currentIds = new Set(exercises.map((ex) => ex.id))
+        const removedIds = originalExerciseIds.filter((oid) => !currentIds.has(oid))
+        for (const removedId of removedIds) {
+          await removeExerciseFromWorkout(removedId)
+        }
+
         for (const [idx, ex] of exercises.entries()) {
           if (ex.id.startsWith('temp-')) {
             await addExerciseToWorkout(workoutId, {
