@@ -10,6 +10,7 @@ import {
 } from '../../services/workout.service'
 import { WorkoutCard } from '../../components/WorkoutCard'
 import { AssignWorkoutModal } from '../../components/AssignWorkoutModal'
+import { sortWorkoutsByWeekday } from '../../lib/workout-sort'
 import { Topbar } from '../../components/layout/Topbar'
 import { Icon } from '../../components/ui/Icon'
 import type { Workout, WorkoutWithStudent } from '../../types'
@@ -189,7 +190,7 @@ export function WorkoutsAdminPage() {
                 </div>
               ) : (
                 <div className="col gap-2">
-                  {workouts.map((w) => (
+                  {sortWorkoutsByWeekday(workouts).map((w) => (
                     <WorkoutCard
                       key={w.id}
                       workout={w}
@@ -252,7 +253,7 @@ export function WorkoutsAdminPage() {
                         {expanded && (
                           <div style={{ padding: '14px 22px 18px' }}>
                             <div className="col gap-2">
-                              {studentWs.map((w) => (
+                              {sortWorkoutsByWeekday(studentWs).map((w) => (
                                 <WorkoutCard
                                   key={w.id}
                                   workout={w}
