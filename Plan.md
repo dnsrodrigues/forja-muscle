@@ -1,7 +1,7 @@
 # MUSCLE TRAINING — Plan.md
 
-**Versão:** 4.0  
-**Atualizado em:** 02 de junho de 2026  
+**Versão:** 4.1  
+**Atualizado em:** 05 de junho de 2026  
 **Status:** ✅ Projeto completo — em produção
 
 > Este é o documento central de execução do projeto.  
@@ -69,7 +69,10 @@ React 19 + TypeScript + Vite 6 + Tailwind CSS v4 + React Router v7 + Motion.
 **Patches aplicados:**
 - v1: criação inicial das tabelas
 - v2: índices, RLS refinada, segurança
-- v3 (Fase 5): `is_template` e `template_id` em `workouts`, RLS atualizada para alunos lerem templates
+- v3 (Fase 5): `is_template` e `template_id` em `workouts`, RLS para alunos lerem templates
+- v4 (Fase 8): coluna `is_active` em `nutrition_logs`, RLS para trainer ver diário do aluno
+- v5 (Fase 9): tabelas de trainers, RLS para gestão de alunos
+- v6 (05/06/2026): RLS corrigida — `super_admin` e `trainer` agora têm permissão de gestores em `workout_exercises`, `workouts` e `exercise_library` (`supabase-patch-v6-roles.sql`)
 
 ---
 
@@ -485,21 +488,43 @@ src/pages/admin/ExerciseLibraryPage.tsx
 
 ---
 
-### FASE 11 — Deploy ⏳
+### FASE 11 — Deploy ✅
 **Complexidade:** 🟡 Simples (checklist)
 
-**Passos:**
-1. Criar conta em [vercel.com](https://vercel.com) e conectar o repositório GitHub `dnsrodrigues/musctrainig`
-2. Configurar variáveis de ambiente no Vercel:
-   ```
-   VITE_SUPABASE_URL=https://xfcblbdwaibpzcpwzkow.supabase.co
-   VITE_SUPABASE_ANON_KEY=sb_publishable_...
-   VITE_GEMINI_API_KEY=...
-   ```
-3. Fazer deploy e testar a URL de produção
-4. (Opcional) Configurar domínio personalizado
+**Repositório:** `https://github.com/dnsrodrigues/forja-muscle` (renomeado de `musctrainig` em 05/06/2026)  
+**URL de produção:** `https://forjamuscle.vercel.app`  
+**Deploy:** automático — cada `git push` para `main` publica em ~2 minutos.
 
-**Critério de conclusão:** URL pública funciona, login funciona, dados são salvos no Supabase de produção.
+**Variáveis de ambiente configuradas no Vercel:**
+```
+VITE_SUPABASE_URL=https://xfcblbdwaibpzcpwzkow.supabase.co
+VITE_SUPABASE_ANON_KEY=sb_publishable_...
+```
+
+**Critério de conclusão:** ✅ URL pública funciona, login funciona, dados salvos no Supabase de produção.
+
+---
+
+## Correções e melhorias pós-deploy
+
+### 05 de junho de 2026
+
+**Bug 1 — RLS bloqueava super_admin/trainer ao salvar fichas** ✅ Corrigido
+- **Sintoma:** erro "new row violates row-level security policy for table workout_exercises" ao adicionar exercício; edições de séries/reps não salvavam silenciosamente.
+- **Causa:** as políticas RLS originais só reconheciam o cargo `admin` (descontinuado). Os cargos `super_admin` e `trainer` da Fase 9 nunca foram adicionados às regras do banco.
+- **Correção:** `supabase-patch-v6-roles.sql` — cria a função `is_manager()` e novas políticas para `workout_exercises`, `workouts` e `exercise_library`. Aplicar no Supabase SQL Editor.
+
+**Bug 2 — Exercícios removidos persistiam ao salvar ficha editada** ✅ Corrigido
+- **Sintoma:** ao editar uma ficha e remover exercícios, eles continuavam aparecendo após salvar.
+- **Causa:** `WorkoutFormPage.handleSave()` adicionava novos e atualizava existentes, mas não chamava `removeExerciseFromWorkout()` para os removidos.
+- **Correção:** `WorkoutFormPage.tsx` agora guarda `originalExerciseIds` ao carregar a ficha e, ao salvar, apaga do banco os IDs que não estão mais na lista atual.
+
+**Melhoria — Fichas ordenadas por dia da semana** ✅
+- **O que faz:** templates e fichas de alunos aparecem ordenados Segunda → Domingo (em vez de por data de criação).
+- **Implementação:** `src/lib/workout-sort.ts` — função `sortWorkoutsByWeekday()` reutilizável. Aplicada em `WorkoutsAdminPage`.
+
+**Melhoria — Tela de login corrigida no mobile** ✅
+- Números decorativos (stats animados) ocultados em telas pequenas via `.forja-login-stats { display: none }` no breakpoint `max-width: 768px`, evitando sobreposição sobre o formulário.
 
 ---
 

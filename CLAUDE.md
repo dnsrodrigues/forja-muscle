@@ -84,6 +84,7 @@ src/
     navigation.ts              — navDestinations() — links da sidebar por papel
     nutritionGoals.ts          — calculateDailyGoals(profile) — metas calóricas
     supabase.ts                — cliente Supabase
+    workout-sort.ts            — sortWorkoutsByWeekday() — ordena fichas por dia da semana
   pages/
     DashboardPage.tsx          — dashboard (aluno: hoje + stats | admin: painel)
     HistoryPage.tsx            — histórico de sessões do aluno
@@ -120,7 +121,9 @@ src/
   index.css                    — Tailwind v4 + Design System v4 "FORJA" (vars CSS)
   main.tsx                     — ponto de entrada
 
-supabase-setup.sql             — SQL completo (patches v1–v6)
+supabase-setup.sql             — SQL base (schema + patches v1–v3)
+supabase-patch-v2.sql          — índices, RLS refinada
+supabase-patch-v6-roles.sql    — RLS corrigida para super_admin e trainer
 supabase/functions/
   analyze-meal/index.ts        — Edge Function: IA nutricional (Groq/Llama)
   manage-users/index.ts        — Edge Function: criar/excluir/resetar usuários
