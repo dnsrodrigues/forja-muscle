@@ -1,9 +1,8 @@
-import { useState } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
 import { Icon } from '../ui/Icon'
-import { MobileMoreSheet } from './MobileMoreSheet'
 import { mobileNavDestinations, navDestinations, isNavActive } from '../../lib/navigation'
+import type { NavDest } from '../../lib/navigation'
 import { getMyWorkouts } from '../../services/workout.service'
 import type { WeekDay } from '../../types'
 
@@ -11,13 +10,15 @@ import type { WeekDay } from '../../types'
  * Tabbar fixa no rodapé. Aparece SOMENTE no mobile (≤768px) via CSS.
  *
  * - Aluno / trainer em modo treino: 5 colunas (2 tabs | FAB | 2 tabs)
- * - Admin em modo gestão: layout antigo (tabs primárias + botão Mais)
+ * - Admin em modo gestão: tabs primárias + Perfil (sem gaveta "Mais")
+ *
+ * A aba Perfil usa o avatar do usuário como ícone, diferenciando-a
+ * visualmente da aba "Alunos" (ambas usariam o ícone de pessoa).
  */
 export function MobileTabbar() {
   const { profile, isManager, isSuperAdmin, trainerMode } = useAuth()
   const { pathname } = useLocation()
   const navigate = useNavigate()
-  const [moreOpen, setMoreOpen] = useState(false)
 
   const inTrainingMode = isManager && trainerMode === 'treino'
   const isAdminMode = isManager && trainerMode !== 'treino'
@@ -26,36 +27,53 @@ export function MobileTabbar() {
   const mobileDests = mobileNavDestinations(ctx)
   const adminDests = navDestinations(ctx)
 
-  // ── Admin mode: layout original (tabs primárias + "Mais") ──────────────────
+  // Conteúdo do ícone do tab — Perfil mostra o avatar do usuário
+  function tabInner(dest: NavDest, active: boolean) {
+    if (dest.to === '/perfil') {
+      return (
+        <span
+          style={{
+            width: 24, height: 24, borderRadius: '50%', overflow: 'hidden',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            background: 'var(--bg-3)',
+            border: active ? '2px solid var(--accent)' : '2px solid transparent',
+            fontFamily: 'var(--f-display)', fontSize: 12, lineHeight: 1,
+            color: active ? 'var(--accent)' : 'var(--text-dim)',
+          }}
+        >
+          {profile?.avatar_url ? (
+            <img
+              src={profile.avatar_url}
+              alt=""
+              style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+            />
+          ) : (
+            (profile?.full_name ?? 'A').charAt(0).toUpperCase()
+          )}
+        </span>
+      )
+    }
+    return <Icon name={dest.icon} size={22} />
+  }
+
+  // ── Admin mode: tabs primárias + Perfil ────────────────────────────────────
   if (isAdminMode) {
     const primary = adminDests.filter((d) => d.primary)
-    const secondary = adminDests.filter((d) => !d.primary)
-    const moreActive = secondary.some((d) => isNavActive(d, pathname))
+    const perfil = adminDests.find((d) => d.to === '/perfil')
+    const tabs = perfil ? [...primary, perfil] : primary
 
     return (
-      <>
-        <nav className="mob-tabbar" style={{ display: 'none' }} data-mobile-tabbar>
-          {primary.map((t) => (
-            <Link
-              key={t.to}
-              to={t.to}
-              className={'mob-tab' + (isNavActive(t, pathname) ? ' active' : '')}
-            >
-              <Icon name={t.icon} size={22} />
+      <nav className="mob-tabbar" style={{ display: 'none' }} data-mobile-tabbar>
+        {tabs.map((t) => {
+          const active = isNavActive(t, pathname)
+          return (
+            <Link key={t.to} to={t.to} className={'mob-tab' + (active ? ' active' : '')}>
+              {tabInner(t, active)}
               {t.label}
             </Link>
-          ))}
-          <button
-            type="button"
-            onClick={() => setMoreOpen(true)}
-            className={'mob-tab' + (moreActive ? ' active' : '')}
-          >
-            <Icon name="more" size={22} />
-            Mais
-          </button>
-        </nav>
-        <MobileMoreSheet isOpen={moreOpen} onClose={() => setMoreOpen(false)} />
-      </>
+          )
+        })}
+      </nav>
     )
   }
 
@@ -89,16 +107,15 @@ export function MobileTabbar() {
       style={{ display: 'none' }}
       data-mobile-tabbar
     >
-      {left.map((t) => (
-        <Link
-          key={t.to}
-          to={t.to}
-          className={'mob-tab' + (isNavActive(t, pathname) ? ' active' : '')}
-        >
-          <Icon name={t.icon} size={22} />
-          {t.label}
-        </Link>
-      ))}
+      {left.map((t) => {
+        const active = isNavActive(t, pathname)
+        return (
+          <Link key={t.to} to={t.to} className={'mob-tab' + (active ? ' active' : '')}>
+            {tabInner(t, active)}
+            {t.label}
+          </Link>
+        )
+      })}
 
       <button
         type="button"
@@ -109,16 +126,15 @@ export function MobileTabbar() {
         <Icon name="play" size={24} />
       </button>
 
-      {right.map((t) => (
-        <Link
-          key={t.to}
-          to={t.to}
-          className={'mob-tab' + (isNavActive(t, pathname) ? ' active' : '')}
-        >
-          <Icon name={t.icon} size={22} />
-          {t.label}
-        </Link>
-      ))}
+      {right.map((t) => {
+        const active = isNavActive(t, pathname)
+        return (
+          <Link key={t.to} to={t.to} className={'mob-tab' + (active ? ' active' : '')}>
+            {tabInner(t, active)}
+            {t.label}
+          </Link>
+        )
+      })}
     </nav>
   )
 }
