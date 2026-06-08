@@ -139,6 +139,7 @@ export function WorkoutFormPage() {
   }
 
   const [name, setName] = useState('')
+  const [description, setDescription] = useState('')
   const [weekDays, setWeekDays] = useState<WeekDay[]>([])
   const [isTemplate, setIsTemplate] = useState(true)
   const [exercises, setExercises] = useState<(WorkoutExercise & { exercise?: Exercise })[]>([])
@@ -159,6 +160,7 @@ export function WorkoutFormPage() {
       .then((data) => {
         if (!data) { setLoadError('Ficha não encontrada'); return }
         setName(data.name)
+        setDescription(data.description ?? '')
         setWeekDays(data.week_days)
         setIsTemplate(data.is_template)
         const loaded = (data.exercises as any[]) ?? []
@@ -243,6 +245,7 @@ export function WorkoutFormPage() {
         const created = await createWorkout(
           {
             name: name.trim(),
+            description: description.trim() || undefined,
             user_id: targetUserId,
             week_days: weekDays,
             is_template: isTemplate && !presetUserId,
@@ -263,6 +266,7 @@ export function WorkoutFormPage() {
       } else if (workoutId) {
         await updateWorkout(workoutId, {
           name: name.trim(),
+          description: description.trim() || undefined,
           week_days: weekDays,
           is_template: isTemplate,
         })
@@ -390,6 +394,19 @@ export function WorkoutFormPage() {
                     ⚠ {errors.name}
                   </div>
                 )}
+              </div>
+
+              <div style={{ marginTop: 18 }}>
+                <div className="label-sm" style={{ marginBottom: 6 }}>Descrição</div>
+                <textarea
+                  className="input"
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                  placeholder="Descrição opcional da ficha (método, observações gerais...)"
+                  rows={3}
+                  maxLength={500}
+                  style={{ resize: 'vertical' }}
+                />
               </div>
 
               {/* Dias da semana */}
