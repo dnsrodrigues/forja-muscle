@@ -26,6 +26,17 @@ const ALUNO: NavDest[] = [
   { to: '/perfil', label: 'Perfil', icon: 'user' },
 ]
 
+/**
+ * Destinos da tabbar mobile para o aluno.
+ * 4 itens (o FAB central é tratado no componente, não aqui).
+ */
+const ALUNO_MOBILE: NavDest[] = [
+  { to: '/dashboard',   label: 'Hoje',       icon: 'home',     primary: true },
+  { to: '/semana',      label: 'Semana',     icon: 'calendar', primary: true },
+  { to: '/exercicios',  label: 'Exercícios', icon: 'dumbbell', primary: true },
+  { to: '/perfil',      label: 'Perfil',     icon: 'user',     primary: true },
+]
+
 function gestao(isSuperAdmin: boolean): NavDest[] {
   const list: NavDest[] = [
     { to: '/dashboard', label: 'Hoje', icon: 'home', primary: true },
@@ -43,6 +54,16 @@ function gestao(isSuperAdmin: boolean): NavDest[] {
 /** Lista ordenada de destinos de navegação para o contexto atual. */
 export function navDestinations(ctx: NavContext): NavDest[] {
   if (!ctx.isManager || ctx.inTrainingMode) return ALUNO
+  return gestao(ctx.isSuperAdmin)
+}
+
+/**
+ * Destinos da tabbar para o mobile.
+ * Para admin/manager em modo gestão: usa o mesmo que navDestinations().
+ * Para aluno (ou manager em modo treino): retorna ALUNO_MOBILE (4 tabs + FAB).
+ */
+export function mobileNavDestinations(ctx: NavContext): NavDest[] {
+  if (!ctx.isManager || ctx.inTrainingMode) return ALUNO_MOBILE
   return gestao(ctx.isSuperAdmin)
 }
 

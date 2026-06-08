@@ -4,6 +4,8 @@ import { motion } from 'motion/react'
 import { useAuth } from '../context/AuthContext'
 import { Topbar } from '../components/layout/Topbar'
 import { Icon } from '../components/ui/Icon'
+import { useIsMobile } from '../hooks/useIsMobile'
+import { MobHead } from '../components/layout/MobHead'
 import {
   getWorkoutHistory,
   getCurrentStreak,
@@ -49,6 +51,7 @@ export function DashboardPage() {
   const { profile, isManager, isSuperAdmin, trainerMode } = useAuth()
   const showAdminView = isManager && trainerMode === 'gestao'
   const navigate = useNavigate()
+  const isMobile = useIsMobile()
 
   const [workouts, setWorkouts] = useState<Workout[]>([])
   const [history, setHistory] = useState<WorkoutLog[]>([])
@@ -105,6 +108,237 @@ export function DashboardPage() {
   const volumeDelta = volumeData.lastWeek > 0
     ? Math.round(((volumeData.thisWeek - volumeData.lastWeek) / volumeData.lastWeek) * 100)
     : null
+
+  // ─── Render mobile (aluno) ────────────────────────────────────────────────
+  if (isMobile && !showAdminView) {
+    const WEEK_DAYS_ORDERED: WeekDay[] = [
+      'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday',
+    ]
+    const WEEK_SHORT: Record<WeekDay, string> = {
+      monday: 'S', tuesday: 'T', wednesday: 'Q',
+      thursday: 'Q', friday: 'S', saturday: 'S', sunday: 'D',
+    }
+    const weekStart = (() => {
+      const d = new Date()
+      const day = d.getDay()
+      d.setDate(d.getDate() + (day === 0 ? -6 : 1 - day))
+      d.setHours(0, 0, 0, 0)
+      return d
+    })()
+    const DAY_INDEX_MAP: Record<number, WeekDay> = {
+      0: 'sunday', 1: 'monday', 2: 'tuesday', 3: 'wednesday',
+      4: 'thursday', 5: 'friday', 6: 'saturday',
+    }
+    const doneDays = new Set<WeekDay>(
+      history
+        .filter((h) => new Date(h.started_at) >= weekStart)
+        .map((h) => DAY_INDEX_MAP[new Date(h.started_at).getDay()])
+    )
+    const avatarInitial = (profile?.full_name ?? 'A').charAt(0).toUpperCase()
+
+    return (
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.2 }}
+        style={{ display: 'flex', flexDirection: 'column', minHeight: '100%' }}
+      >
+        <MobHead
+          over={formatTodayHeader()}
+          title={`${getGreeting()}, ${firstName.toUpperCase()}`}
+          right={
+            <div
+              style={{
+                width: 44, height: 44, borderRadius: 12,
+                background: 'var(--bg-2)', border: '2px solid var(--bg-3)',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                fontFamily: 'var(--f-display)', fontSize: 22, color: 'var(--accent)',
+                cursor: 'pointer', flexShrink: 0, overflow: 'hidden',
+              }}
+              onClick={() => navigate('/perfil')}
+            >
+              {profile?.avatar_url ? (
+                <img
+                  src={profile.avatar_url}
+                  alt={profile.full_name}
+                  style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                />
+              ) : (
+                avatarInitial
+              )}
+            </div>
+          }
+        />
+
+        <div className="mob-scroll">
+          {loading ? (
+            <>
+              <div className="skeleton" style={{ height: 210, borderRadius: 14, marginBottom: 10 }} />
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginBottom: 10 }}>
+                <div className="skeleton" style={{ height: 88, borderRadius: 14 }} />
+                <div className="skeleton" style={{ height: 88, borderRadius: 14 }} />
+              </div>
+            </>
+          ) : (
+            <>
+              {/* Hero card */}
+              <div
+                className={todayWorkout ? 'card card-accent' : 'card'}
+                style={{
+                  padding: 22, marginBottom: 12,
+                  position: 'relative', overflow: 'hidden',
+                  minHeight: todayWorkout ? 200 : 140,
+                }}
+              >
+                {todayWorkout ? (
+                  <>
+                    <div
+                      className="f-display"
+                      style={{
+                        position: 'absolute', right: -10, bottom: -20,
+                        fontSize: 180, opacity: 0.07, color: '#000',
+                        lineHeight: 1, pointerEvents: 'none', userSelect: 'none',
+                      }}
+                    >
+                      {String(workouts.indexOf(todayWorkout) + 1).padStart(2, '0')}
+                    </div>
+                    <div style={{ position: 'relative' }}>
+                      <div className="eyebrow" style={{ color: 'rgba(0,0,0,0.5)', marginBottom: 4 }}>
+                        TREINO DE HOJE
+                      </div>
+                      <h2 className="f-display" style={{ fontSize: 64, lineHeight: 0.85, margin: 0 }}>
+                        {todayWorkout.name.toUpperCase()}
+                      </h2>
+                      <div style={{ fontSize: 13, color: 'rgba(0,0,0,0.65)', marginTop: 6 }}>
+                        {Array.from(new Set(
+                          (todayWorkout.exercises ?? [])
+                            .map((e) => e.exercise?.muscle_group)
+                            .filter(Boolean)
+                        ))
+                          .map((g) => MUSCLE_GROUP_LABELS[g!])
+                          .join(' · ') || 'Treino completo'}
+                      </div>
+                      <div className="f-mono" style={{ display: 'flex', gap: 16, marginTop: 10, fontSize: 12, color: 'rgba(0,0,0,0.7)' }}>
+                        <span><b>{todayWorkout.exercises?.length ?? 0}</b> exerc.</span>
+                        {avgDuration !== null && <span><b>{avgDuration}</b>min</span>}
+                      </div>
+                      <button
+                        className="btn lg"
+                        onClick={() => navigate(`/workouts/${todayWorkout.id}/session`)}
+                        style={{
+                          width: '100%', justifyContent: 'center', marginTop: 16,
+                          background: '#080909', color: 'var(--accent)', borderColor: '#080909',
+                        }}
+                      >
+                        <Icon name="play" size={13} /> COMEÇAR TREINO
+                      </button>
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <div className="eyebrow" style={{ marginBottom: 8 }}>SEM TREINO HOJE</div>
+                    <h2 className="f-display" style={{ fontSize: 44, lineHeight: 0.95, margin: '0 0 10px' }}>
+                      DIA DE DESCANSO
+                    </h2>
+                    <div style={{ fontSize: 13, color: 'var(--text-dim)' }}>
+                      Recuperação ativa, mobilidade ou descanso total.
+                    </div>
+                  </>
+                )}
+              </div>
+
+              {/* 2 KPIs */}
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginBottom: 12 }}>
+                <div className="mob-kpi">
+                  <div className="stat-label">Streak</div>
+                  <div className="mob-kpi-val">
+                    {streak.current}<span className="mob-kpi-unit">d</span>
+                  </div>
+                </div>
+                <div className="mob-kpi">
+                  <div className="stat-label">Vol. semana</div>
+                  <div className="mob-kpi-val" style={{ fontSize: 28 }}>
+                    {formatVolume(volumeData.thisWeek)}
+                  </div>
+                </div>
+              </div>
+
+              {/* Mini-semana */}
+              <div className="card" style={{ padding: '14px 16px', marginBottom: 12 }}>
+                <div className="label-sm" style={{ marginBottom: 12 }}>ESTA SEMANA</div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', gap: 4 }}>
+                  {WEEK_DAYS_ORDERED.map((day) => {
+                    const isToday = day === todayKey
+                    const hasWorkout = workouts.some((w) => w.week_days.includes(day))
+                    const isDone = doneDays.has(day)
+                    return (
+                      <div
+                        key={day}
+                        style={{
+                          flex: 1, padding: '8px 2px',
+                          background: isToday ? 'var(--accent)' : isDone ? 'var(--bg-2)' : 'transparent',
+                          color: isToday ? 'var(--accent-fg)' : isDone ? 'var(--text)' : 'var(--text-faint)',
+                          borderRadius: 6, textAlign: 'center',
+                          border: !hasWorkout && !isToday ? '1px dashed var(--hairline)' : 'none',
+                        }}
+                      >
+                        <div style={{ fontSize: 9, letterSpacing: '0.06em', opacity: 0.8 }}>
+                          {WEEK_SHORT[day]}
+                        </div>
+                        <div className="f-display" style={{ fontSize: 16, marginTop: 3, lineHeight: 1 }}>
+                          {isDone ? '✓' : !hasWorkout ? '—' : '·'}
+                        </div>
+                      </div>
+                    )
+                  })}
+                </div>
+              </div>
+
+              {/* Última sessão */}
+              {lastSession && (
+                <div className="card" style={{ padding: '14px 16px' }}>
+                  <div className="label-sm" style={{ marginBottom: 12 }}>ÚLTIMA SESSÃO</div>
+                  <div className="mob-lrow" style={{ paddingTop: 0, paddingBottom: 0, border: 'none' }}>
+                    <div
+                      style={{
+                        width: 42, height: 42, borderRadius: '50%',
+                        background: 'var(--bg-2)', border: '1px solid var(--hairline)',
+                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        color: 'var(--accent)', flexShrink: 0,
+                      }}
+                    >
+                      <Icon name="flame" size={20} />
+                    </div>
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--text)' }}>
+                        {(lastSession.workout as { name?: string } | undefined)?.name ?? 'Treino'}
+                      </div>
+                      <div style={{ fontSize: 12, color: 'var(--text-dim)', marginTop: 2 }}>
+                        {new Date(lastSession.started_at).toLocaleDateString('pt-BR', {
+                          day: '2-digit', month: 'short',
+                        })}
+                        {lastSession.duration_minutes ? ` · ${lastSession.duration_minutes}min` : ''}
+                      </div>
+                    </div>
+                    {prsThisMonthCount > 0 && (
+                      <div style={{ textAlign: 'right', flexShrink: 0 }}>
+                        <div style={{ fontSize: 9, color: 'var(--text-faint)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
+                          PRs/mês
+                        </div>
+                        <div className="f-display" style={{ fontSize: 28, color: 'var(--accent)', lineHeight: 1 }}>
+                          {prsThisMonthCount}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+            </>
+          )}
+        </div>
+      </motion.div>
+    )
+  }
 
   return (
     <>

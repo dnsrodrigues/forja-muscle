@@ -28,6 +28,8 @@ import { StudentDetailPage } from './pages/admin/StudentDetailPage'
 import { ExerciseLibraryPage } from './pages/admin/ExerciseLibraryPage'
 import { NutritionPage } from './pages/NutritionPage'
 import { NotFoundPage } from './pages/NotFoundPage'
+import { SemanaPage } from './pages/SemanaPage'
+import { ExerciciosPage } from './pages/ExerciciosPage'
 
 function PasswordGuard({ children }: { children: React.ReactNode }) {
   const { mustChangePassword, user } = useAuth()
@@ -73,6 +75,8 @@ function AnimatedRoutes() {
               <Route path="/progresso" element={<ProgressPage />} />
               <Route path="/medidas" element={<MeasurementsPage />} />
               <Route path="/nutricao" element={<NutritionPage />} />
+              <Route path="/semana" element={<SemanaPage />} />
+              <Route path="/exercicios" element={<ExerciciosPage />} />
 
               {/* Admin / Trainer */}
               <Route element={<AdminRoute />}>

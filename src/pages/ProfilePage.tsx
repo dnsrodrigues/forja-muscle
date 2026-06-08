@@ -1,9 +1,9 @@
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { motion } from 'motion/react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { getBmiStatus } from '../lib/bmi'
 import { updateProfile, uploadAvatar } from '../services/profile.service'
@@ -11,6 +11,13 @@ import { supabase } from '../lib/supabase'
 import { Topbar } from '../components/layout/Topbar'
 import { Icon } from '../components/ui/Icon'
 import { AvatarCropModal } from '../components/ui/AvatarCropModal'
+import { useIsMobile } from '../hooks/useIsMobile'
+import { MobHead } from '../components/layout/MobHead'
+import {
+  getCurrentStreak,
+  getPersonalRecordsThisMonth,
+  getWorkoutHistory,
+} from '../services/history.service'
 
 // ─── Schema ───────────────────────────────────────────────────────────────────
 
@@ -46,8 +53,33 @@ type ProfileFormData = z.infer<typeof profileSchema>
 
 export function ProfilePage() {
   const { user, profile, isAdmin, signOut, refreshProfile } = useAuth()
+  const navigate = useNavigate()
+  const [searchParams] = useSearchParams()
+  const isMobile = useIsMobile()
+  // ?mode=edit força exibição do formulário mesmo no mobile
+  const forceEditMode = searchParams.get('mode') === 'edit'
   const [saveStatus, setSaveStatus] = useState<'idle' | 'success' | 'error'>('idle')
   const [errorMsg, setErrorMsg] = useState('')
+
+  // Dados extras carregados apenas no mobile
+  const [mobileStats, setMobileStats] = useState<{
+    totalWorkouts: number
+    streak: number
+    prs: number
+  } | null>(null)
+
+  useEffect(() => {
+    if (!isMobile || !profile?.id) return
+    Promise.all([
+      getWorkoutHistory(profile.id),
+      getCurrentStreak(profile.id),
+      getPersonalRecordsThisMonth(profile.id),
+    ])
+      .then(([hist, str, prs]) => {
+        setMobileStats({ totalWorkouts: hist.length, streak: str.current, prs })
+      })
+      .catch(console.error)
+  }, [isMobile, profile?.id])
 
   // Avatar / foto de perfil
   const fileInputRef = useRef<HTMLInputElement>(null)
@@ -169,6 +201,189 @@ export function ProfilePage() {
 
   // Indicador de IMC (só quando peso E altura estão preenchidos)
   const weightStatus = getBmiStatus(profile?.weight, profile?.height)
+
+  // ─── Render mobile ─────────────────────────────────────────────────────────
+  if (isMobile && !forceEditMode) {
+    const initials = (profile?.full_name ?? 'A')
+      .split(' ')
+      .map((n) => n[0])
+      .slice(0, 2)
+      .join('')
+      .toUpperCase()
+
+    return (
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.2 }}
+        style={{ display: 'flex', flexDirection: 'column', minHeight: '100%' }}
+      >
+        <MobHead title="PERFIL" />
+
+        <div className="mob-scroll">
+          {/* Banner + Avatar sobreposto */}
+          <div style={{ position: 'relative', marginBottom: 54 }}>
+            <div
+              style={{
+                height: 110, borderRadius: 14,
+                background: 'linear-gradient(135deg, var(--bg-2) 0%, var(--bg-3) 100%)',
+                border: '1px solid var(--hairline)', overflow: 'hidden', position: 'relative',
+              }}
+            >
+              <div
+                className="f-display"
+                style={{
+                  fontSize: 120, opacity: 0.07, color: 'var(--accent)',
+                  position: 'absolute', right: -8, top: -8, lineHeight: 1, pointerEvents: 'none',
+                }}
+              >
+                {initials}
+              </div>
+            </div>
+            <div
+              style={{
+                position: 'absolute', bottom: -46, left: 20,
+                width: 90, height: 90, borderRadius: 16, overflow: 'hidden',
+                border: '3px solid var(--bg-0)', background: 'var(--bg-2)',
+                display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer',
+              }}
+              onClick={() => fileInputRef.current?.click()}
+            >
+              {profile?.avatar_url ? (
+                <img
+                  src={profile.avatar_url}
+                  alt={profile.full_name}
+                  style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                />
+              ) : (
+                <span className="f-display" style={{ fontSize: 36, color: 'var(--accent)' }}>
+                  {initials}
+                </span>
+              )}
+            </div>
+          </div>
+
+          {/* Nome + chips */}
+          <div style={{ marginBottom: 18 }}>
+            <h2 className="f-display" style={{ fontSize: 32, lineHeight: 1, margin: '0 0 8px' }}>
+              {(profile?.full_name ?? '').toUpperCase()}
+            </h2>
+            <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+              {profile?.goal && <span className="chip">{profile.goal}</span>}
+              <span className="chip">
+                {profile?.role === 'super_admin' ? 'Super Admin'
+                  : profile?.role === 'trainer' ? 'Personal Trainer'
+                  : 'Aluno'}
+              </span>
+            </div>
+          </div>
+
+          {/* 3 KPIs */}
+          {mobileStats ? (
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 8, marginBottom: 18 }}>
+              {[
+                { label: 'Treinos', value: String(mobileStats.totalWorkouts) },
+                { label: 'Streak',  value: `${mobileStats.streak}d`          },
+                { label: 'PRs/mês', value: String(mobileStats.prs)           },
+              ].map(({ label, value }) => (
+                <div key={label} className="mob-kpi" style={{ padding: '12px 10px' }}>
+                  <div className="stat-label" style={{ fontSize: 9 }}>{label}</div>
+                  <div className="mob-kpi-val" style={{ fontSize: 26, marginTop: 2 }}>{value}</div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 8, marginBottom: 18 }}>
+              {[1, 2, 3].map((i) => (
+                <div key={i} className="skeleton" style={{ height: 68, borderRadius: 14 }} />
+              ))}
+            </div>
+          )}
+
+          {/* Menu de navegação */}
+          <div className="card" style={{ padding: '4px 0', marginBottom: 16 }}>
+            {[
+              { icon: 'scale'    as const, label: 'Medidas corporais', sub: 'Peso e medidas',       to: '/medidas'   },
+              { icon: 'chart'    as const, label: 'Progresso',          sub: 'PRs e evolução',       to: '/progresso' },
+              { icon: 'history'  as const, label: 'Histórico',           sub: 'Sessões passadas',     to: '/historico' },
+              { icon: 'flash'    as const, label: 'Nutrição',            sub: 'Diário alimentar',     to: '/nutricao'  },
+            ].map((item) => (
+              <div
+                key={item.label}
+                className="mob-lrow"
+                style={{ padding: '14px 18px', cursor: 'pointer' }}
+                onClick={() => navigate(item.to)}
+              >
+                <div
+                  style={{
+                    width: 38, height: 38, borderRadius: 10, background: 'var(--bg-2)',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    color: 'var(--accent)', flexShrink: 0,
+                  }}
+                >
+                  <Icon name={item.icon} size={18} />
+                </div>
+                <div style={{ flex: 1 }}>
+                  <div style={{ fontSize: 14, fontWeight: 600 }}>{item.label}</div>
+                  <div style={{ fontSize: 12, color: 'var(--text-dim)' }}>{item.sub}</div>
+                </div>
+                <span style={{ color: 'var(--text-faint)', display: 'flex' }}>
+                  <Icon name="chevron" size={16} />
+                </span>
+              </div>
+            ))}
+          </div>
+
+          {/* Editar dados pessoais */}
+          <div className="card" style={{ padding: 18, marginBottom: 16 }}>
+            <div className="label-sm" style={{ marginBottom: 12 }}>DADOS PESSOAIS</div>
+            <div style={{ fontSize: 13, color: 'var(--text-dim)', marginBottom: 14 }}>
+              Edite seu nome, objetivo, altura e outros dados.
+            </div>
+            <button
+              className="btn ghost"
+              style={{ width: '100%', justifyContent: 'center' }}
+              onClick={() => navigate('/perfil?mode=edit')}
+            >
+              <Icon name="edit" size={14} />
+              Editar dados
+            </button>
+          </div>
+
+          {/* Sair */}
+          <button
+            className="btn ghost"
+            style={{
+              width: '100%', justifyContent: 'center', marginBottom: 8,
+              color: 'var(--danger)', borderColor: 'var(--danger)',
+            }}
+            onClick={() => void signOut()}
+          >
+            <Icon name="logout" size={14} />
+            Sair da conta
+          </button>
+        </div>
+
+        {/* Input de foto oculto */}
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept="image/*"
+          style={{ display: 'none' }}
+          onChange={handleFileChange}
+        />
+
+        {cropSrc && (
+          <AvatarCropModal
+            imageSrc={cropSrc}
+            onConfirm={(blob) => void handleCropConfirm(blob)}
+            onClose={handleCropClose}
+            isLoading={isUploadingAvatar}
+          />
+        )}
+      </motion.div>
+    )
+  }
 
   return (
     <>

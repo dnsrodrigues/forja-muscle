@@ -670,6 +670,142 @@ select.input {
   height: 22px;
 }
 
+/* ── FAB central da tabbar ── */
+.mob-tab-fab {
+  position: relative;
+  justify-self: center;
+  width: 64px;
+  height: 64px;
+  margin-top: -28px;
+  border-radius: 50%;
+  background: var(--accent);
+  color: var(--accent-fg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 4px solid var(--bg-0);
+  box-shadow: 0 8px 24px -6px rgba(212, 255, 58, 0.45);
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+/* tabbar em grid 5 colunas com FAB */
+.mob-tabbar-fab {
+  display: grid !important;
+  grid-template-columns: 1fr 1fr 84px 1fr 1fr;
+  align-items: center;
+  justify-items: center;
+}
+
+/* ── Header mobile padrão (MobHead) ── */
+.mob-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: 10px 20px 14px;
+  gap: 12px;
+  flex-shrink: 0;
+}
+
+.mob-head > .mob-head-left {
+  flex: 1;
+  min-width: 0;
+}
+
+.mob-head-over {
+  font-size: 11px;
+  color: var(--text-dim);
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  margin-bottom: 2px;
+}
+
+.mob-head-title {
+  font-family: var(--f-display);
+  font-size: 33px;
+  line-height: 1.04;
+  color: var(--text);
+  margin: 0;
+}
+
+/* ── Área de scroll das páginas mobile ── */
+.mob-scroll {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 0 16px 16px;
+  -webkit-overflow-scrolling: touch;
+}
+
+.mob-scroll::-webkit-scrollbar {
+  width: 0;
+}
+
+/* ── Linha de lista mobile (exercício, menu, etc.) ── */
+.mob-lrow {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--hairline);
+}
+
+.mob-lrow:last-child {
+  border-bottom: none;
+}
+
+/* ── KPI card mobile ── */
+.mob-kpi {
+  background: var(--bg-1);
+  border: 1px solid var(--hairline);
+  border-radius: var(--r-3);
+  padding: 14px 16px;
+}
+
+.mob-kpi-val {
+  font-family: var(--f-display);
+  font-size: 38px;
+  line-height: 0.9;
+  color: var(--text);
+}
+
+.mob-kpi-unit {
+  font-family: var(--f-body);
+  font-size: 13px;
+  color: var(--text-dim);
+  margin-left: 2px;
+}
+
+/* ── Segmented control mobile ── */
+.mob-seg {
+  display: flex;
+  background: var(--bg-2);
+  border-radius: 10px;
+  padding: 3px;
+  gap: 2px;
+}
+
+.mob-seg > button {
+  flex: 1;
+  border: none;
+  background: transparent;
+  color: var(--text-dim);
+  font-family: var(--f-body);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  padding: 8px 4px;
+  border-radius: 8px;
+  cursor: pointer;
+  text-transform: uppercase;
+  transition: background 0.15s, color 0.15s;
+}
+
+.mob-seg > button.active {
+  background: var(--accent);
+  color: var(--accent-fg);
+}
+
 /* ══════════════════════════════════════════════════════════════════
    Helpers (flex / spacing / dividers)
    ══════════════════════════════════════════════════════════════════ */

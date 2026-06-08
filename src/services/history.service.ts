@@ -476,3 +476,56 @@ export async function getLastSetData(
 
   return result
 }
+
+// ─────────────────────────────────────────────
+// PRs por exercício (ExerciciosPage)
+// ─────────────────────────────────────────────
+
+export interface ExercisePR {
+  loadKg: number
+  reps: number
+}
+
+/**
+ * Para cada exercício já treinado pelo aluno, retorna
+ * a maior carga registrada (PR) e as repetições naquele set.
+ *
+ * Retorna: { [exerciseLibraryId]: { loadKg, reps } }
+ */
+export async function getAllExercisePRs(
+  userId: string
+): Promise<Record<string, ExercisePR>> {
+  // 1. IDs de todas as sessões concluídas
+  const { data: logs, error: logsErr } = await supabase
+    .from('workout_logs')
+    .select('id')
+    .eq('user_id', userId)
+    .not('finished_at', 'is', null)
+
+  if (logsErr) throw new Error(logsErr.message)
+  if (!logs || logs.length === 0) return {}
+
+  const logIds = (logs as { id: string }[]).map((l) => l.id)
+
+  // 2. Todas as séries com carga registrada
+  const { data: sets, error: setsErr } = await supabase
+    .from('exercise_logs')
+    .select('exercise_id, load_kg, reps_completed')
+    .in('workout_log_id', logIds)
+    .not('load_kg', 'is', null)
+    .gt('load_kg', 0)
+
+  if (setsErr) throw new Error(setsErr.message)
+  if (!sets || sets.length === 0) return {}
+
+  // 3. Para cada exercício, mantém o set de maior carga
+  const result: Record<string, ExercisePR> = {}
+  for (const row of sets as { exercise_id: string; load_kg: number; reps_completed: number }[]) {
+    const existing = result[row.exercise_id]
+    if (!existing || row.load_kg > existing.loadKg) {
+      result[row.exercise_id] = { loadKg: row.load_kg, reps: row.reps_completed }
+    }
+  }
+
+  return result
+}
