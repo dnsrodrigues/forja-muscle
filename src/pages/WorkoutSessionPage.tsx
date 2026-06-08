@@ -36,6 +36,7 @@ export function WorkoutSessionPage() {
 
   // ── Layout preference ─────────────────────────────────────────────
   const [layout, setLayout] = useState<Layout>(() => {
+    if (typeof window !== 'undefined' && window.innerWidth <= 768) return 'A'
     const v = localStorage.getItem('forja-workout-layout')
     return v === 'B' ? 'B' : 'A'
   })
@@ -309,7 +310,7 @@ export function WorkoutSessionPage() {
             </span>
           )}
           <button
-            className="btn ghost"
+            className="btn ghost forja-layout-toggle"
             onClick={() => setLayout((l) => (l === 'A' ? 'B' : 'A'))}
             aria-label={`Trocar para layout ${layout === 'A' ? 'B' : 'A'}`}
             style={
@@ -720,6 +721,10 @@ function LayoutA(props: LayoutAProps) {
           .forja-treino-list, .forja-treino-side { width: 100% !important; }
           .forja-treino-thumb { display: none; }
           .forja-treino-exname { font-size: 36px; }
+        }
+
+        @media (max-width: 768px) {
+          .forja-layout-toggle { display: none !important; }
         }
       `}</style>
     </div>
