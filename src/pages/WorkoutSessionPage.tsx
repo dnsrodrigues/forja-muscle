@@ -598,6 +598,23 @@ function LayoutA(props: LayoutAProps) {
                     <span className="chip">{ex.reps} reps</span>
                     {ex.rest_seconds > 0 && <span className="chip">desc. {ex.rest_seconds}s</span>}
                   </div>
+                  {ex.notes && (
+                    <div
+                      style={{
+                        marginTop: 10,
+                        padding: '7px 12px',
+                        background: 'rgba(212,255,58,0.06)',
+                        borderLeft: '2px solid var(--accent)',
+                        borderRadius: '0 var(--r-1) var(--r-1) 0',
+                        fontSize: 12,
+                        color: 'var(--text-dim)',
+                        fontStyle: 'italic',
+                        lineHeight: 1.5,
+                      }}
+                    >
+                      {ex.notes}
+                    </div>
+                  )}
                 </div>
               </div>
 
@@ -762,6 +779,23 @@ function LayoutB(props: LayoutBProps) {
             <h1 className="f-display forja-treino-b-exname">
               {(ex.exercise?.name ?? 'Exercício').toUpperCase()}
             </h1>
+            {ex.notes && (
+              <div
+                style={{
+                  marginTop: 10,
+                  padding: '7px 12px',
+                  background: 'rgba(212,255,58,0.06)',
+                  borderLeft: '2px solid var(--accent)',
+                  borderRadius: '0 var(--r-1) var(--r-1) 0',
+                  fontSize: 12,
+                  color: 'var(--text-dim)',
+                  fontStyle: 'italic',
+                  lineHeight: 1.5,
+                }}
+              >
+                {ex.notes}
+              </div>
+            )}
           </div>
           <div className="forja-treino-b-meta">
             <div>
