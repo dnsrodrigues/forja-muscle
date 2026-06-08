@@ -1024,7 +1024,7 @@ function SetList({ ex, exDoneCount, lastSetData, onSetComplete, embedded = false
         const isCurrent = setNumber === exDoneCount + 1
         return (
           <SetRow
-            key={setNumber}
+            key={`${ex.id}-${setNumber}`}
             setNumber={setNumber}
             isDone={isDone}
             isCurrent={isCurrent}
