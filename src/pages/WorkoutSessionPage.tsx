@@ -6,6 +6,7 @@ import { getWorkoutById } from '../services/workout.service'
 import {
   startWorkoutSession,
   logExerciseSet,
+  updateExerciseSet,
   finishWorkoutSession,
   deleteWorkoutSession,
 } from '../services/workout-log.service'
@@ -199,6 +200,23 @@ export function WorkoutSessionPage() {
     })
   }, [workoutLogId, workout, currentIdx])
 
+  const handleSetUpdate = useCallback(async (
+    exercise: WorkoutExercise,
+    setNumber: number,
+    reps: number,
+    loadKg: number | null,
+  ) => {
+    if (!workoutLogId || !exercise.exercise) return
+    try {
+      await updateExerciseSet(workoutLogId, exercise.exercise.id, setNumber, {
+        repsCompleted: reps,
+        loadKg,
+      })
+    } catch (err) {
+      console.error('Erro ao atualizar série:', err)
+    }
+  }, [workoutLogId])
+
   // ─────────────────────────────────────────────────────────────────
   // Finalizar / Sair
   // ─────────────────────────────────────────────────────────────────
@@ -359,6 +377,7 @@ export function WorkoutSessionPage() {
           setsCompleted={setsCompleted}
           lastSetData={lastSetData}
           onSetComplete={handleSetComplete}
+          onSetUpdate={handleSetUpdate}
           timerSeconds={timerSeconds}
           isTimerRunning={isTimerRunning}
           exercisesDone={exercisesDone}
@@ -372,6 +391,7 @@ export function WorkoutSessionPage() {
           setsCompleted={setsCompleted}
           lastSetData={lastSetData}
           onSetComplete={handleSetComplete}
+          onSetUpdate={handleSetUpdate}
           timerSeconds={timerSeconds}
           isTimerRunning={isTimerRunning}
         />
@@ -473,6 +493,7 @@ interface LayoutACommonProps {
   setsCompleted: Record<string, number>
   lastSetData: Record<string, Record<number, LastSetRecord>>
   onSetComplete: (ex: WorkoutExercise, setNumber: number, reps: number, loadKg: number | null) => void
+  onSetUpdate: (ex: WorkoutExercise, setNumber: number, reps: number, loadKg: number | null) => void
   timerSeconds: number
   isTimerRunning: boolean
 }
@@ -488,7 +509,7 @@ interface LayoutAProps extends LayoutACommonProps {
 function LayoutA(props: LayoutAProps) {
   const {
     workout, currentIdx, setCurrentIdx, exercises, currentExercise,
-    setsCompleted, lastSetData, onSetComplete,
+    setsCompleted, lastSetData, onSetComplete, onSetUpdate,
     timerSeconds, isTimerRunning,
     exercisesDone, totalSets,
   } = props
@@ -662,6 +683,7 @@ function LayoutA(props: LayoutAProps) {
           exDoneCount={exDoneCount}
           lastSetData={lastSetData}
           onSetComplete={onSetComplete}
+          onSetUpdate={onSetUpdate}
         />
       </div>
 
@@ -759,7 +781,7 @@ interface LayoutBProps extends LayoutACommonProps {
 function LayoutB(props: LayoutBProps) {
   const {
     currentIdx, exercises, currentExercise,
-    setsCompleted, lastSetData, onSetComplete,
+    setsCompleted, lastSetData, onSetComplete, onSetUpdate,
     timerSeconds,
   } = props
 
@@ -868,6 +890,7 @@ function LayoutB(props: LayoutBProps) {
             exDoneCount={exDoneCount}
             lastSetData={lastSetData}
             onSetComplete={onSetComplete}
+            onSetUpdate={onSetUpdate}
             embedded
           />
         </div>
@@ -998,11 +1021,12 @@ interface SetListProps {
   exDoneCount: number
   lastSetData: Record<string, Record<number, LastSetRecord>>
   onSetComplete: (ex: WorkoutExercise, setNumber: number, reps: number, loadKg: number | null) => void
+  onSetUpdate: (ex: WorkoutExercise, setNumber: number, reps: number, loadKg: number | null) => void
   /** se true, remove o wrapper .card */
   embedded?: boolean
 }
 
-function SetList({ ex, exDoneCount, lastSetData, onSetComplete, embedded = false }: SetListProps) {
+function SetList({ ex, exDoneCount, lastSetData, onSetComplete, onSetUpdate, embedded = false }: SetListProps) {
   const sets = Array.from({ length: ex.sets }, (_, i) => i + 1)
   const exId = ex.exercise?.id ?? ''
 
@@ -1039,6 +1063,7 @@ function SetList({ ex, exDoneCount, lastSetData, onSetComplete, embedded = false
             lastReps={lastSetData[exId]?.[setNumber]?.reps}
             lastLoad={lastSetData[exId]?.[setNumber]?.loadKg}
             onComplete={(reps, load) => onSetComplete(ex, setNumber, reps, load)}
+          onUpdate={(reps, load) => onSetUpdate(ex, setNumber, reps, load)}
           />
         )
       })}
@@ -1075,10 +1100,11 @@ interface SetRowProps {
   lastReps?: number
   lastLoad?: number | null
   onComplete: (reps: number, loadKg: number | null) => void
+  onUpdate: (reps: number, loadKg: number | null) => void
 }
 
 function SetRow({
-  setNumber, isDone, isCurrent, suggestedReps, suggestedLoad, lastReps, lastLoad, onComplete,
+  setNumber, isDone, isCurrent, suggestedReps, suggestedLoad, lastReps, lastLoad, onComplete, onUpdate,
 }: SetRowProps) {
   // Prioridade: histórico > sugerido
   const defaultReps = lastReps != null
@@ -1100,6 +1126,13 @@ function SetRow({
     }
   }
 
+  function handleDoneUpdate() {
+    if (!isDone) return
+    const repsNum = parseInt(reps, 10)
+    const loadNum = load !== '' ? parseFloat(load) : null
+    if (!isNaN(repsNum) && repsNum > 0) onUpdate(repsNum, loadNum)
+  }
+
   return (
     <div className={'set-row' + (isDone ? ' done' : '') + (isCurrent ? ' current' : '')}
          style={{ gridTemplateColumns: '36px 1fr 1fr 32px' }}>
@@ -1110,7 +1143,7 @@ function SetRow({
         inputMode="decimal"
         value={load}
         onChange={(e) => setLoad(e.target.value)}
-        disabled={isDone}
+        onBlur={handleDoneUpdate}
         placeholder="—"
         step={0.5}
         min={0}
@@ -1121,7 +1154,7 @@ function SetRow({
         inputMode="numeric"
         value={reps}
         onChange={(e) => setReps(e.target.value)}
-        disabled={isDone}
+        onBlur={handleDoneUpdate}
         placeholder="—"
         min={1}
       />
