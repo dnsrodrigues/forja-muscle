@@ -510,7 +510,7 @@ function LayoutA(props: LayoutAProps) {
   const {
     workout, currentIdx, setCurrentIdx, exercises, currentExercise,
     setsCompleted, lastSetData, onSetComplete, onSetUpdate,
-    timerSeconds, isTimerRunning,
+    timerSeconds,
     exercisesDone, totalSets,
   } = props
 
