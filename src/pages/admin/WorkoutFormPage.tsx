@@ -245,7 +245,7 @@ export function WorkoutFormPage() {
         const created = await createWorkout(
           {
             name: name.trim(),
-            description: description.trim() || undefined,
+            description: description.trim() || null,
             user_id: targetUserId,
             week_days: weekDays,
             is_template: isTemplate && !presetUserId,
@@ -266,7 +266,7 @@ export function WorkoutFormPage() {
       } else if (workoutId) {
         await updateWorkout(workoutId, {
           name: name.trim(),
-          description: description.trim() || undefined,
+          description: description.trim() || null,
           week_days: weekDays,
           is_template: isTemplate,
         })

@@ -128,7 +128,7 @@ export interface WorkoutExercise {
 
 export interface CreateWorkoutDTO {
   name: string
-  description?: string
+  description?: string | null
   user_id: string
   week_days: WeekDay[]
   is_template: boolean
@@ -137,7 +137,7 @@ export interface CreateWorkoutDTO {
 
 export interface UpdateWorkoutDTO {
   name?: string
-  description?: string
+  description?: string | null
   week_days?: WeekDay[]
   is_template?: boolean
 }

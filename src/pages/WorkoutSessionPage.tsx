@@ -174,6 +174,14 @@ export function WorkoutSessionPage() {
       console.error('Erro ao salvar série:', err)
     }
 
+    // Guarda o valor digitado para que, ao voltar neste exercício,
+    // a série já concluída mostre o que foi realmente registrado.
+    const exLibId = exercise.exercise.id
+    setLastSetData((prev) => ({
+      ...prev,
+      [exLibId]: { ...prev[exLibId], [setNumber]: { reps, loadKg } },
+    }))
+
     setSetsCompleted((prev) => {
       const next = { ...prev, [exercise.id]: (prev[exercise.id] ?? 0) + 1 }
 
@@ -215,6 +223,14 @@ export function WorkoutSessionPage() {
     } catch (err) {
       console.error('Erro ao atualizar série:', err)
     }
+
+    // Atualiza o valor guardado para refletir a edição na próxima vez
+    // que a linha for recriada (ao voltar neste exercício).
+    const exLibId = exercise.exercise.id
+    setLastSetData((prev) => ({
+      ...prev,
+      [exLibId]: { ...prev[exLibId], [setNumber]: { reps, loadKg } },
+    }))
   }, [workoutLogId])
 
   // ─────────────────────────────────────────────────────────────────
