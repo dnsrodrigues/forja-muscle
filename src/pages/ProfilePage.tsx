@@ -12,7 +12,6 @@ import { Topbar } from '../components/layout/Topbar'
 import { Icon } from '../components/ui/Icon'
 import { AvatarCropModal } from '../components/ui/AvatarCropModal'
 import { ThemeSwitcher } from '../components/ui/ThemeSwitcher'
-import { useTheme } from '../context/ThemeContext'
 import { useIsMobile } from '../hooks/useIsMobile'
 import { MobHead } from '../components/layout/MobHead'
 import { navDestinations } from '../lib/navigation'
@@ -70,7 +69,6 @@ export function ProfilePage() {
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
   const isMobile = useIsMobile()
-  const { mode, toggleMode } = useTheme()
   // ?mode=edit força exibição do formulário mesmo no mobile
   const forceEditMode = searchParams.get('mode') === 'edit'
   const [saveStatus, setSaveStatus] = useState<'idle' | 'success' | 'error'>('idle')
@@ -430,25 +428,9 @@ export function ProfilePage() {
             </button>
           </div>
 
-          {/* Aparência: claro/escuro + cor de destaque */}
+          {/* Aparência: cor de destaque */}
           <div className="label-sm" style={{ marginBottom: 8 }}>APARÊNCIA</div>
           <div className="card" style={{ padding: 16, marginBottom: 16 }}>
-            <div className="mob-seg" style={{ marginBottom: 16 }}>
-              <button
-                type="button"
-                className={mode === 'dark' ? 'active' : ''}
-                onClick={() => { if (mode !== 'dark') toggleMode() }}
-              >
-                Escuro
-              </button>
-              <button
-                type="button"
-                className={mode === 'light' ? 'active' : ''}
-                onClick={() => { if (mode !== 'light') toggleMode() }}
-              >
-                Claro
-              </button>
-            </div>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <span style={{ fontSize: 13, color: 'var(--text-dim)' }}>Cor de destaque</span>
               <ThemeSwitcher compact />
