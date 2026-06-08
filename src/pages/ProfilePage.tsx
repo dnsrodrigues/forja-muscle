@@ -13,11 +13,20 @@ import { Icon } from '../components/ui/Icon'
 import { AvatarCropModal } from '../components/ui/AvatarCropModal'
 import { useIsMobile } from '../hooks/useIsMobile'
 import { MobHead } from '../components/layout/MobHead'
+import { navDestinations } from '../lib/navigation'
 import {
   getCurrentStreak,
   getPersonalRecordsThisMonth,
   getWorkoutHistory,
 } from '../services/history.service'
+
+// Subtítulos dos atalhos de gestão (mobile)
+const ADMIN_SUBS: Record<string, string> = {
+  '/admin/workouts': 'Biblioteca de treinos',
+  '/admin/students': 'Gerenciar alunos',
+  '/admin/trainers': 'Gerenciar trainers',
+  '/admin/exercises': 'Catálogo de exercícios',
+}
 
 // ─── Schema ───────────────────────────────────────────────────────────────────
 
@@ -52,7 +61,10 @@ type ProfileFormData = z.infer<typeof profileSchema>
 // ─── Página ──────────────────────────────────────────────────────────────────
 
 export function ProfilePage() {
-  const { user, profile, isAdmin, signOut, refreshProfile } = useAuth()
+  const {
+    user, profile, isAdmin, signOut, refreshProfile,
+    isManager, isSuperAdmin, trainerMode, setTrainerMode,
+  } = useAuth()
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
   const isMobile = useIsMobile()
@@ -211,6 +223,12 @@ export function ProfilePage() {
       .join('')
       .toUpperCase()
 
+    // Atalhos de gestão (Fichas, Alunos, Trainers, Exercícios) — só para manager
+    const adminLinks = isManager
+      ? navDestinations({ isManager: true, isSuperAdmin, inTrainingMode: false })
+          .filter((d) => d.to !== '/dashboard' && d.to !== '/perfil')
+      : []
+
     return (
       <motion.div
         initial={{ opacity: 0 }}
@@ -278,6 +296,26 @@ export function ProfilePage() {
             </div>
           </div>
 
+          {/* Seletor de modo (apenas manager) — alterna Gestão / Meu Treino */}
+          {isManager && (
+            <div className="mob-seg" style={{ marginBottom: 18 }}>
+              <button
+                type="button"
+                className={trainerMode === 'gestao' ? 'active' : ''}
+                onClick={() => setTrainerMode('gestao')}
+              >
+                Gestão
+              </button>
+              <button
+                type="button"
+                className={trainerMode === 'treino' ? 'active' : ''}
+                onClick={() => setTrainerMode('treino')}
+              >
+                Meu Treino
+              </button>
+            </div>
+          )}
+
           {/* 3 KPIs */}
           {mobileStats ? (
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 8, marginBottom: 18 }}>
@@ -300,7 +338,46 @@ export function ProfilePage() {
             </div>
           )}
 
-          {/* Menu de navegação */}
+          {/* Gestão (apenas manager): atalhos admin */}
+          {isManager && (
+            <>
+              <div className="label-sm" style={{ marginBottom: 8 }}>GESTÃO</div>
+              <div className="card" style={{ padding: '4px 0', marginBottom: 18 }}>
+                {adminLinks.map((item) => (
+                  <div
+                    key={item.to}
+                    className="mob-lrow"
+                    style={{ padding: '14px 18px', cursor: 'pointer' }}
+                    onClick={() => { setTrainerMode('gestao'); navigate(item.to) }}
+                  >
+                    <div
+                      style={{
+                        width: 38, height: 38, borderRadius: 10, background: 'var(--bg-2)',
+                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        color: 'var(--accent)', flexShrink: 0,
+                      }}
+                    >
+                      <Icon name={item.icon} size={18} />
+                    </div>
+                    <div style={{ flex: 1 }}>
+                      <div style={{ fontSize: 14, fontWeight: 600 }}>{item.label}</div>
+                      <div style={{ fontSize: 12, color: 'var(--text-dim)' }}>
+                        {ADMIN_SUBS[item.to] ?? ''}
+                      </div>
+                    </div>
+                    <span style={{ color: 'var(--text-faint)', display: 'flex' }}>
+                      <Icon name="chevron" size={16} />
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </>
+          )}
+
+          {/* Menu de navegação (Meu Treino) */}
+          {isManager && (
+            <div className="label-sm" style={{ marginBottom: 8 }}>MEU TREINO</div>
+          )}
           <div className="card" style={{ padding: '4px 0', marginBottom: 16 }}>
             {[
               { icon: 'scale'    as const, label: 'Medidas corporais', sub: 'Peso e medidas',       to: '/medidas'   },
