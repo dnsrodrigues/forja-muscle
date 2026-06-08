@@ -3,8 +3,11 @@ import { Link, useNavigate } from 'react-router-dom'
 import { motion } from 'motion/react'
 import { useAuth } from '../context/AuthContext'
 import { getWorkoutHistory } from '../services/history.service'
+import { deleteWorkoutSession } from '../services/workout-log.service'
 import { Topbar } from '../components/layout/Topbar'
 import { Icon } from '../components/ui/Icon'
+import { ConfirmModal } from '../components/ui/ConfirmModal'
+import { useToast } from '../context/ToastContext'
 import type { WorkoutLog } from '../types'
 
 const DIFFICULTY_LABEL: Record<string, string> = {
@@ -27,9 +30,12 @@ function formatDate(iso: string): string {
 export function HistoryPage() {
   const { profile } = useAuth()
   const navigate = useNavigate()
+  const { showToast } = useToast()
   const [sessions, setSessions] = useState<WorkoutLog[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [confirmId, setConfirmId] = useState<string | null>(null)
+  const [deletingId, setDeletingId] = useState<string | null>(null)
 
   async function load() {
     if (!profile?.id) return
@@ -46,6 +52,22 @@ export function HistoryPage() {
   }
 
   useEffect(() => { void load() }, [profile?.id])
+
+  async function handleDelete(id: string) {
+    setDeletingId(id)
+    try {
+      await deleteWorkoutSession(id)
+      setSessions((prev) => prev.filter((s) => s.id !== id))
+      showToast('Treino apagado.', 'success')
+    } catch (err) {
+      showToast(err instanceof Error ? err.message : 'Erro ao apagar treino', 'error')
+    } finally {
+      setDeletingId(null)
+      setConfirmId(null)
+    }
+  }
+
+  const confirmSession = confirmId ? sessions.find((s) => s.id === confirmId) : null
 
   // Stats agregados
   const total = sessions.length
@@ -152,6 +174,7 @@ export function HistoryPage() {
             {sessions.map((session, idx) => {
               const workout = (session as WorkoutLog & { workout?: { name: string } }).workout
               const diff = session.difficulty ? DIFFICULTY_LABEL[session.difficulty] : null
+              const open = () => navigate(`/historico/${session.id}`)
               return (
                 <motion.div
                   key={session.id}
@@ -159,10 +182,13 @@ export function HistoryPage() {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.25, delay: idx * 0.03 }}
                 >
-                  <Link
-                    to={`/historico/${session.id}`}
+                  <div
                     className="card forja-history-row"
-                    style={{ textDecoration: 'none', display: 'block' }}
+                    role="button"
+                    tabIndex={0}
+                    onClick={open}
+                    onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); open() } }}
+                    style={{ cursor: 'pointer' }}
                   >
                     <div className="forja-history-grid">
                       <div>
@@ -192,15 +218,37 @@ export function HistoryPage() {
                           </div>
                         )}
                       </div>
-                      <Icon name="arrow" size={18} />
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+                        <button
+                          type="button"
+                          onClick={(e) => { e.stopPropagation(); setConfirmId(session.id) }}
+                          aria-label="Apagar treino"
+                          className="forja-del-btn"
+                          disabled={deletingId === session.id}
+                        >
+                          <Icon name="trash" size={16} />
+                        </button>
+                        <Icon name="arrow" size={18} />
+                      </div>
                     </div>
-                  </Link>
+                  </div>
                 </motion.div>
               )
             })}
           </div>
         )}
       </div>
+
+      {confirmId && (
+        <ConfirmModal
+          title="Apagar treino?"
+          message={`Isto vai apagar permanentemente a sessão${confirmSession ? ' de ' + formatDate(confirmSession.started_at) : ''} e todas as séries registradas. Não dá pra desfazer.`}
+          confirmLabel="Apagar"
+          danger
+          onConfirm={() => void handleDelete(confirmId)}
+          onCancel={() => setConfirmId(null)}
+        />
+      )}
 
       <style>{`
         .forja-history-stats {
@@ -210,6 +258,19 @@ export function HistoryPage() {
         }
         .forja-history-row { transition: border-color 0.15s; }
         .forja-history-row:hover { border-color: var(--accent) !important; }
+        .forja-del-btn {
+          background: transparent;
+          border: none;
+          color: var(--text-faint);
+          cursor: pointer;
+          padding: 6px;
+          border-radius: 8px;
+          display: flex;
+          align-items: center;
+          transition: background 0.15s, color 0.15s;
+        }
+        .forja-del-btn:hover { background: rgba(255,61,85,0.12); color: var(--danger); }
+        .forja-del-btn:disabled { opacity: 0.5; cursor: default; }
         .forja-history-grid {
           display: grid;
           grid-template-columns: 1fr auto auto;
