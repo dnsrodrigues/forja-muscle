@@ -144,10 +144,6 @@ export function WorkoutSessionPage() {
     setTimerSeconds(seconds)
     setIsTimerRunning(true)
   }
-  function adjustTimer(delta: number) {
-    setTimerSeconds((s) => Math.max(0, s + delta))
-    if (!isTimerRunning && timerSeconds + delta > 0) setIsTimerRunning(true)
-  }
   function skipTimer() {
     if (timerRef.current) clearInterval(timerRef.current)
     setTimerSeconds(0)
@@ -364,8 +360,6 @@ export function WorkoutSessionPage() {
           onSetComplete={handleSetComplete}
           timerSeconds={timerSeconds}
           isTimerRunning={isTimerRunning}
-          onAdjustTimer={adjustTimer}
-          onSkipTimer={skipTimer}
           exercisesDone={exercisesDone}
           totalSets={totalSets}
         />
@@ -379,8 +373,6 @@ export function WorkoutSessionPage() {
           onSetComplete={handleSetComplete}
           timerSeconds={timerSeconds}
           isTimerRunning={isTimerRunning}
-          onAdjustTimer={adjustTimer}
-          onSkipTimer={skipTimer}
         />
       )}
 
@@ -482,8 +474,6 @@ interface LayoutACommonProps {
   onSetComplete: (ex: WorkoutExercise, setNumber: number, reps: number, loadKg: number | null) => void
   timerSeconds: number
   isTimerRunning: boolean
-  onAdjustTimer: (delta: number) => void
-  onSkipTimer: () => void
 }
 
 interface LayoutAProps extends LayoutACommonProps {
@@ -498,7 +488,7 @@ function LayoutA(props: LayoutAProps) {
   const {
     workout, currentIdx, setCurrentIdx, exercises, currentExercise,
     setsCompleted, lastSetData, onSetComplete,
-    timerSeconds, isTimerRunning, onAdjustTimer, onSkipTimer,
+    timerSeconds, isTimerRunning,
     exercisesDone, totalSets,
   } = props
 
@@ -678,22 +668,6 @@ function LayoutA(props: LayoutAProps) {
               }}
             />
           </div>
-          <div style={{ display: 'flex', gap: 8, marginTop: 14 }}>
-            <button
-              onClick={() => onAdjustTimer(15)}
-              className="btn"
-              style={{ background: '#0a0a0a', color: 'var(--accent)', borderColor: '#0a0a0a', flex: 1, justifyContent: 'center' }}
-            >
-              +15s
-            </button>
-            <button
-              onClick={onSkipTimer}
-              className="btn"
-              style={{ background: '#0a0a0a', color: 'var(--accent)', borderColor: '#0a0a0a', flex: 1, justifyContent: 'center' }}
-            >
-              {isTimerRunning ? 'Pular' : 'Pronto'}
-            </button>
-          </div>
         </div>
 
         {nextExercise && (
@@ -764,7 +738,7 @@ function LayoutB(props: LayoutBProps) {
   const {
     currentIdx, exercises, currentExercise,
     setsCompleted, lastSetData, onSetComplete,
-    timerSeconds, onAdjustTimer, onSkipTimer,
+    timerSeconds,
   } = props
 
   const ex = currentExercise
@@ -826,13 +800,6 @@ function LayoutB(props: LayoutBProps) {
             style={{ color: timerSeconds > 0 ? 'var(--accent)' : 'var(--text-faint)' }}
           >
             {formatMMSS(timerSeconds)}
-          </div>
-          <div style={{ display: 'flex', gap: 10, marginTop: 18, position: 'relative' }}>
-            <button onClick={() => onAdjustTimer(-15)} className="btn">-15s</button>
-            <button onClick={() => onAdjustTimer(15)} className="btn">+15s</button>
-            <button onClick={onSkipTimer} className="btn primary">
-              <Icon name="play" size={12} /> Pular
-            </button>
           </div>
         </div>
       </div>
