@@ -741,7 +741,8 @@ select.input {
   flex: 1;
   overflow-y: auto;
   overflow-x: hidden;
-  padding: 0 16px 16px;
+  /* espaço extra no fim para o conteúdo não ficar atrás da tabbar fixa */
+  padding: 0 16px calc(92px + env(safe-area-inset-bottom));
   -webkit-overflow-scrolling: touch;
 }
 

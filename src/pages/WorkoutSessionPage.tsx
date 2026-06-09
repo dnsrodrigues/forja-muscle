@@ -153,9 +153,6 @@ export function WorkoutSessionPage() {
     setTimerSeconds(0)
     setIsTimerRunning(false)
   }
-  function adjustTimer(delta: number) {
-    setTimerSeconds((s) => Math.max(0, s + delta))
-  }
 
   // ─────────────────────────────────────────────────────────────────
   // Registrar série
@@ -336,7 +333,6 @@ export function WorkoutSessionPage() {
           timerSeconds={timerSeconds}
           isTimerRunning={isTimerRunning}
           skipTimer={skipTimer}
-          adjustTimer={adjustTimer}
           elapsedSec={elapsedSec}
           totalSets={totalSets}
           totalSetsPlanned={totalSetsPlanned}
@@ -1074,7 +1070,6 @@ interface LayoutMobileProps {
   timerSeconds: number
   isTimerRunning: boolean
   skipTimer: () => void
-  adjustTimer: (delta: number) => void
   elapsedSec: number
   totalSets: number
   totalSetsPlanned: number
@@ -1086,7 +1081,7 @@ function LayoutMobile(props: LayoutMobileProps) {
   const {
     currentIdx, setCurrentIdx, exercises, currentExercise,
     setsCompleted, lastSetData, onSetComplete, onSetUpdate,
-    timerSeconds, isTimerRunning, skipTimer, adjustTimer,
+    timerSeconds, isTimerRunning, skipTimer,
     elapsedSec, totalSets, totalSetsPlanned, onExit, onFinish,
   } = props
 
@@ -1145,6 +1140,10 @@ function LayoutMobile(props: LayoutMobileProps) {
   const R = 46
   const CIRC = 2 * Math.PI * R
   const restPct = Math.min(1, Math.max(0, timerSeconds / restTotal))
+
+  // Dados da série anterior (treino passado) para a próxima série do descanso
+  const nextSetNumber = Math.min(exDoneCount + 1, ex.sets)
+  const prevSet = lastSetData[exId]?.[nextSetNumber]
 
   const navBtnStyle: React.CSSProperties = {
     width: 32, height: 32, borderRadius: 8, display: 'flex',
@@ -1312,11 +1311,11 @@ function LayoutMobile(props: LayoutMobileProps) {
       {isTimerRunning && timerSeconds > 0 && (
         <div style={{ position: 'absolute', inset: 0, zIndex: 5, background: '#0a0a0a', display: 'flex', flexDirection: 'column' }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: 'calc(8px + env(safe-area-inset-top)) 20px 12px' }}>
-            <button onClick={skipTimer} aria-label="Pular descanso" style={{ background: 'transparent', border: 'none', color: 'var(--text)', padding: 6, cursor: 'pointer', display: 'flex' }}>
+            <button onClick={skipTimer} aria-label="Voltar" style={{ background: 'transparent', border: 'none', color: 'var(--text)', padding: 6, cursor: 'pointer', display: 'flex', width: 36 }}>
               <Icon name="arrowL" size={24} />
             </button>
             <div className="eyebrow">DESCANSO</div>
-            <button onClick={skipTimer} style={{ background: 'transparent', border: 'none', color: 'var(--text-dim)', fontSize: 12, fontWeight: 600, cursor: 'pointer', letterSpacing: '0.1em' }}>PULAR</button>
+            <span style={{ width: 36, flexShrink: 0 }} />
           </div>
 
           <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: 24, gap: 28 }}>
@@ -1342,19 +1341,24 @@ function LayoutMobile(props: LayoutMobileProps) {
                   <div style={{ fontSize: 12, color: 'var(--text-dim)' }}>Série {Math.min(exDoneCount + 1, ex.sets)} de {ex.sets}</div>
                 </div>
                 <div style={{ textAlign: 'right', flexShrink: 0 }}>
-                  <div className="f-display" style={{ fontSize: 30, color: 'var(--accent)' }}>
-                    {ex.suggested_load ?? '—'}<span className="stat-unit" style={{ fontSize: 12 }}>kg</span>
+                  <div style={{ fontSize: 9, color: 'var(--text-faint)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 2 }}>
+                    {prevSet ? 'Última vez' : 'Sugerido'}
                   </div>
-                  <div style={{ fontSize: 11, color: 'var(--text-dim)' }}>{ex.reps} reps</div>
+                  <div className="f-display" style={{ fontSize: 30, color: 'var(--accent)' }}>
+                    {(prevSet?.loadKg ?? ex.suggested_load) ?? '—'}<span className="stat-unit" style={{ fontSize: 12 }}>kg</span>
+                  </div>
+                  <div style={{ fontSize: 11, color: 'var(--text-dim)' }}>
+                    {prevSet?.reps != null ? `${prevSet.reps} reps` : `${ex.reps} reps`}
+                  </div>
                 </div>
               </div>
             </div>
           </div>
 
-          <div style={{ padding: '12px 20px calc(24px + env(safe-area-inset-bottom))', display: 'flex', gap: 10 }}>
-            <button className="btn lg" style={{ flex: 1, justifyContent: 'center' }} onClick={() => adjustTimer(-15)}>-15s</button>
-            <button className="btn lg" style={{ flex: 1, justifyContent: 'center' }} onClick={() => adjustTimer(15)}>+15s</button>
-            <button className="btn primary lg" style={{ flex: 2, justifyContent: 'center' }} onClick={skipTimer}>INICIAR SÉRIE</button>
+          <div style={{ padding: '12px 20px calc(24px + env(safe-area-inset-bottom))', display: 'flex', justifyContent: 'center' }}>
+            <button className="btn primary lg" style={{ width: '100%', maxWidth: 340, justifyContent: 'center' }} onClick={skipTimer}>
+              PRÓXIMA SÉRIE
+            </button>
           </div>
         </div>
       )}
