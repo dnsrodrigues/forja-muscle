@@ -9,7 +9,7 @@ import { getBmiStatus } from '../lib/bmi'
 import { updateProfile, uploadAvatar } from '../services/profile.service'
 import { supabase } from '../lib/supabase'
 import { Topbar } from '../components/layout/Topbar'
-import { Icon } from '../components/ui/Icon'
+import { Icon, type IconName } from '../components/ui/Icon'
 import { AvatarCropModal } from '../components/ui/AvatarCropModal'
 import { ThemeSwitcher } from '../components/ui/ThemeSwitcher'
 import { useIsMobile } from '../hooks/useIsMobile'
@@ -64,7 +64,7 @@ type ProfileFormData = z.infer<typeof profileSchema>
 export function ProfilePage() {
   const {
     user, profile, isAdmin, signOut, refreshProfile,
-    isManager, isSuperAdmin, trainerMode, setTrainerMode,
+    isManager, isSuperAdmin,
   } = useAuth()
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
@@ -230,6 +230,14 @@ export function ProfilePage() {
           .filter((d) => d.to !== '/dashboard' && d.to !== '/perfil')
       : []
 
+    // Lista da seção GESTÃO — "Alertas" no topo + atalhos das páginas admin
+    const gestaoItems: { to: string; label: string; icon: IconName; sub: string }[] = isManager
+      ? [
+          { to: '/admin/alertas', label: 'Alertas', icon: 'bell', sub: 'Alunos que precisam de atenção' },
+          ...adminLinks.map((d) => ({ to: d.to, label: d.label, icon: d.icon, sub: ADMIN_SUBS[d.to] ?? '' })),
+        ]
+      : []
+
     return (
       <motion.div
         initial={{ opacity: 0 }}
@@ -257,6 +265,20 @@ export function ProfilePage() {
                 }}
               >
                 {initials}
+              </div>
+              {/* Seletor de cor accent — sobre o banner */}
+              <div
+                style={{
+                  position: 'absolute', top: 12, left: 14,
+                  display: 'flex', alignItems: 'center', gap: 9,
+                  background: 'rgba(0,0,0,0.32)', backdropFilter: 'blur(4px)',
+                  padding: '7px 11px', borderRadius: 99, border: '1px solid var(--hairline)',
+                }}
+              >
+                <span style={{ fontSize: 9, color: 'var(--text-dim)', letterSpacing: '0.12em', textTransform: 'uppercase', fontWeight: 600 }}>
+                  Cor
+                </span>
+                <ThemeSwitcher compact />
               </div>
             </div>
             <div
@@ -297,26 +319,6 @@ export function ProfilePage() {
             </div>
           </div>
 
-          {/* Seletor de modo (apenas manager) — alterna Gestão / Meu Treino */}
-          {isManager && (
-            <div className="mob-seg" style={{ marginBottom: 18 }}>
-              <button
-                type="button"
-                className={trainerMode === 'gestao' ? 'active' : ''}
-                onClick={() => setTrainerMode('gestao')}
-              >
-                Gestão
-              </button>
-              <button
-                type="button"
-                className={trainerMode === 'treino' ? 'active' : ''}
-                onClick={() => setTrainerMode('treino')}
-              >
-                Meu Treino
-              </button>
-            </div>
-          )}
-
           {/* 3 KPIs */}
           {mobileStats ? (
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 8, marginBottom: 18 }}>
@@ -344,12 +346,12 @@ export function ProfilePage() {
             <>
               <div className="label-sm" style={{ marginBottom: 8 }}>GESTÃO</div>
               <div className="card" style={{ padding: '4px 0', marginBottom: 18 }}>
-                {adminLinks.map((item) => (
+                {gestaoItems.map((item) => (
                   <div
                     key={item.to}
                     className="mob-lrow"
                     style={{ padding: '14px 18px', cursor: 'pointer' }}
-                    onClick={() => { setTrainerMode('gestao'); navigate(item.to) }}
+                    onClick={() => navigate(item.to)}
                   >
                     <div
                       style={{
@@ -363,7 +365,7 @@ export function ProfilePage() {
                     <div style={{ flex: 1 }}>
                       <div style={{ fontSize: 14, fontWeight: 600 }}>{item.label}</div>
                       <div style={{ fontSize: 12, color: 'var(--text-dim)' }}>
-                        {ADMIN_SUBS[item.to] ?? ''}
+                        {item.sub}
                       </div>
                     </div>
                     <span style={{ color: 'var(--text-faint)', display: 'flex' }}>
@@ -426,15 +428,6 @@ export function ProfilePage() {
               <Icon name="edit" size={14} />
               Editar dados
             </button>
-          </div>
-
-          {/* Aparência: cor de destaque */}
-          <div className="label-sm" style={{ marginBottom: 8 }}>APARÊNCIA</div>
-          <div className="card" style={{ padding: 16, marginBottom: 16 }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <span style={{ fontSize: 13, color: 'var(--text-dim)' }}>Cor de destaque</span>
-              <ThemeSwitcher compact />
-            </div>
           </div>
 
           {/* Sair */}

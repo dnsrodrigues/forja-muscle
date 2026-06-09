@@ -49,9 +49,10 @@ function formatTodayHeader(): string {
 
 export function DashboardPage() {
   const { profile, isManager, isSuperAdmin, trainerMode } = useAuth()
-  const showAdminView = isManager && trainerMode === 'gestao'
   const navigate = useNavigate()
   const isMobile = useIsMobile()
+  // No mobile o app é sempre "meu treino" — o painel de gestão fica em /admin/alertas
+  const showAdminView = isManager && trainerMode === 'gestao' && !isMobile
 
   const [workouts, setWorkouts] = useState<Workout[]>([])
   const [history, setHistory] = useState<WorkoutLog[]>([])

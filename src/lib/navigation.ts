@@ -31,10 +31,10 @@ const ALUNO: NavDest[] = [
  * 4 itens (o FAB central é tratado no componente, não aqui).
  */
 const ALUNO_MOBILE: NavDest[] = [
-  { to: '/dashboard',   label: 'Hoje',       icon: 'home',     primary: true },
-  { to: '/semana',      label: 'Semana',     icon: 'calendar', primary: true },
-  { to: '/exercicios',  label: 'Exercícios', icon: 'dumbbell', primary: true },
-  { to: '/perfil',      label: 'Perfil',     icon: 'user',     primary: true },
+  { to: '/dashboard',   label: 'Hoje',      icon: 'home',     primary: true },
+  { to: '/semana',      label: 'Semana',    icon: 'calendar', primary: true },
+  { to: '/historico',   label: 'Histórico', icon: 'history',  primary: true, matches: (p) => p.startsWith('/historico') },
+  { to: '/perfil',      label: 'Perfil',    icon: 'user',     primary: true },
 ]
 
 function gestao(isSuperAdmin: boolean): NavDest[] {
@@ -58,13 +58,11 @@ export function navDestinations(ctx: NavContext): NavDest[] {
 }
 
 /**
- * Destinos da tabbar para o mobile.
- * Para admin/manager em modo gestão: usa o mesmo que navDestinations().
- * Para aluno (ou manager em modo treino): retorna ALUNO_MOBILE (4 tabs + FAB).
+ * Destinos da tabbar mobile. O mobile é SEMPRE "meu treino" (4 tabs + FAB) —
+ * as funções de gestão ficam na lista dentro do Perfil, não na tabbar.
  */
-export function mobileNavDestinations(ctx: NavContext): NavDest[] {
-  if (!ctx.isManager || ctx.inTrainingMode) return ALUNO_MOBILE
-  return gestao(ctx.isSuperAdmin)
+export function mobileNavDestinations(): NavDest[] {
+  return ALUNO_MOBILE
 }
 
 /** Diz se um destino está ativo dado o pathname atual. */

@@ -26,6 +26,7 @@ import { StudentsAdminPage } from './pages/admin/StudentsAdminPage'
 import { StudentFormPage } from './pages/admin/StudentFormPage'
 import { StudentDetailPage } from './pages/admin/StudentDetailPage'
 import { ExerciseLibraryPage } from './pages/admin/ExerciseLibraryPage'
+import { AlertasPage } from './pages/admin/AlertasPage'
 import { NutritionPage } from './pages/NutritionPage'
 import { NotFoundPage } from './pages/NotFoundPage'
 import { SemanaPage } from './pages/SemanaPage'
@@ -81,6 +82,7 @@ function AnimatedRoutes() {
               {/* Admin / Trainer */}
               <Route element={<AdminRoute />}>
                 <Route path="/admin" element={<Navigate to="/admin/workouts" replace />} />
+                <Route path="/admin/alertas" element={<AlertasPage />} />
                 <Route path="/admin/workouts" element={<WorkoutsAdminPage />} />
                 <Route path="/admin/workouts/new" element={<WorkoutFormPage />} />
                 <Route path="/admin/workouts/:id/edit" element={<WorkoutFormPage />} />

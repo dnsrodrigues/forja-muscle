@@ -1,7 +1,7 @@
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
 import { Icon } from '../ui/Icon'
-import { mobileNavDestinations, navDestinations, isNavActive } from '../../lib/navigation'
+import { mobileNavDestinations, isNavActive } from '../../lib/navigation'
 import type { NavDest } from '../../lib/navigation'
 import { getMyWorkouts } from '../../services/workout.service'
 import type { WeekDay } from '../../types'
@@ -9,23 +9,18 @@ import type { WeekDay } from '../../types'
 /**
  * Tabbar fixa no rodapé. Aparece SOMENTE no mobile (≤768px) via CSS.
  *
- * - Aluno / trainer em modo treino: 5 colunas (2 tabs | FAB | 2 tabs)
- * - Admin em modo gestão: tabs primárias + Perfil (sem gaveta "Mais")
+ * O mobile é SEMPRE "meu treino": 5 colunas (2 tabs | FAB | 2 tabs).
+ * As funções de gestão (Fichas, Alunos, etc.) ficam na lista dentro do Perfil.
  *
  * A aba Perfil usa o avatar do usuário como ícone, diferenciando-a
- * visualmente da aba "Alunos" (ambas usariam o ícone de pessoa).
+ * visualmente das demais.
  */
 export function MobileTabbar() {
-  const { profile, isManager, isSuperAdmin, trainerMode } = useAuth()
+  const { profile } = useAuth()
   const { pathname } = useLocation()
   const navigate = useNavigate()
 
-  const inTrainingMode = isManager && trainerMode === 'treino'
-  const isAdminMode = isManager && trainerMode !== 'treino'
-
-  const ctx = { isManager, isSuperAdmin, inTrainingMode }
-  const mobileDests = mobileNavDestinations(ctx)
-  const adminDests = navDestinations(ctx)
+  const mobileDests = mobileNavDestinations()
 
   // Conteúdo do ícone do tab — Perfil mostra o avatar do usuário
   function tabInner(dest: NavDest, active: boolean) {
@@ -56,32 +51,11 @@ export function MobileTabbar() {
     return <Icon name={dest.icon} size={22} />
   }
 
-  // ── Admin mode: tabs primárias + Perfil ────────────────────────────────────
-  if (isAdminMode) {
-    const primary = adminDests.filter((d) => d.primary)
-    const perfil = adminDests.find((d) => d.to === '/perfil')
-    const tabs = perfil ? [...primary, perfil] : primary
-
-    return (
-      <nav className="mob-tabbar" style={{ display: 'none' }} data-mobile-tabbar>
-        {tabs.map((t) => {
-          const active = isNavActive(t, pathname)
-          return (
-            <Link key={t.to} to={t.to} className={'mob-tab' + (active ? ' active' : '')}>
-              {tabInner(t, active)}
-              {t.label}
-            </Link>
-          )
-        })}
-      </nav>
-    )
-  }
-
-  // ── Aluno mode: 5 colunas com FAB central ─────────────────────────────────
-  // mobileDests tem 4 items: [Hoje, Semana, Exercícios, Perfil]
-  // O FAB fica entre Semana (index 1) e Exercícios (index 2)
-  const left = mobileDests.slice(0, 2)   // Hoje, Semana
-  const right = mobileDests.slice(2)     // Exercícios, Perfil
+  // 5 colunas com FAB central.
+  // mobileDests tem 4 items: [Hoje, Semana, Histórico, Perfil]
+  // O FAB fica entre Semana (index 1) e Histórico (index 2)
+  const left = mobileDests.slice(0, 2)
+  const right = mobileDests.slice(2)
 
   async function handleFAB() {
     if (!profile?.id) return
