@@ -528,6 +528,14 @@ select.input {
   transition: width 0.3s ease;
 }
 
+/* Botão grande full-width (CTA) — usado na execução de treino mobile */
+.cta {
+  width: 100%;
+  justify-content: center;
+  padding: 16px;
+  font-size: 15px;
+}
+
 /* ══════════════════════════════════════════════════════════════════
    Set list (treino em execução)
    ══════════════════════════════════════════════════════════════════ */

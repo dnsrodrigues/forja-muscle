@@ -12,6 +12,7 @@ import {
 } from '../services/workout-log.service'
 import { getLastSetData, type LastSetRecord } from '../services/history.service'
 import { Icon } from '../components/ui/Icon'
+import { useIsMobile } from '../hooks/useIsMobile'
 import { WorkoutFinishModal } from '../components/WorkoutFinishModal'
 import { useModalA11y } from '../hooks/useModalA11y'
 import { MUSCLE_GROUP_LABELS } from '../types'
@@ -34,6 +35,7 @@ export function WorkoutSessionPage() {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
   const { profile } = useAuth()
+  const isMobile = useIsMobile()
 
   // ── Layout preference ─────────────────────────────────────────────
   const [layout, setLayout] = useState<Layout>(() => {
@@ -150,6 +152,9 @@ export function WorkoutSessionPage() {
     if (timerRef.current) clearInterval(timerRef.current)
     setTimerSeconds(0)
     setIsTimerRunning(false)
+  }
+  function adjustTimer(delta: number) {
+    setTimerSeconds((s) => Math.max(0, s + delta))
   }
 
   // ─────────────────────────────────────────────────────────────────
@@ -278,6 +283,7 @@ export function WorkoutSessionPage() {
   const isExerciseDone = (ex: WorkoutExercise) => (setsCompleted[ex.id] ?? 0) >= ex.sets
   const exercisesDone = exercises.filter(isExerciseDone).length
   const totalSets = Object.values(setsCompleted).reduce((a, b) => a + b, 0)
+  const totalSetsPlanned = exercises.reduce((sum, e) => sum + e.sets, 0)
 
   // ─────────────────────────────────────────────────────────────────
   // States: boot, error
@@ -317,6 +323,28 @@ export function WorkoutSessionPage() {
 
   return (
     <>
+      {isMobile ? (
+        <LayoutMobile
+          currentIdx={currentIdx}
+          setCurrentIdx={setCurrentIdx}
+          exercises={exercises}
+          currentExercise={currentExercise}
+          setsCompleted={setsCompleted}
+          lastSetData={lastSetData}
+          onSetComplete={handleSetComplete}
+          onSetUpdate={handleSetUpdate}
+          timerSeconds={timerSeconds}
+          isTimerRunning={isTimerRunning}
+          skipTimer={skipTimer}
+          adjustTimer={adjustTimer}
+          elapsedSec={elapsedSec}
+          totalSets={totalSets}
+          totalSetsPlanned={totalSetsPlanned}
+          onExit={() => setShowExitModal(true)}
+          onFinish={() => { skipTimer(); setShowFinishModal(true) }}
+        />
+      ) : (
+      <>
       {/* ─── TOPBAR ───────────────────────────────────────── */}
       <div
         className="topbar"
@@ -411,6 +439,8 @@ export function WorkoutSessionPage() {
           timerSeconds={timerSeconds}
           isTimerRunning={isTimerRunning}
         />
+      )}
+      </>
       )}
 
       {/* ─── MODAL FINALIZAR ────────────────────────────── */}
@@ -1024,6 +1054,310 @@ function LayoutB(props: LayoutBProps) {
           .forja-treino-b-exname { font-size: 48px; }
         }
       `}</style>
+    </div>
+  )
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// LAYOUT MOBILE — tela de execução (≤768px) conforme handoff FORJA
+// ═══════════════════════════════════════════════════════════════════
+
+interface LayoutMobileProps {
+  currentIdx: number
+  setCurrentIdx: (i: number) => void
+  exercises: WorkoutExercise[]
+  currentExercise: WorkoutExercise
+  setsCompleted: Record<string, number>
+  lastSetData: Record<string, Record<number, LastSetRecord>>
+  onSetComplete: (ex: WorkoutExercise, setNumber: number, reps: number, loadKg: number | null) => void
+  onSetUpdate: (ex: WorkoutExercise, setNumber: number, reps: number, loadKg: number | null) => void
+  timerSeconds: number
+  isTimerRunning: boolean
+  skipTimer: () => void
+  adjustTimer: (delta: number) => void
+  elapsedSec: number
+  totalSets: number
+  totalSetsPlanned: number
+  onExit: () => void
+  onFinish: () => void
+}
+
+function LayoutMobile(props: LayoutMobileProps) {
+  const {
+    currentIdx, setCurrentIdx, exercises, currentExercise,
+    setsCompleted, lastSetData, onSetComplete, onSetUpdate,
+    timerSeconds, isTimerRunning, skipTimer, adjustTimer,
+    elapsedSec, totalSets, totalSetsPlanned, onExit, onFinish,
+  } = props
+
+  const ex = currentExercise
+  const exId = ex.exercise?.id ?? ''
+  const exDoneCount = setsCompleted[ex.id] ?? 0
+  const setNumbers = Array.from({ length: ex.sets }, (_, i) => i + 1)
+  const nextExercise = exercises[currentIdx + 1]
+  const isLastExercise = currentIdx >= exercises.length - 1
+  const allSetsDone = exDoneCount >= ex.sets
+  const currentSetNumber = exDoneCount + 1
+
+  // Estado dos inputs levantado para cá — assim o botão inferior consegue
+  // concluir a série atual lendo os valores digitados.
+  const [vals, setVals] = useState<Record<number, { reps: string; load: string }>>({})
+
+  // Reinicializa os valores ao trocar de exercício (não em cada série, para
+  // não apagar o que o usuário digitou).
+  useEffect(() => {
+    const init: Record<number, { reps: string; load: string }> = {}
+    for (const n of setNumbers) {
+      const last = lastSetData[exId]?.[n]
+      const defReps = last?.reps != null
+        ? String(last.reps)
+        : (ex.reps.includes('-') ? ex.reps.split('-')[1] : ex.reps)
+      const defLoad = last?.loadKg != null
+        ? String(last.loadKg)
+        : (ex.suggested_load != null ? String(ex.suggested_load) : '')
+      init[n] = { reps: defReps, load: defLoad }
+    }
+    setVals(init)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [ex.id])
+
+  function readSet(n: number): { reps: number; load: number | null } | null {
+    const v = vals[n]
+    if (!v) return null
+    const repsNum = parseInt(v.reps, 10)
+    const loadNum = v.load !== '' ? parseFloat(v.load) : null
+    if (isNaN(repsNum) || repsNum <= 0) return null
+    return { reps: repsNum, load: loadNum }
+  }
+  function completeSet(n: number) {
+    const r = readSet(n)
+    if (r) onSetComplete(ex, n, r.reps, r.load)
+  }
+  function updateSet(n: number) {
+    const r = readSet(n)
+    if (r) onSetUpdate(ex, n, r.reps, r.load)
+  }
+
+  const progressPct = totalSetsPlanned > 0 ? (totalSets / totalSetsPlanned) * 100 : 0
+
+  // Cronômetro circular de descanso
+  const restTotal = ex.rest_seconds > 0 ? ex.rest_seconds : 1
+  const R = 46
+  const CIRC = 2 * Math.PI * R
+  const restPct = Math.min(1, Math.max(0, timerSeconds / restTotal))
+
+  const navBtnStyle: React.CSSProperties = {
+    width: 32, height: 32, borderRadius: 8, display: 'flex',
+    alignItems: 'center', justifyContent: 'center', background: 'var(--bg-2)',
+    border: '1px solid var(--border)', color: 'var(--text)', cursor: 'pointer',
+  }
+
+  return (
+    <div
+      style={{
+        position: 'fixed', inset: 0, zIndex: 45,
+        background: 'var(--bg-0)', display: 'flex', flexDirection: 'column',
+        color: 'var(--text)',
+      }}
+    >
+      {/* Cabeçalho */}
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: 'calc(8px + env(safe-area-inset-top)) 16px 10px' }}>
+        <button onClick={onExit} aria-label="Sair do treino" style={{ background: 'transparent', border: 'none', color: 'var(--text)', padding: 6, cursor: 'pointer', display: 'flex' }}>
+          <Icon name="arrowL" size={24} />
+        </button>
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', lineHeight: 1.3 }}>
+          <span style={{ fontSize: 10, color: 'var(--text-dim)', letterSpacing: '0.15em' }}>EM TREINO</span>
+          <span className="f-mono" style={{ fontSize: 16, fontWeight: 600, color: 'var(--accent)' }}>{formatMMSS(elapsedSec)}</span>
+        </div>
+        <button onClick={onFinish} aria-label="Encerrar treino" style={{ background: 'transparent', border: 'none', color: 'var(--accent)', padding: 6, cursor: 'pointer', display: 'flex' }}>
+          <Icon name="check" size={24} />
+        </button>
+      </div>
+
+      {/* Exercício atual */}
+      <div style={{ padding: '4px 20px 14px' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 10 }}>
+          <div className="eyebrow" style={{ minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+            Exercício {String(currentIdx + 1).padStart(2, '0')} / {String(exercises.length).padStart(2, '0')}
+            {ex.exercise?.muscle_group ? ` · ${MUSCLE_GROUP_LABELS[ex.exercise.muscle_group]}` : ''}
+          </div>
+          <div style={{ display: 'flex', gap: 6, flexShrink: 0 }}>
+            <button
+              onClick={() => currentIdx > 0 && setCurrentIdx(currentIdx - 1)}
+              disabled={currentIdx === 0}
+              aria-label="Exercício anterior"
+              style={{ ...navBtnStyle, opacity: currentIdx === 0 ? 0.35 : 1 }}
+            >
+              <Icon name="arrowL" size={16} />
+            </button>
+            <button
+              onClick={() => !isLastExercise && setCurrentIdx(currentIdx + 1)}
+              disabled={isLastExercise}
+              aria-label="Próximo exercício"
+              style={{ ...navBtnStyle, opacity: isLastExercise ? 0.35 : 1 }}
+            >
+              <Icon name="arrow" size={16} />
+            </button>
+          </div>
+        </div>
+        <h1 className="f-display" style={{ fontSize: 30, lineHeight: 1.08, margin: '6px 0 14px' }}>
+          {(ex.exercise?.name ?? 'Exercício').toUpperCase()}
+        </h1>
+        <div className="bar"><span style={{ width: `${progressPct}%` }} /></div>
+      </div>
+
+      {/* Área rolável */}
+      <div style={{ flex: 1, overflow: 'auto', padding: '0 16px 12px' }}>
+        {/* Séries */}
+        <div className="card" style={{ padding: 0, marginBottom: 14 }}>
+          <div style={{ display: 'grid', gridTemplateColumns: '30px 1fr 1fr 40px', gap: 10, padding: '12px 16px', borderBottom: '1px solid var(--hairline)', fontSize: 10, color: 'var(--text-dim)', letterSpacing: '0.1em', textTransform: 'uppercase' }}>
+            <div>#</div><div>Carga</div><div>Reps</div><div></div>
+          </div>
+          {setNumbers.map((n) => {
+            const done = n <= exDoneCount
+            const current = n === currentSetNumber
+            const v = vals[n] ?? { reps: '', load: '' }
+            return (
+              <div
+                key={n}
+                style={{
+                  display: 'grid', gridTemplateColumns: '30px 1fr 1fr 40px', gap: 10,
+                  padding: '12px 16px', alignItems: 'center',
+                  borderBottom: n < ex.sets ? '1px solid var(--hairline)' : 'none',
+                  opacity: done ? 0.5 : 1,
+                  background: current ? 'var(--bg-2)' : 'transparent',
+                }}
+              >
+                <div className="f-display" style={{ fontSize: 18, color: current ? 'var(--accent)' : 'var(--text-dim)' }}>{n}</div>
+                <input
+                  className="set-input" type="number" inputMode="decimal"
+                  value={v.load} placeholder="—" step={0.5} min={0}
+                  style={{ fontSize: 14, padding: '8px' }}
+                  onChange={(e) => setVals((p) => ({ ...p, [n]: { ...(p[n] ?? { reps: '', load: '' }), load: e.target.value } }))}
+                  onBlur={() => { if (done) updateSet(n) }}
+                />
+                <input
+                  className="set-input" type="number" inputMode="numeric"
+                  value={v.reps} placeholder="—" min={1}
+                  style={{ fontSize: 14, padding: '8px' }}
+                  onChange={(e) => setVals((p) => ({ ...p, [n]: { ...(p[n] ?? { reps: '', load: '' }), reps: e.target.value } }))}
+                  onBlur={() => { if (done) updateSet(n) }}
+                />
+                {done ? (
+                  <div className="check checked" style={{ width: 26, height: 26 }}>
+                    <Icon name="check" size={13} stroke={3} />
+                  </div>
+                ) : (
+                  <button
+                    onClick={() => completeSet(n)}
+                    className="check"
+                    style={{ width: 26, height: 26, background: current ? 'var(--accent)' : 'transparent', borderColor: current ? 'var(--accent)' : undefined, cursor: 'pointer' }}
+                    aria-label={`Concluir série ${n}`}
+                  >
+                    <Icon name="check" size={13} stroke={3} color={current ? 'var(--accent-fg)' : 'currentColor'} />
+                  </button>
+                )}
+              </div>
+            )
+          })}
+        </div>
+
+        {/* Observação do exercício */}
+        {ex.notes && (
+          <div style={{ padding: '10px 14px', background: 'rgba(212,255,58,0.06)', borderLeft: '2px solid var(--accent)', borderRadius: '0 var(--r-1) var(--r-1) 0', fontSize: 12, color: 'var(--text-dim)', fontStyle: 'italic', lineHeight: 1.5, marginBottom: 14 }}>
+            {ex.notes}
+          </div>
+        )}
+
+        {/* Instruções (toggle + vídeo) */}
+        <ExerciseInstructions description={ex.exercise?.description} videoUrl={ex.exercise?.video_url} />
+
+        {/* Próximo exercício */}
+        {nextExercise && (
+          <div
+            onClick={() => setCurrentIdx(currentIdx + 1)}
+            style={{ padding: '12px 16px', background: 'var(--bg-1)', borderRadius: 'var(--r-3)', border: '1px solid var(--hairline)', marginTop: 14, cursor: 'pointer' }}
+          >
+            <div className="label-sm">Próximo</div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginTop: 8 }}>
+              <MuscleImage group={nextExercise.exercise?.muscle_group} style={{ width: 44, height: 44, borderRadius: 'var(--r-1)' }} />
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <div style={{ fontSize: 14, fontWeight: 600, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                  {nextExercise.exercise?.name ?? 'Exercício'}
+                </div>
+                <div style={{ fontSize: 11, color: 'var(--text-dim)' }}>
+                  {nextExercise.sets}×{nextExercise.reps}{nextExercise.suggested_load ? ` · ${nextExercise.suggested_load}kg` : ''}
+                </div>
+              </div>
+              <Icon name="arrow" size={18} />
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* Botão inferior */}
+      <div style={{ padding: '12px 16px calc(16px + env(safe-area-inset-bottom))', borderTop: '1px solid var(--hairline)', background: '#0a0b0c' }}>
+        {!allSetsDone ? (
+          <button className="btn primary cta" onClick={() => completeSet(currentSetNumber)}>
+            CONCLUIR SÉRIE{ex.rest_seconds > 0 ? ` · DESCANSO ${formatMMSS(ex.rest_seconds)}` : ''}
+          </button>
+        ) : isLastExercise ? (
+          <button className="btn primary cta" onClick={onFinish}>ENCERRAR TREINO</button>
+        ) : (
+          <button className="btn primary cta" onClick={() => setCurrentIdx(currentIdx + 1)}>PRÓXIMO EXERCÍCIO</button>
+        )}
+      </div>
+
+      {/* Tela de descanso (cronômetro) */}
+      {isTimerRunning && timerSeconds > 0 && (
+        <div style={{ position: 'absolute', inset: 0, zIndex: 5, background: '#0a0a0a', display: 'flex', flexDirection: 'column' }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: 'calc(8px + env(safe-area-inset-top)) 20px 12px' }}>
+            <button onClick={skipTimer} aria-label="Pular descanso" style={{ background: 'transparent', border: 'none', color: 'var(--text)', padding: 6, cursor: 'pointer', display: 'flex' }}>
+              <Icon name="arrowL" size={24} />
+            </button>
+            <div className="eyebrow">DESCANSO</div>
+            <button onClick={skipTimer} style={{ background: 'transparent', border: 'none', color: 'var(--text-dim)', fontSize: 12, fontWeight: 600, cursor: 'pointer', letterSpacing: '0.1em' }}>PULAR</button>
+          </div>
+
+          <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: 24, gap: 28 }}>
+            <div style={{ position: 'relative', width: 260, height: 260 }}>
+              <svg viewBox="0 0 100 100" style={{ position: 'absolute', inset: 0, transform: 'rotate(-90deg)' }}>
+                <circle cx="50" cy="50" r={R} fill="none" stroke="var(--bg-2)" strokeWidth="3" />
+                <circle cx="50" cy="50" r={R} fill="none" stroke="var(--accent)" strokeWidth="3" strokeLinecap="round" strokeDasharray={CIRC} strokeDashoffset={CIRC * (1 - restPct)} style={{ transition: 'stroke-dashoffset 1s linear' }} />
+              </svg>
+              <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+                <div style={{ fontSize: 11, color: 'var(--text-dim)', letterSpacing: '0.2em' }}>RESTAM</div>
+                <div className="f-display" style={{ fontSize: 96, lineHeight: 0.9, color: 'var(--accent)' }}>{formatMMSS(timerSeconds)}</div>
+                <div style={{ fontSize: 11, color: 'var(--text-faint)', letterSpacing: '0.15em', marginTop: 6 }}>DE {formatMMSS(restTotal)}</div>
+              </div>
+            </div>
+
+            <div className="card card-flat" style={{ width: '100%', padding: 18, maxWidth: 340 }}>
+              <div className="label-sm" style={{ color: 'var(--accent)' }}>PRÓXIMA SÉRIE</div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 8 }}>
+                <div style={{ minWidth: 0 }}>
+                  <div className="f-display" style={{ fontSize: 22, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                    {(ex.exercise?.name ?? '').toUpperCase()}
+                  </div>
+                  <div style={{ fontSize: 12, color: 'var(--text-dim)' }}>Série {Math.min(exDoneCount + 1, ex.sets)} de {ex.sets}</div>
+                </div>
+                <div style={{ textAlign: 'right', flexShrink: 0 }}>
+                  <div className="f-display" style={{ fontSize: 30, color: 'var(--accent)' }}>
+                    {ex.suggested_load ?? '—'}<span className="stat-unit" style={{ fontSize: 12 }}>kg</span>
+                  </div>
+                  <div style={{ fontSize: 11, color: 'var(--text-dim)' }}>{ex.reps} reps</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div style={{ padding: '12px 20px calc(24px + env(safe-area-inset-bottom))', display: 'flex', gap: 10 }}>
+            <button className="btn lg" style={{ flex: 1, justifyContent: 'center' }} onClick={() => adjustTimer(-15)}>-15s</button>
+            <button className="btn lg" style={{ flex: 1, justifyContent: 'center' }} onClick={() => adjustTimer(15)}>+15s</button>
+            <button className="btn primary lg" style={{ flex: 2, justifyContent: 'center' }} onClick={skipTimer}>INICIAR SÉRIE</button>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
