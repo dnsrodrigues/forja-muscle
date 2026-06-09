@@ -245,23 +245,7 @@ export function ProfilePage() {
         transition={{ duration: 0.2 }}
         style={{ display: 'flex', flexDirection: 'column', minHeight: '100%' }}
       >
-        <MobHead
-          title="PERFIL"
-          right={
-            <button
-              onClick={() => void signOut()}
-              aria-label="Sair da conta"
-              style={{
-                width: 40, height: 40, borderRadius: 10,
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                background: 'var(--bg-2)', border: '1px solid var(--border)',
-                color: 'var(--danger)', cursor: 'pointer',
-              }}
-            >
-              <Icon name="logout" size={18} />
-            </button>
-          }
-        />
+        <MobHead title="PERFIL" />
 
         <div className="mob-scroll">
           {/* Banner + Avatar sobreposto */}
@@ -318,6 +302,20 @@ export function ProfilePage() {
                 </span>
               )}
             </div>
+            {/* Sair — lado direito da faixa do avatar, menor */}
+            <button
+              onClick={() => void signOut()}
+              aria-label="Sair da conta"
+              style={{
+                position: 'absolute', right: 12, bottom: -19,
+                width: 36, height: 36, borderRadius: 10,
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                background: 'var(--bg-2)', border: '1px solid var(--border)',
+                color: 'var(--danger)', cursor: 'pointer',
+              }}
+            >
+              <Icon name="logout" size={16} />
+            </button>
           </div>
 
           {/* Nome + chips */}
