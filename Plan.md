@@ -1,7 +1,7 @@
 # MUSCLE TRAINING — Plan.md
 
-**Versão:** 4.1  
-**Atualizado em:** 05 de junho de 2026  
+**Versão:** 4.2  
+**Atualizado em:** 09 de junho de 2026  
 **Status:** ✅ Projeto completo — em produção
 
 > Este é o documento central de execução do projeto.  
@@ -26,6 +26,9 @@
 | 9 | Painel admin (gestão de alunos) | ✅ Completa |
 | 10 | Polish + PWA | ✅ Completa |
 | 11 | Deploy (Vercel) | ✅ Completa |
+| 12 | Redesign Mobile FORJA (≤768px, desktop intacto) | ✅ Completa |
+
+> **Fase 12 — Redesign Mobile FORJA:** layout dedicado para celular sem alterar o desktop, via hook `useIsMobile()` + branches condicionais. Inclui: tabbar de 5 abas com FAB central (sempre "meu treino"), páginas novas (Semana, Exercícios, Alertas), Perfil reformulado (hub com lista GESTÃO, seletor de cor no banner), e a tela de execução de treino + cronômetro de descanso redesenhados. Detalhes na seção **Mobile (≤768px)** do CLAUDE.md.
 
 ---
 

@@ -7,8 +7,10 @@ MUSCLE TRAINING é um PWA (app web instalável no celular) de gerenciamento de t
 > Documentação completa: [PRD](docs/superpowers/specs/2026-05-22-musctrainig-prd.md) | [Plan.md](Plan.md)  
 > Toda decisão de funcionalidade deve ser validada contra o PRD. Não implementar nada fora do escopo sem confirmar com o usuário.
 
-**Fases concluídas:** 1, 2, 3, 4, 4.5 (Design System), 5 (Fichas de Treino), 6 (Execução de Treino), 7 (Histórico e Progressão), 8 (Nutrição + IA com Groq/Llama), 9 (Painel Administrativo), 10 (Polish + PWA), 11 (Deploy Vercel)  
+**Fases concluídas:** 1, 2, 3, 4, 4.5 (Design System), 5 (Fichas de Treino), 6 (Execução de Treino), 7 (Histórico e Progressão), 8 (Nutrição + IA com Groq/Llama), 9 (Painel Administrativo), 10 (Polish + PWA), 11 (Deploy Vercel), 12 (Redesign Mobile FORJA)  
 **Status:** ✅ Projeto completo e em produção — **https://forjamuscle.vercel.app**
+
+> **Fase 12 — Redesign Mobile FORJA:** layout dedicado para celular (≤768px) sem alterar o desktop. Navegação por 5 abas com botão central (FAB), páginas novas (Semana, Exercícios, Alertas), perfil reformulado e tela de execução de treino + cronômetro de descanso redesenhados. Ver seção **Mobile (≤768px)** abaixo.
 
 ---
 
@@ -54,15 +56,19 @@ src/
     layout/
       AdminRoute.tsx           — bloqueia rota se não for admin/trainer
       AppShell.tsx             — shell com sidebar + topbar + conteúdo
+      MobHead.tsx              — cabeçalho padrão das páginas mobile (over/title/right)
+      MobileTabbar.tsx         — barra inferior mobile: 5 abas + FAB central (sempre "meu treino")
       ProtectedRoute.tsx       — bloqueia rota se não estiver logado
+      Sidebar.tsx              — navegação lateral (desktop) + ModeToggle + logout
       Topbar.tsx               — barra superior com eyebrow, título e actions
     ui/
       Avatar.tsx               — avatar quadrado com fallback nas iniciais
       AvatarCropModal.tsx      — recorte circular de foto de perfil
       ConfirmModal.tsx         — modal de confirmação genérico
       ForcePasswordModal.tsx   — força troca de senha no primeiro login
-      Icon.tsx                 — ícones SVG do sistema FORJA
-      ThemeSwitcher.tsx        — toggle dark/light + seletor de cor accent
+      Icon.tsx                 — ícones SVG do sistema FORJA (inclui trash, power)
+      ModeToggle.tsx           — alterna Gestão / Meu Treino (só no desktop, na sidebar)
+      ThemeSwitcher.tsx        — seletor de cor accent (compact = só as bolinhas)
       ToastStack.tsx           — stack de notificações toast (Fase 10)
     AssignWorkoutModal.tsx     — atribuir template a aluno(s) (template-centric)
     ExerciseRow.tsx            — linha de exercício (leitura + edição)
@@ -78,43 +84,48 @@ src/
     ThemeContext.tsx           — mode ('dark'|'light'), accent, toggleMode
     ToastContext.tsx           — showToast(), sistema global de toasts
   hooks/
+    useIsMobile.ts             — true quando viewport ≤768px (reativo a resize)
     useModalA11y.ts            — foco e teclado para modais (acessibilidade)
   lib/
     bmi.ts                     — getBmiStatus(weight, height) → cor/rótulo/tooltip IMC
-    navigation.ts              — navDestinations() — links da sidebar por papel
+    navigation.ts              — navDestinations() (sidebar) + mobileNavDestinations() (tabbar)
     nutritionGoals.ts          — calculateDailyGoals(profile) — metas calóricas
     supabase.ts                — cliente Supabase
     workout-sort.ts            — sortWorkoutsByWeekday() — ordena fichas por dia da semana
   pages/
-    DashboardPage.tsx          — dashboard (aluno: hoje + stats | admin: painel)
-    HistoryPage.tsx            — histórico de sessões do aluno
+    DashboardPage.tsx          — dashboard (aluno: hoje + stats | admin: painel) — branch mobile dedicado
+    ExerciciosPage.tsx         — catálogo de exercícios do aluno + PR (mobile)
+    HistoryPage.tsx            — histórico de sessões do aluno (com botão de apagar por sessão)
     LoginPage.tsx              — tela de login com shader e números animados
     MeasurementsPage.tsx       — peso + medidas corporais com gráficos
     NotFoundPage.tsx           — página 404
     NutritionPage.tsx          — diário alimentar + IA Groq/Llama
-    ProfilePage.tsx            — perfil do usuário (edição + foto)
+    ProfilePage.tsx            — perfil do usuário (branch mobile = hub com GESTÃO + cor + sair)
     ProgressPage.tsx           — progresso: PRs, volume, gráfico de carga
-    SessionDetailPage.tsx      — detalhe de uma sessão de treino
+    SemanaPage.tsx             — visão semanal das fichas (mobile)
+    SessionDetailPage.tsx      — detalhe de uma sessão de treino (editável)
     WorkoutDetailPage.tsx      — detalhe de uma ficha (aluno)
     WorkoutsPage.tsx           — fichas do aluno + destaque do dia
-    WorkoutSessionPage.tsx     — execução de treino ativo (séries, timer)
+    WorkoutSessionPage.tsx     — execução de treino ativo (branch mobile + cronômetro de descanso)
     admin/
+      AlertasPage.tsx          — painel de gestão (alunos que precisam de atenção, métricas)
       ExerciseLibraryPage.tsx  — biblioteca de exercícios (listar, filtrar, criar, editar)
       StudentDetailPage.tsx    — perfil completo do aluno (abas + ações)
       StudentFormPage.tsx      — criar novo aluno
-      StudentsAdminPage.tsx    — lista de alunos (ativos + inativos)
+      StudentsAdminPage.tsx    — lista de alunos (ações por ícone: power/trash)
       TrainerFormPage.tsx      — criar novo trainer
-      TrainersAdminPage.tsx    — lista de trainers
+      TrainersAdminPage.tsx    — lista de trainers (ações por ícone: power/trash)
       WorkoutFormPage.tsx      — criar / editar ficha
       WorkoutsAdminPage.tsx    — biblioteca de templates do admin
   services/
     admin.service.ts           — getAdminDashboardStats() — números do painel
-    history.service.ts         — histórico, streak, progressão de carga, PRs
+    history.service.ts         — histórico, streak, progressão, PRs, getAllExercisePRs()
     measurements.service.ts    — peso corporal e medidas
     nutrition.service.ts       — diário alimentar, totais diários
     profile.service.ts         — getProfile, updateProfile, uploadAvatar
     trainer.service.ts         — alunos, trainers, resetStudentPassword
     workout.service.ts         — fichas, exercícios, atribuição, catálogo
+    workout-log.service.ts     — sessão: start/log/update/finish/deleteWorkoutSession
   types/
     index.ts                   — todos os tipos TypeScript do projeto
   App.tsx                      — rotas com AnimatedRoutes + ToastProvider
@@ -153,6 +164,9 @@ CLAUDE.md                      — este arquivo
 | `/progresso` | ProgressPage | logado |
 | `/medidas` | MeasurementsPage | logado |
 | `/nutricao` | NutritionPage | logado |
+| `/semana` | SemanaPage | logado (mobile) |
+| `/exercicios` | ExerciciosPage | logado (mobile) |
+| `/admin/alertas` | AlertasPage | admin |
 | `/admin/workouts` | WorkoutsAdminPage | admin |
 | `/admin/workouts/new` | WorkoutFormPage | admin |
 | `/admin/workouts/:id/edit` | WorkoutFormPage | admin |
@@ -179,7 +193,7 @@ CLAUDE.md                      — este arquivo
 - Lógica de banco sempre em `src/services/`
 - Sempre verificar erros: `const { data, error } = await supabase...`
 - RLS ativo em todas as tabelas — nunca desativar
-- Nunca excluir registros fisicamente — usar `is_active = false`
+- Nunca excluir registros fisicamente — usar `is_active = false`. **Exceções explícitas:** sessões de treino (`deleteWorkoutSession` — o aluno pediu para descartar/apagar) e exclusão de usuários (Edge Function `manage-users`, ação `delete`)
 - Tabela de exercícios é `exercise_library` (não `exercises`)
 
 ### Componentes
@@ -243,6 +257,8 @@ Inspirado em apps de treino premium (vigor./GASLUR): **preto absoluto**, tipogra
 - Formulário: `.input` (+ `textarea.input`, `select.input`); `.set-input` para campo numérico
 - Números grandes: `.stat-num` `.stat-label` `.stat-unit`
 - Outros: `.bar` (progresso) · `.skeleton` (carregando) · `.topbar` `.content` `.nav` `.mob-tabbar` (estrutura)
+- Ações: `.cta` (botão grande full-width) · `.icon-btn` (+ `.accent` `.danger`) — botão compacto só com ícone
+- Mobile: `.mob-head` (cabeçalho) · `.mob-scroll` (área rolável) · `.mob-kpi` (card de número) · `.mob-lrow` (linha de lista) · `.mob-seg` (segmented control) · `.mob-tab-fab` (FAB central da tabbar)
 
 ### Padrões visuais recorrentes
 ```tsx
@@ -261,6 +277,30 @@ Inspirado em apps de treino premium (vigor./GASLUR): **preto absoluto**, tipogra
 // Estado de erro
 <div className="card" style={{ borderLeft: '2px solid var(--danger)', background: 'rgba(255,61,85,0.05)' }} />
 ```
+
+---
+
+## Mobile (≤768px)
+
+O app tem um layout mobile dedicado, **sem alterar o desktop**. Regra de ouro: **toda mudança mobile fica isolada** — nunca quebrar o desktop.
+
+### Como funciona
+- O hook **`useIsMobile()`** (`src/hooks/useIsMobile.ts`) retorna `true` em telas ≤768px. As páginas com versão mobile fazem um `if (isMobile) return (<JSX mobile/>)` **antes** do `return` do desktop. O caminho do desktop fica intocado.
+- O cabeçalho mobile é o **`MobHead`** (over/title/right) no lugar do `Topbar`.
+- A área rolável usa a classe `.mob-scroll`.
+
+### Navegação mobile
+- A barra inferior (`MobileTabbar`) é **sempre "meu treino"**: 5 colunas → **Hoje · Semana · [FAB ▶] · Histórico · Perfil**. O FAB central inicia o treino de hoje (ou abre `/semana` se não houver).
+- **Não existe** alternância Gestão/Meu Treino no mobile. As funções de gestão (Fichas, Alunos, Trainers, Exercícios, **Alertas**) ficam na lista **GESTÃO** dentro do **Perfil** (só aparece para `isManager`).
+- `mobileNavDestinations()` em `navigation.ts` sempre devolve a lista do aluno. O `ModeToggle` (Gestão/Meu Treino) existe **só no desktop**, na sidebar.
+
+### Páginas mobile
+- **Dashboard** (`/dashboard`): no mobile sempre mostra a visão do aluno (hero do treino de hoje, KPIs, mini-semana, última sessão) — mesmo logado como admin.
+- **Semana** (`/semana`): os 7 dias com status (concluído / hoje / descanso / futuro).
+- **Exercícios** (`/exercicios`): catálogo do aluno com busca, filtro por grupo e PR.
+- **Perfil** (`/perfil`): hub com avatar sobreposto ao banner, seletor de cor no banner, KPIs, lista GESTÃO (manager), lista MEU TREINO e botão de **sair** (ícone, no banner).
+- **Alertas** (`/admin/alertas`): painel de gestão (métricas + alunos que precisam de atenção).
+- **Execução de treino** (`/workouts/:id/session`): tela imersiva (cabeçalho com cronômetro, séries, próximo, botão "CONCLUIR SÉRIE") + **tela de descanso** em tela cheia (cronômetro circular + próxima série).
 
 ---
 
@@ -312,7 +352,7 @@ O `.env` existe localmente mas **nunca vai para o git**. O `.env.example` é o t
 
 **Produção:** https://forjamuscle.vercel.app  
 **Plataforma:** Vercel (deploy automático a cada push na branch `main`)  
-**Repositório:** https://github.com/dnsrodrigues/musctrainig  
+**Repositório:** https://github.com/dnsrodrigues/forja-muscle  
 
 ### Como funciona o deploy
 1. Qualquer `git push origin main` dispara o build automático no Vercel
