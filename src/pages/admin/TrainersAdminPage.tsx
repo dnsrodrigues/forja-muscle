@@ -201,38 +201,38 @@ function TrainerRow({ trainer, studentCount, inactive, onDeactivate, onActivate,
         opacity: inactive ? 0.6 : 1,
       }}
     >
-      <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 12, flex: 1, minWidth: 0 }}>
         <div style={{
           width: 36, height: 36, borderRadius: 8,
           background: inactive ? 'var(--bg-3)' : 'rgba(212,255,58,0.1)',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
           fontFamily: "'Outfit', sans-serif", fontWeight: 800, fontSize: 16,
-          color: inactive ? 'var(--text-dim)' : 'var(--accent)',
+          color: inactive ? 'var(--text-dim)' : 'var(--accent)', flexShrink: 0,
         }}>
           {trainer.full_name.charAt(0).toUpperCase()}
         </div>
-        <div>
+        <div style={{ minWidth: 0 }}>
           <div style={{ fontWeight: 600, fontSize: 14, color: inactive ? 'var(--text-dim)' : 'var(--text)' }}>
             {trainer.full_name}
           </div>
-          <div style={{ fontSize: 12, color: 'var(--text-dim)' }}>
+          <div style={{ fontSize: 12, color: 'var(--text-dim)', wordBreak: 'break-word' }}>
             {trainer.email} · {studentCount} aluno(s)
             {inactive && <span style={{ marginLeft: 8, color: 'var(--danger)', fontSize: 10, fontFamily: "'JetBrains Mono', monospace" }}>INATIVO</span>}
           </div>
         </div>
       </div>
-      <div style={{ display: 'flex', gap: 6 }}>
+      <div style={{ display: 'flex', gap: 6, flexShrink: 0 }}>
         {inactive ? (
-          <button onClick={onActivate} className="btn ghost" style={{ fontSize: 11, padding: '6px 12px', color: 'var(--accent)' }}>
-            Reativar
+          <button onClick={onActivate} className="icon-btn accent" title="Reativar" aria-label="Reativar trainer">
+            <Icon name="power" size={16} />
           </button>
         ) : (
-          <button onClick={onDeactivate} className="btn ghost" style={{ fontSize: 11, padding: '6px 12px' }}>
-            Desativar
+          <button onClick={onDeactivate} className="icon-btn" title="Desativar" aria-label="Desativar trainer">
+            <Icon name="power" size={16} />
           </button>
         )}
-        <button onClick={onDelete} className="btn ghost" style={{ fontSize: 11, padding: '6px 12px', color: 'var(--danger)', borderColor: 'var(--danger)' }}>
-          Excluir
+        <button onClick={onDelete} className="icon-btn danger" title="Excluir" aria-label="Excluir trainer">
+          <Icon name="trash" size={16} />
         </button>
       </div>
     </div>

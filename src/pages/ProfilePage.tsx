@@ -473,14 +473,9 @@ export function ProfilePage() {
         eyebrow={`MEMBRO DESDE ${memberSince}`}
         title="PERFIL"
         actions={
-          <>
-            <Link to="/dashboard" className="btn ghost">
-              <Icon name="arrowL" size={14} /> Voltar
-            </Link>
-            <button onClick={() => void signOut()} className="btn ghost">
-              <Icon name="logout" size={14} /> Sair
-            </button>
-          </>
+          <Link to="/dashboard" className="btn ghost">
+            <Icon name="arrowL" size={14} /> Voltar
+          </Link>
         }
       />
 

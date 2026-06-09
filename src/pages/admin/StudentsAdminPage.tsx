@@ -225,16 +225,16 @@ function StudentRow({ student, inactive, onOpen, onDeactivate, onActivate, onDel
       </button>
       <div style={{ display: 'flex', gap: 6, flexShrink: 0 }}>
         {inactive ? (
-          <button onClick={onActivate} className="btn ghost" style={{ fontSize: 11, padding: '6px 12px', color: 'var(--accent)' }}>
-            Reativar
+          <button onClick={onActivate} className="icon-btn accent" title="Reativar" aria-label="Reativar aluno">
+            <Icon name="power" size={16} />
           </button>
         ) : (
-          <button onClick={onDeactivate} className="btn ghost" style={{ fontSize: 11, padding: '6px 12px' }}>
-            Desativar
+          <button onClick={onDeactivate} className="icon-btn" title="Desativar" aria-label="Desativar aluno">
+            <Icon name="power" size={16} />
           </button>
         )}
-        <button onClick={onDelete} className="btn ghost" style={{ fontSize: 11, padding: '6px 12px', color: 'var(--danger)', borderColor: 'var(--danger)' }}>
-          Excluir
+        <button onClick={onDelete} className="icon-btn danger" title="Excluir" aria-label="Excluir aluno">
+          <Icon name="trash" size={16} />
         </button>
       </div>
     </div>

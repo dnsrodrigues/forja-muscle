@@ -536,6 +536,27 @@ select.input {
   font-size: 15px;
 }
 
+/* Botão compacto só com ícone (ações de lista: desativar, excluir, etc.) */
+.icon-btn {
+  width: 34px;
+  height: 34px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--r-2);
+  background: var(--bg-2);
+  border: 1px solid var(--border);
+  color: var(--text-dim);
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+}
+.icon-btn:hover { background: var(--bg-3); color: var(--text); }
+.icon-btn.accent { color: var(--accent); border-color: rgba(212, 255, 58, 0.4); }
+.icon-btn.accent:hover { background: rgba(212, 255, 58, 0.1); border-color: var(--accent); }
+.icon-btn.danger { color: var(--danger); border-color: rgba(255, 61, 85, 0.4); }
+.icon-btn.danger:hover { background: rgba(255, 61, 85, 0.12); border-color: var(--danger); }
+
 /* ══════════════════════════════════════════════════════════════════
    Set list (treino em execução)
    ══════════════════════════════════════════════════════════════════ */
