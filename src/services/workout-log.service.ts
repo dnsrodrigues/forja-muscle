@@ -5,26 +5,80 @@ import type { WorkoutDifficulty } from '../types'
 // Iniciar sessão de treino
 // ─────────────────────────────────────────────
 
+export interface ResumableSession {
+  id: string
+  startedAt: string
+  resumed: boolean
+}
+
 /**
- * Cria um registro em workout_logs para a sessão que está começando.
- * Retorna o ID da linha criada — usado em todas as chamadas seguintes.
+ * Retoma a sessão em andamento (finished_at IS NULL) deste aluno para esta
+ * ficha, começada nas últimas 6 horas. Se não houver, cria uma nova.
+ *
+ * Isso torna o treino resistente a recarregamentos do iOS: ao reabrir a
+ * tela no meio do treino, continua a mesma sessão em vez de zerar.
  */
-export async function startWorkoutSession(
+export async function resumeOrStartWorkoutSession(
   workoutId: string,
-  userId: string
-): Promise<string> {
+  userId: string,
+): Promise<ResumableSession> {
+  const sixHoursAgo = new Date(Date.now() - 6 * 60 * 60 * 1000).toISOString()
+
+  // 1. Procura uma sessão recente ainda não finalizada para esta ficha
+  const { data: existing, error: findErr } = await supabase
+    .from('workout_logs')
+    .select('id, started_at')
+    .eq('user_id', userId)
+    .eq('workout_id', workoutId)
+    .is('finished_at', null)
+    .gte('started_at', sixHoursAgo)
+    .order('started_at', { ascending: false })
+    .limit(1)
+    .maybeSingle()
+
+  if (findErr) throw new Error(findErr.message)
+  if (existing) {
+    return {
+      id: existing.id as string,
+      startedAt: existing.started_at as string,
+      resumed: true,
+    }
+  }
+
+  // 2. Não há sessão em andamento → cria nova
+  const startedAt = new Date().toISOString()
   const { data, error } = await supabase
     .from('workout_logs')
-    .insert({
-      workout_id: workoutId,
-      user_id: userId,
-      started_at: new Date().toISOString(),
-    })
+    .insert({ workout_id: workoutId, user_id: userId, started_at: startedAt })
     .select('id')
     .single()
 
   if (error) throw new Error(error.message)
-  return data.id as string
+  return { id: data.id as string, startedAt, resumed: false }
+}
+
+/**
+ * Séries concluídas de uma sessão, agrupadas por exercise_id (id da
+ * exercise_library) → lista de set_numbers distintos já registrados.
+ * Usado para reconstruir o progresso ao retomar uma sessão.
+ */
+export async function getSessionProgress(
+  workoutLogId: string,
+): Promise<Record<string, number[]>> {
+  const { data, error } = await supabase
+    .from('exercise_logs')
+    .select('exercise_id, set_number')
+    .eq('workout_log_id', workoutLogId)
+    .eq('completed', true)
+
+  if (error) throw new Error(error.message)
+
+  const result: Record<string, number[]> = {}
+  for (const row of (data ?? []) as { exercise_id: string; set_number: number }[]) {
+    const arr = result[row.exercise_id] ?? (result[row.exercise_id] = [])
+    if (!arr.includes(row.set_number)) arr.push(row.set_number)
+  }
+  return result
 }
 
 // ─────────────────────────────────────────────
