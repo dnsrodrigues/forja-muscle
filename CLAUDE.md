@@ -86,6 +86,7 @@ src/
   hooks/
     useIsMobile.ts             — true quando viewport ≤768px (reativo a resize)
     useModalA11y.ts            — foco e teclado para modais (acessibilidade)
+    useWakeLock.ts             — mantém a tela acesa durante o treino (Screen Wake Lock)
   lib/
     bmi.ts                     — getBmiStatus(weight, height) → cor/rótulo/tooltip IMC
     navigation.ts              — navDestinations() (sidebar) + mobileNavDestinations() (tabbar)
@@ -125,7 +126,7 @@ src/
     profile.service.ts         — getProfile, updateProfile, uploadAvatar
     trainer.service.ts         — alunos, trainers, resetStudentPassword
     workout.service.ts         — fichas, exercícios, atribuição, catálogo
-    workout-log.service.ts     — sessão: start/log/update/finish/deleteWorkoutSession
+    workout-log.service.ts     — sessão: resumeOrStart/getSessionProgress/log/update/finish/delete
   types/
     index.ts                   — todos os tipos TypeScript do projeto
   App.tsx                      — rotas com AnimatedRoutes + ToastProvider
@@ -301,6 +302,10 @@ O app tem um layout mobile dedicado, **sem alterar o desktop**. Regra de ouro: *
 - **Perfil** (`/perfil`): hub com avatar sobreposto ao banner, seletor de cor no banner, KPIs, lista GESTÃO (manager), lista MEU TREINO e botão de **sair** (ícone, no banner).
 - **Alertas** (`/admin/alertas`): painel de gestão (métricas + alunos que precisam de atenção).
 - **Execução de treino** (`/workouts/:id/session`): tela imersiva (cabeçalho com cronômetro, séries, próximo, botão "CONCLUIR SÉRIE") + **tela de descanso** em tela cheia (cronômetro circular + próxima série).
+
+### Robustez no iOS (Safari / PWA na tela inicial)
+- **Sem zoom ao focar campos:** todos os campos de digitação têm fonte **≥16px** (`.input` = 16px; `.set-input` = 16px). O iOS dá zoom automático em campos < 16px — por isso esse mínimo é obrigatório. **Nunca** usar `maximum-scale=1` no viewport (mata o zoom de pinça / acessibilidade).
+- **Treino à prova de recarregamento:** o iOS recarrega PWAs sozinho após inatividade. Ao abrir a tela de treino, `resumeOrStartWorkoutSession()` **retoma** a sessão em andamento (não finalizada, desta ficha, começada nas últimas 6h) em vez de criar nova; o `boot()` reconstrói as séries feitas via `getSessionProgress()`, recupera o tempo a partir de `started_at` e posiciona no próximo exercício. `useWakeLock` mantém a tela acesa durante o treino.
 
 ---
 
