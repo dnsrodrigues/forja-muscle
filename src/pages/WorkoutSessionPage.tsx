@@ -4,7 +4,8 @@ import { motion, AnimatePresence } from 'motion/react'
 import { useAuth } from '../context/AuthContext'
 import { getWorkoutById } from '../services/workout.service'
 import {
-  startWorkoutSession,
+  resumeOrStartWorkoutSession,
+  getSessionProgress,
   logExerciseSet,
   updateExerciseSet,
   finishWorkoutSession,
@@ -13,6 +14,7 @@ import {
 import { getLastSetData, type LastSetRecord } from '../services/history.service'
 import { Icon } from '../components/ui/Icon'
 import { useIsMobile } from '../hooks/useIsMobile'
+import { useWakeLock } from '../hooks/useWakeLock'
 import { WorkoutFinishModal } from '../components/WorkoutFinishModal'
 import { useModalA11y } from '../hooks/useModalA11y'
 import { MUSCLE_GROUP_LABELS } from '../types'
@@ -109,9 +111,26 @@ export function WorkoutSessionPage() {
           setLastSetData(lastData)
         }
 
-        const logId = await startWorkoutSession(id!, profile!.id)
-        setWorkoutLogId(logId)
-        startTimeRef.current = new Date()
+        const session = await resumeOrStartWorkoutSession(id!, profile!.id)
+        setWorkoutLogId(session.id)
+        startTimeRef.current = new Date(session.startedAt)
+
+        // Sessão retomada: remarca séries feitas e posiciona no próximo exercício
+        if (session.resumed && data.exercises) {
+          const progress = await getSessionProgress(session.id)
+          const completed: Record<string, number> = {}
+          for (const we of data.exercises) {
+            const exLibId = we.exercise?.id
+            if (!exLibId) continue
+            const doneSets = progress[exLibId]?.length ?? 0
+            if (doneSets > 0) completed[we.id] = Math.min(doneSets, we.sets)
+          }
+          setSetsCompleted(completed)
+          const firstUnfinished = data.exercises.findIndex(
+            (we) => (completed[we.id] ?? 0) < we.sets,
+          )
+          setCurrentIdx(firstUnfinished === -1 ? 0 : firstUnfinished)
+        }
       } catch (err) {
         setLoadError(err instanceof Error ? err.message : 'Erro ao iniciar treino')
       } finally {
@@ -153,6 +172,9 @@ export function WorkoutSessionPage() {
     setTimerSeconds(0)
     setIsTimerRunning(false)
   }
+
+  // Mantém a tela acesa durante o treino (reduz recarregamento do iOS)
+  useWakeLock(!isBooting && workoutLogId !== null)
 
   // ─────────────────────────────────────────────────────────────────
   // Registrar série
