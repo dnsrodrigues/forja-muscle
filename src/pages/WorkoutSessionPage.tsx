@@ -1231,14 +1231,14 @@ function LayoutMobile(props: LayoutMobileProps) {
                 <input
                   className="set-input" type="number" inputMode="decimal"
                   value={v.load} placeholder="—" step={0.5} min={0}
-                  style={{ fontSize: 14, padding: '8px' }}
+                  style={{ padding: '8px' }}
                   onChange={(e) => setVals((p) => ({ ...p, [n]: { ...(p[n] ?? { reps: '', load: '' }), load: e.target.value } }))}
                   onBlur={() => { if (done) updateSet(n) }}
                 />
                 <input
                   className="set-input" type="number" inputMode="numeric"
                   value={v.reps} placeholder="—" min={1}
-                  style={{ fontSize: 14, padding: '8px' }}
+                  style={{ padding: '8px' }}
                   onChange={(e) => setVals((p) => ({ ...p, [n]: { ...(p[n] ?? { reps: '', load: '' }), reps: e.target.value } }))}
                   onBlur={() => { if (done) updateSet(n) }}
                 />
