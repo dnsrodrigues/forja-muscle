@@ -29,6 +29,8 @@
 | 12 | Redesign Mobile FORJA (≤768px, desktop intacto) | ✅ Completa |
 
 > **Fase 12 — Redesign Mobile FORJA:** layout dedicado para celular sem alterar o desktop, via hook `useIsMobile()` + branches condicionais. Inclui: tabbar de 5 abas com FAB central (sempre "meu treino"), páginas novas (Semana, Exercícios, Alertas), Perfil reformulado (hub com lista GESTÃO, seletor de cor no banner), e a tela de execução de treino + cronômetro de descanso redesenhados. Detalhes na seção **Mobile (≤768px)** do CLAUDE.md.
+>
+> **Pós-Fase 12 — Correções iOS (10/06/2026):** campos de digitação a ≥16px (fim do zoom automático do Safari) e treino à prova de recarregamento — `resumeOrStartWorkoutSession()` retoma a sessão em andamento, o progresso/tempo é reconstruído via `getSessionProgress()`, e `useWakeLock` mantém a tela acesa. Spec/plano: `docs/superpowers/specs|plans/2026-06-10-correcoes-ios-mobile*`.
 
 ---
 
